@@ -8,10 +8,10 @@ Created on Sun Dec 27 19:19:21 2020
 import random
 import re
 
-"""
+
 from diversifieur import get_syn
 from diversifieur import cong
-"""
+
 
 
 class Action :
