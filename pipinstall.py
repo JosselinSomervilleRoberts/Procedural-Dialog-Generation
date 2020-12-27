@@ -23,9 +23,10 @@ def importAll():
     from psclib.action import Action
     from psclib.objet import Objet, Personnage
     from psclib.caracteristique import Caracteristique, Type, CaracChiffree
-    from psclib.histoire import Histoire, ajouterPonctuation, demanderLien, nePasSavoirLien
+    from psclib.histoire import Histoire, ajouterPonctuation, demanderLien, nePasSavoirLien, SUITE, CAUSE, CONSEQUENCE
     from psclib.coeuraction import CoeurAction
     from psclib.coeurdescriptif import CoeurDescriptif
     from psclib.lien import Lien
+    from psclib.dialogue import dialogue, pickStory, raconter, quiparle, transition, fin, testContinuer, intersection, switcheroo, intro, connait
     """
     pass
