@@ -5,10 +5,12 @@ Created on Wed Dec 16 18:59:03 2020
 @author: josse
 """
 
-import pip
+#import pip
+import subprocess
 
 def install(package):
-    pip.main(['install', package])
+	subprocess.check_call(["python", '-m', 'pip', 'install', package])
+    #pip.main(['install', package])
 
 def installRequirements():
     install('verbecc')
