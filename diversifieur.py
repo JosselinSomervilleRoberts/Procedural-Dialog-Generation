@@ -14,15 +14,57 @@ Original file is located at
 
 from verbecc import Conjugator
 from google_trans_new import google_translator
+import language_tool_python
+import io
+import random
 
 cg = Conjugator(lang='fr')
+tool = language_tool_python.LanguageToolPublicAPI('fr')
 useTranslation = True
+syns = {}
 
 ts = None
 if useTranslation:
   ts = google_translator()
+  
+  
+COURANT = 1
+FAMILIER = 2
+SOUTENU = 3
 
 
+
+def buildSynonyms():
+    """
+    Construit le dictionnaire "syns" à partir du fichier "synonymes_tries.txt"
+    une entrée de syns est sous la forme :
+    syns["manger"] = [["bouffer", "brouter"], [60, 40], [FAMILIER, COURANT]]
+    On retrouve dans l ordre : les mots, les probabilités, les registres de langue
+    """ 
+    global syns
+    
+    f = open("psclib/synonymes_tries.txt", "r")
+    liste = f.readlines()
+    f.close()
+    
+    for ligne in liste:
+        l1 = ligne.replace("\n","").split("=")
+        mot = l1[0]
+        synonymes = l1[1]
+        
+        if len(synonymes) == 0:
+            pass
+        else:
+            l2 = synonymes.split("/")
+            syns[mot] = [[], [], []]
+            for synonyme in l2:
+                l3 = synonyme.split(":")
+                syns[mot][0].append(str(l3[0]))
+                syns[mot][1].append(int(float(l3[1])))
+                syns[mot][2].append(int(l3[2]))
+
+    print("Synonymes chargés.")
+                
 
 def cong(s, mode, temps, personne):
   """
@@ -44,23 +86,89 @@ def cong(s, mode, temps, personne):
 
 
 
-def get_syn(s):
+def get_syn(s, registre=None):
   """
   Fonction qui renvoie des synonymes de s
-  NOT IMPLEMENTED YET
+  - 50% de chance de renvoyer directement s
+  - 50% de chance de choisir un synonyme de s dans le dictionnaire "syns"
 
   Arguments :
   - s: str. (le mot)
+  - registre: str ou int ou list de int ou list de str. Liste (ou non) des registres à utiliser.
+  Soit en int (COURANT=1, FAMILIER=2, SOUTENU=3), soit en str : ("COURANT", "FAMILIER", "SOUTENU")
+  Attention à ne pas utiliser et des int et des str.
+  Par défaut les 3 registres sont choisis.
 
   Renvoie:
-  - syn: str. (Un synonyme choisi aléatoirement)
+  - syn_choisi: str. (Un synonyme choisi aléatoirement)
   """
+  global syns
+  
+  if len(syns) == 0:
+    buildSynonyms()
+  
+  # Si le registre n'est pas précisé, on les prend tous
+  if registre is None: registre = [COURANT, FAMILIER, SOUTENU]
+  
+  # Si on a précisé juste un registre et non une liste de registre, on corrige ça
+  if type(registre) == str:
+    registre = [COURANT]
+    if registre == "FAMILIER": registre = [FAMILIER]
+    if registre == "SOUTENU": registre = [SOUTENU]
+    if registre == "TOUS" or "ALL": registre = [COURANT, FAMILIER, SOUTENU]
+  elif type(registre) == int:
+    registre = [registre]
+  elif type(registre) == list:
+    for i in range(len(registre)):
+      if type(registre[i]) == str:
+        registre = [COURANT]
+        if registre[i] == "FAMILIER": registre[i] = [FAMILIER]
+        if registre[i] == "SOUTENU": registre[i] = [SOUTENU]
+        
 
-  return s
+  if not(s in syns.keys()) or random.random() <= 0.5:
+      return s
+  
+  # On vérifie qu'on ne soit pas dans le cas où il existe des synonymes mais pas du bon registre
+  continuer = False
+  for r in syns[s][2]:
+    if r in registre:
+      continuer = True
+
+  if not(continuer) : return s
+
+  synonymes = syns[s]
+  syn_a_utiliser = [] # On va filtrer "synonymes" pour ne garder que les regiostres à utiliser
+  proba_a_utiliser = []
+  
+  for i in range(len(synonymes[0])):
+    if synonymes[2][i] in registre:
+      syn_a_utiliser.append(synonymes[0][i])
+      proba_a_utiliser.append(synonymes[1][i])
+      
+  syn_choisi = random.choices(syn_a_utiliser, weights=proba_a_utiliser, k=1)[0]
+  return syn_choisi
+  
 
 
 
 def correct(s):
+  """
+  Fonction qui corrige un morceau de phrase ave le correcteur de OpenOffice
+    
+    Arguments :
+  - s: str. (le mot)
+
+  Renvoie:
+  - s2: str. (la correction)
+  """
+  global tool
+  
+  return tool.correct(s)
+
+
+
+def correctOld(s):
   """
   Fonction qui corrige un morceau de phrase avec le double traducteur
 
@@ -68,7 +176,7 @@ def correct(s):
   - s: str. (le mot)
 
   Renvoie:
-  - s2: str. (Un synonyme choisi aléatoirement)
+  - s2: str. (la correction)
   """
   global useTranslation, ts
 
@@ -76,14 +184,10 @@ def correct(s):
     return s
 
   s1 = ts.translate(s, lang_src="fr", lang_tgt="en")
-  if type(s1) == list:
-    s1 = s1[0]
+  if type(s1) == list: s1 = s1[0]
   s2 = ts.translate(s1, lang_src="en", lang_tgt="fr")
-  #s1 = ts.translate(s, lang_tgt="en")
-  #s2 = ts.translate(s1, lang_tgt="fr")
-
-  if type(s2) == list:
-    s2 = s2[0]
+  if type(s2) == list: s2 = s2[0]
+  
   return s2
 
 
@@ -105,8 +209,8 @@ def diversifier(s):
     
   return correct(s)
 
-  l = ["en"]
-  nb_langues = 1
+  l = ["en", "it", "pt", "de", "ca"]
+  nb_langues = random.randint(1,3) # Nombre de langues intermédiaires
 
   langues = []
   for i in range(nb_langues):

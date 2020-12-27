@@ -9,8 +9,8 @@ import random
 import re
 
 
-from diversifieur import get_syn
-from diversifieur import cong
+from psclib.diversifieur import get_syn
+from psclib.diversifieur import cong
 
 
 
