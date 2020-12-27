@@ -5,6 +5,12 @@ Created on Mon Dec 28 00:24:13 2020
 @author: josse
 """
 
+
+CAUSE = 1
+CONSEQUENCE = 2
+SUITE = 3
+
+
 # Les liens entre les coeurs
 class Lien :
 

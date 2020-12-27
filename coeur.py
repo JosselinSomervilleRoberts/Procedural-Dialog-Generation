@@ -5,12 +5,9 @@ Created on Mon Dec 28 00:23:22 2020
 @author: josse
 """
 
-CAUSE = 1
-CONSEQUENCE = 2
-SUITE = 3
-
 from psclib.objet import Personnage
 from psclib.diversifieur import correct
+from psclib.lien import CAUSE, CONSEQUENCE, SUITE
 
 
 # Classe abstraite qui définit la structure des coeurs et la manière dont ils s'enchaînent

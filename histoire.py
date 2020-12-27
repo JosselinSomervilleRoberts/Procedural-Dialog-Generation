@@ -8,11 +8,9 @@ Created on Mon Dec 28 00:20:08 2020
 import random
 from psclib.caracteristique import Caracteristique
 from psclib.diversifieur import correct
+from psclib.lien import CAUSE, CONSEQUENCE, SUITE
 
 
-CAUSE = 1
-CONSEQUENCE = 2
-SUITE = 3
 
 def ajouterPonctuation(s):
   return s[:1].upper() + s[1:] + "."
