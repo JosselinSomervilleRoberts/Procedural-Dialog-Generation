@@ -15,3 +15,7 @@ def install(package):
 def installRequirements():
     install('verbecc')
     install('google_trans_new')
+    
+def importAll():
+    from psclib.diversifieur import Diversifieur
+    from psclib.action import Action
