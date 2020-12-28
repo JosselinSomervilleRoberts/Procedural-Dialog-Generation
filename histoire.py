@@ -87,7 +87,7 @@ class Histoire:
           liensOmis = coeurCurrent.liens
           liensRacontes = []
 
-      s += locuteur.imprimer(correct(ajouterPonctuation(s1)))
+      s += locuteur.imprimer(ajouterPonctuation(s1))
 
       # L'interlocuteur pose des questions
       # Plus le perso est curieux, plus il a de chance de demander les liens
@@ -116,9 +116,9 @@ class Histoire:
             liensPossibles = [SUITE]
 
           typeLien = random.choice(liensPossibles)
-          s += "\n" + interlocuteur.imprimer(demanderLien(typeLien))
-          s += "\n" + locuteur.imprimer(nePasSavoirLien(typeLien))
+          s += "\n" + interlocuteur.imprimer(demanderLien(typeLien), diversify=False)
+          s += "\n" + locuteur.imprimer(nePasSavoirLien(typeLien), diversify=False)
     else:
-      s += locuteur.imprimer(correct(ajouterPonctuation(s1)))
+      s += locuteur.imprimer(ajouterPonctuation(s1))
 
     return s

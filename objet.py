@@ -5,7 +5,7 @@ Created on Sun Dec 27 23:50:39 2020
 @author: josse
 """
 
-from psclib.diversifieur import correct, diversifier
+from psclib.diversifieur import correct, diversifier, get_syn
 from psclib.caracteristique import CaracChiffree
 import random
 
@@ -82,7 +82,7 @@ class Objet:
 
 
     # Nom de l'objet
-    exp = "lae " + self.lib # J AI ENLEVE LA DIVERSIFICATION
+    exp = "lae " + get_syn(self.lib)
     #print("exp", exp)
    
     # On cherche les caracteristiques que l'on va preciser
@@ -173,8 +173,9 @@ class Personnage(Objet):
     return Personnage({"nom":self.nom, "prenom":self.prenom, "age":self.age, "sexe":self.sexe})
   
 
-  def imprimer(self, texte) : #Méthode pour faire parler le personnage (on ajoute juste qui parle avant le texte)
-    return self.prenom + " " + self.nom + " : " + diversifier(texte)
+  def imprimer(self, texte, diversify=True) : #Méthode pour faire parler le personnage (on ajoute juste qui parle avant le texte)
+    if diversify: texte = diversifier(texte)
+    return self.prenom + " " + self.nom + " : " + texte
     
   
   def getContact(self, id) : #Retourne la vision qu'a "self" du personnage "id" - A COMPLETER LORSQU'ON TRAITERA LES ECHANGES D'INFORMATIONS

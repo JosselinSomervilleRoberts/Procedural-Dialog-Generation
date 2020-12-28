@@ -75,15 +75,15 @@ def accroche0(p1, p2) : #Les deux personnages ne se connaissent pas
   p, osef = switcheroo(p1,p2) #On ne s'intéresse qu'au premier objet renvoyé
   s = p.imprimer("Bonjour étranger, je ne vous ai jamais vu ici...")
   s += "\n" + osef.imprimer("Bonjour, moi non plus. Je m'appelle " + osef.prenom + " " + osef.nom + ". Et vous?")
-  s += "\n" + p.imprimer("Moi je m'appelle " + p.prenom + " " + p.nom + ". Enchanté, " + osef.prenom + " " + osef.nom +". ")
-  s += "\n" + osef.imprimer("Enchanté, " + p.prenom + " " + p.nom +". ")
+  s += "\n" + p.imprimer("Moi je m'appelle " + p.prenom + " " + p.nom + ". Enchanté, " + osef.prenom + " " + osef.nom +". ", diversify=False)
+  s += "\n" + osef.imprimer("Enchanté, " + p.prenom + " " + p.nom +". ", diversify=False)
   return s
 
 def accroche1(p1, p2) : #p1 connaît p2 mais pas l'inverse
   s = p1.imprimer(diversifier("Bonjour ! Vous êtes "+p2.prenom+" "+p2.nom+", c'est ça ?"))
-  s += "\n" + p2.imprimer(diversifier("Euh, oui. Je ne vous connais pas, vous êtes... ?"))
+  s += "\n" + p2.imprimer("Euh, oui. Je ne vous connais pas, vous êtes... ?")
   s += "\n" + p1.imprimer(p1.prenom+" "+p1.nom+", enchanté. J'ai entendu parler de vous, c'est pour ça haha.")
-  s += "\n" + p2.imprimer("Haha en effet.")
+  s += "\n" + p2.imprimer("Haha en effet.", diversify=False)
   return s
 
 def accroche2(p1, p2) : #Les deux personnages se connaissent
@@ -98,9 +98,9 @@ def testContinuer(p1,p2) : #On détermine si la conversation continue (=True) ou
 #------------- La fin du dialogue
 def fin(p1,p2) : #Fonction temporaire (à redéfinir pour prendre en compte les affinités entre les personnages)
   s = p1.imprimer("Bon, c'était sympa de discuter.")
-  s += "\n" + p2.imprimer("Oui totalement !")
+  s += "\n" + p2.imprimer("Oui totalement !", diversify=False)
   s += "\n" + p1.imprimer("Allez, à la prochaine fois !")
-  s += "\n" + p2.imprimer("Salut !")
+  s += "\n" + p2.imprimer("Salut !", diversify=False)
   return s
 
 #------------- Les transitions (pas entamé pour le moment)

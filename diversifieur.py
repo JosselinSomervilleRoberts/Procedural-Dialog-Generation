@@ -43,7 +43,7 @@ def buildSynonyms():
     """ 
     global syns
     
-    f = open("psclib/synonymes_tries.txt", "r")
+    f = open("psclib/synonymes_tries.txt", "r", encoding="ISO-8859-1")
     liste = f.readlines()
     f.close()
     
@@ -206,8 +206,6 @@ def diversifier(s):
 
   if not(useTranslation):
     return s
-    
-  return correct(s)
 
   l = ["en", "it", "pt", "de", "ca"]
   nb_langues = random.randint(1,3) # Nombre de langues intermédiaires

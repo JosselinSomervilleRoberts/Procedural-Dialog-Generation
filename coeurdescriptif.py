@@ -45,7 +45,6 @@ class CoeurDescriptif(Coeur):
     else:
       exp = vb
 
-    exp += " " + self.carac.toText() + "."
-    s = diversifier(correct(exp))
-    s = s[:-1]
+    exp += " " + self.carac.toText()
+    s = correct(exp)
     return s

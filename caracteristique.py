@@ -5,7 +5,7 @@ Created on Sun Dec 27 23:53:41 2020
 @author: josse
 """
 
-from psclib.diversifieur import diversifier
+from psclib.diversifieur import correct, get_syn
 
 
 class Type:
@@ -71,7 +71,7 @@ class Caracteristique:
         continuer = False
       i -= 1
 
-    return diversifier(prep + " " + self.lib*self.keepLib)
+    return correct(prep + " " + get_syn(self.lib)*self.keepLib)
 
 
 class CaracChiffree:
