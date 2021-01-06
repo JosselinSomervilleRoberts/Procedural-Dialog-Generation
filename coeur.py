@@ -9,7 +9,7 @@ from psclib.objet import Personnage
 from psclib.diversifieur import correct
 from psclib.lien import CAUSE, CONSEQUENCE, SUITE
 
-
+#sadlaksdjalsdas
 # Classe abstraite qui définit la structure des coeurs et la manière dont ils s'enchaînent
 class Coeur:
   
