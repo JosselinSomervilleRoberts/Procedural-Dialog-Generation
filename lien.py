@@ -11,6 +11,8 @@ CONSEQUENCE = 2
 SUITE = 3
 
 
+#HEY c ets joss
+
 # Les liens entre les coeurs
 class Lien :
 
