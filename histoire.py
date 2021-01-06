@@ -4,7 +4,7 @@ Created on Mon Dec 28 00:20:08 2020
 
 @author: josse
 """
-
+#En bande organisée, personne peut nous canaliser
 import random
 from psclib.caracteristique import Caracteristique
 from psclib.diversifieur import correct
