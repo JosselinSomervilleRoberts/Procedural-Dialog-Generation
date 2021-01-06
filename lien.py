@@ -15,6 +15,8 @@ SUITE = 3
 # test 2
 #☻ test 3
 # Les liens entre les coeurs
+#♥ hola olivier
+
 class Lien :
 
   def __init__ (self, coeur = None, typeLien = None):
