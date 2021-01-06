@@ -4,7 +4,9 @@ Created on Mon Dec 28 00:23:22 2020
 
 @author: josse
 """
-"je ne suis plus raciste."
+
+"je ne suis plus raciste. youhou"
+#J'étais recherché ouais j'étais même pas au courant
 from psclib.objet import Personnage
 from psclib.diversifieur import correct
 from psclib.lien import CAUSE, CONSEQUENCE, SUITE
