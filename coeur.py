@@ -16,11 +16,21 @@ from psclib.lien import CAUSE, CONSEQUENCE, SUITE
 # Classe abstraite qui définit la structure des coeurs et la manière dont ils s'enchaînent
 class Coeur:
   
-  def __init__(self, liens=None):
+  def __init__(self, liens=None, infos=None):
     self.id = None # Champ à définir
     self.liens = liens
     if self.liens is None:
-      self.liens = [] 
+      self.liens = []
+    self.infos = infos
+    if self.infos is None:
+      self.infos = []
+      
+  def transmissionInfos(self, loc=None, interloc=None):
+      if self.infos and loc and interloc : #Si il y a des infos à transmettre et que loc et interloc sont définis...
+          representation = interloc.getContact(loc.id)
+          if representation: #Si il y a une représentation
+              representation.miseAJour(self.infos) #Mise à jour avec les informations contenues dans le coeur
+      
 
   # PLUS UTILISE (Mais je garde au cas ou)
   def suivrelesliens(liens,s,p1=None,p2=None):

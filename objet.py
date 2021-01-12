@@ -149,6 +149,8 @@ class Personnage(Objet):
       self.id = None
       self.sexe = None
       self.age = None
+      self.humeur = None
+      self.animaux = []
 
       if not(dico is None):
         #juste pour comparer facilement
@@ -160,7 +162,11 @@ class Personnage(Objet):
           self.age = dico["age"] #Age est un int
         if "sexe" in dico:
           self.sexe = dico["sexe"] #Sexe est -non défini- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      #rajouter humeur, famille, métier, etc (pas que des valeurs fixes)
+        if "humeur" in dico:
+            self.humeur = dico["humeur"] #Humeur est un string (remplacer par une caractéristique CaracChiffree ?)
+        if "animaux" in dico:
+            self.animaux = dico["animaux"] #Animaux est une liste d'objets (désignant des animaux de compagnie)
+      #rajouter famille, métier, etc (pas que des valeurs fixes)
    
       if not (self.prenom is None) and not (self.nom is None):
         self.id = self.prenom+self.nom #Id est un string (plus simple pour comparer des personnages)
@@ -183,6 +189,21 @@ class Personnage(Objet):
       if p.id == id :
         return p
     return None
+
+  def miseAJour(self, dico=None): #Utilisé pour mettre à jour une représentation à partir d'un dictionnaire d'informations
+      if dico:
+          if "nom" in dico: #Ecrase
+            self.nom = dico["nom"]
+          if "prenom" in dico: #Ecrase
+            self.prenom = dico["prenom"]
+          if "age" in dico: #Ecrase
+            self.age = dico["age"]
+          if "humeur" in dico: #Ecrase
+            self.humeur = dico["humeur"]
+          if "animaux" in dico: #Ajout
+            for animal in dico["animaux"]:
+              if animal not in self.animaux:
+                  self.animaux.append(animal)
 
 
   def toText(self, locuteur=None, interlocuteur=None):
