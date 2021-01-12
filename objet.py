@@ -170,7 +170,7 @@ class Personnage(Objet):
 
   
   def copyStrip(self): #Retourne les caractéristiques de base sous forme d'un dictionnaire
-    return Personnage({"nom":self.nom, "prenom":self.prenom, "age":self.age, "sexe":self.sexe})
+    return Personnage({"nom":self.nom, "prenom":self.prenom, "sexe":self.sexe})
   
 
   def imprimer(self, texte, diversify=True) : #Méthode pour faire parler le personnage (on ajoute juste qui parle avant le texte)

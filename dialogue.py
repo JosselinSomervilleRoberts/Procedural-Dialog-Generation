@@ -23,21 +23,14 @@ def connait(p1,p2): #p1 et p2 sont des objets Personnage
 #----------- L'introduction du dialogue
 def intro(p1,p2) : #p1 et p2 sont des objets Personnage
   etat = int(connait(p1,p2)) + 2*int(connait(p2,p1)) #etat est un entier
-  if etat==0 : #les deux personnages ne se connaissent pas
-    p2.contacts.append(p1.copyStrip()) #On ajoute un nouveau personnage, qui est une version "light" de p1 (plus tard, ce nouveau personnage n'aura que les caractéristiques connues par p2)
-    p1.contacts.append(p2.copyStrip())
-  if etat==1 : #p1 connait p2 mais pas l'inverse
-    p2.contacts.append(p1.copyStrip())
-  if etat==2 : #p2 connait p1 mais pas l'inverse
-    p1.contacts.append(p2.copyStrip())
 
-  if etat==0 :
+  if etat==0 : #les deux personnages ne se connaissent pas
     return accroche0(p1,p2)
-  if etat==1 :
+  if etat==1 : #p1 connait p2 mais pas l'inverse
     return accroche1(p1,p2)
-  if etat==2 : 
+  if etat==2 : #p2 connait p1 mais pas l'inverse
     return accroche1(p2,p1)
-  if etat==3 :
+  if etat==3 : #Les deux personnages se connaissent
     return accroche2(p1,p2)
 
   print("GROS PROBLEME DANS INTRO")
@@ -70,20 +63,23 @@ def intersection(histsA, histsB) : #On part de deux listes d'objets Histoire A e
       resteB.append(b)
   return resteA, resteB, intersection
 
-#------------- Les accroches, pour introduire le dialogue
-def accroche0(p1, p2) : #Les deux personnages ne se connaissent pas
-  p, osef = switcheroo(p1,p2) #On ne s'intéresse qu'au premier objet renvoyé
+#------------- Les accroches, pour introduire le dialogue -------------- IL FAUT FAIRE L'ETAPE DE PRESENTATION ELEMENTAIRE
+def accroche0(p1, p2) : #Les deux personnages ne se connaissent pas -> Chacun se crée une représentation de l'autre
+  p, q = switcheroo(p1,p2) #On ne s'intéresse qu'au premier objet renvoyé
   s = p.imprimer("Bonjour étranger, je ne vous ai jamais vu ici...")
-  s += "\n" + osef.imprimer("Bonjour, moi non plus. Je m'appelle " + osef.prenom + " " + osef.nom + ". Et vous?")
-  s += "\n" + p.imprimer("Moi je m'appelle " + p.prenom + " " + p.nom + ". Enchanté, " + osef.prenom + " " + osef.nom +". ", diversify=False)
-  s += "\n" + osef.imprimer("Enchanté, " + p.prenom + " " + p.nom +". ", diversify=False)
+  s += "\n" + q.imprimer("Bonjour, moi non plus. Je m'appelle " + q.prenom + " " + q.nom + ". Et vous?")
+  s += "\n" + p.imprimer("Moi je m'appelle " + p.prenom + " " + p.nom + ". Enchanté, " + q.prenom + " " + q.nom +". ", diversify=False)
+  s += "\n" + q.imprimer("Enchanté, " + p.prenom + " " + p.nom +". ", diversify=False)
+  p1.contacts.append(p2.copyStrip())
+  p2.contacts.append(p1.copyStrip())
   return s
 
-def accroche1(p1, p2) : #p1 connaît p2 mais pas l'inverse
+def accroche1(p1, p2) : #p1 connaît p2 mais pas l'inverse -> p2 se crée une représentation de p1
   s = p1.imprimer(diversifier("Bonjour ! Vous êtes "+p2.prenom+" "+p2.nom+", c'est ça ?"))
   s += "\n" + p2.imprimer("Euh, oui. Je ne vous connais pas, vous êtes... ?")
   s += "\n" + p1.imprimer(p1.prenom+" "+p1.nom+", enchanté. J'ai entendu parler de vous, c'est pour ça haha.")
   s += "\n" + p2.imprimer("Haha en effet.", diversify=False)
+  p2.contacts.append(p1.copyStrip())
   return s
 
 def accroche2(p1, p2) : #Les deux personnages se connaissent
