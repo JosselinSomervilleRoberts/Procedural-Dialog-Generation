@@ -92,6 +92,7 @@ class Histoire:
     if len(coeurCurrent.liens) > 0:
       for lien in coeurCurrent.liens:
         dot.node(str(index), lien.coeur.toText(locuteur, interlocuteur))
+        
         dot.edge(str(indexParent), str(index))
         index += 1
         dot = self.getGraph(locuteur, interlocuteur, dot=dot, index=index, coeurCurrent=lien.coeur, indexParent=index-1)
