@@ -20,15 +20,18 @@ class Coeur:
     self.liens = liens
     if self.liens is None:
       self.liens = []
-    self.infos = infos
+    self.infos = infos #Infos est une liste contenant des listes à 2 éléments [personnage, informations(dictionnaire)]
     if self.infos is None:
       self.infos = []
       
   def transmissionInfos(self, loc=None, interloc=None):
       if self.infos and loc and interloc : #Si il y a des infos à transmettre et que loc et interloc sont définis...
-          representation = interloc.getContact(loc.id)
-          if representation: #Si il y a une représentation
-              representation.miseAJour(self.infos) #Mise à jour avec les informations contenues dans le coeur
+          for k in self.infos:
+              representation = interloc.getContact(k[0].id)
+              if not representation: #Si l'interlocuteur ne connait pas le sujet des informations
+                  interloc.contacts.append(k[0].copyStrip())
+                  representation = interloc.contacts[-1]
+              representation.miseAJour(k[1]) #Mise à jour avec les informations contenues dans le coeur
       
 
   # PLUS UTILISE (Mais je garde au cas ou)
