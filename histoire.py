@@ -57,6 +57,7 @@ class Histoire:
       # Plus le perso est mystérieux, moins il a de chance de raconter les liens
       # Linéaire : mysterieux = 0 -> proba = 0.95, mysterieux=10 -> proba = 0.25
       probaRaconter = 0.95 - 0.07*locuteur.getCaracValue(Caracteristique(name="mysterieux"))
+      #print("mysterieux", locuteur.prenom, locuteur.getCaracValue(Caracteristique(name="mysterieux")), "/ proba=", probaRaconter)
 
       liensRacontes = []
       liensOmis = []
@@ -93,6 +94,7 @@ class Histoire:
       # Plus le perso est curieux, plus il a de chance de demander les liens
       # Linéaire : curieux = 0 -> proba = 0.25, curieux=10 -> proba = 0.95
       probaDemander = 0.25 + 0.07*interlocuteur.getCaracValue(Caracteristique(name="curiosite"))
+      #print("curiosite", interlocuteur.prenom, interlocuteur.getCaracValue(Caracteristique(name="curiosite")), "/ proba=", probaDemander)
       probaDemanderInfoExistante = 0.75 # Proba de demander une info dans liensOmis
 
       if random.random() <= probaDemander:

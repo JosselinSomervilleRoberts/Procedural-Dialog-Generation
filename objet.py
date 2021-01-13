@@ -35,14 +35,15 @@ class Objet:
   def ecrire(self):
     return self.toText()
 
-  def setCarac(self, caracChif):
+  def setCarac(self, caracChif, overWrite=True):
     """Assigne \"caracChif\" (une instance de CaracChiffree) à l'objet. S'occupe notamment de
     gérer si la carac doit être ajoutée ou modifier car déja présente."""
     alreadyExists = False
     for c in self.caracs:
       if c.isSame(caracChif):
         alreadyExists = True
-        c.value = caracChif.value
+        if overWrite:
+            c.value = caracChif.value
     if not(alreadyExists):
       self.caracs.append(caracChif)
 
@@ -141,9 +142,9 @@ class Personnage(Objet):
       if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10)]})
     else:
       Objet.__init__(self, dico=dico) # A RAJOUTER dico EN ARGUMENT
-      self.setCarac(CaracChiffree(name="mysterieux", value=5))
-      self.setCarac(CaracChiffree(name="bavard", value=5))
-      self.setCarac(CaracChiffree(name="curiosite", value=5))
+      self.setCarac(CaracChiffree(name="mysterieux", value=5), overWrite=False)
+      self.setCarac(CaracChiffree(name="bavard", value=5), overWrite=False)
+      self.setCarac(CaracChiffree(name="curiosite", value=5), overWrite=False)
       self.nom = None
       self.prenom = None
       self.id = None
