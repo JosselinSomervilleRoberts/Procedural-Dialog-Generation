@@ -209,3 +209,15 @@ class Personnage(Objet):
 
   def toText(self, locuteur=None, interlocuteur=None):
     return self.prenom + " " + self.nom
+
+
+  def indexHistoire(self, titre):
+      """
+      Renvoie l'index de l'histoire ayant pour titre "titre"
+      Si le personnage ne la connait pas, renvoie -1
+      """
+      for i in range(len(self.histoires)):
+          h = self.histoires[i]
+          if not(h is None) and not(h.titre is None) and h.titre == titre:
+              return i
+      return -1

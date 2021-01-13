@@ -144,7 +144,7 @@ def dialogue(p1,p2) :
       s += "\n" + transition() #à définir
       s1, histoire = raconter(loc, interloc) #On choisit et raconte une histoire
       s += "\n" + s1
-      interloc.histoires.append(histoire) #L'interlocuteur connaît maintenant l'histoire qu'on lui a raconté (à modifier, car en réalité il ne connait pas forcément TOUTE l'histoire)
+      #interloc.histoires.append(histoire) #L'interlocuteur connaît maintenant l'histoire qu'on lui a raconté (à modifier, car en réalité il ne connait pas forcément TOUTE l'histoire)
       continuer = testContinuer(loc,interloc) #On teste si les personnages continuent de dialoguer
     else : #Les deux personnages n'ont pas d'histoire à se raconter
       continuer = False

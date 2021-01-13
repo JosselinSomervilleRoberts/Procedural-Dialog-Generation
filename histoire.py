@@ -76,10 +76,69 @@ class Histoire:
     self.titre = titre # String, pour les comparaisons
     self.personnes = personnes # ___, personnages évoqués dans l'histoire (c'est là pour le moment, à voir si ça sera utile ou non)
     self.conteur = conteur # ___, Narrateur originel de l'histoire, pour différencier les histoires personnelles des histoires rapportées
+    
+    
+
+  def getGraph(self, locuteur, interlocuteur, dot=None, index=1, coeurCurrent=None, indexParent=1):
+    from graphviz import Digraph
+      
+    if dot is None:
+      dot = Digraph(comment=self.titre)
+      if coeurCurrent is None:
+        coeurCurrent = self.head
+      dot.node(str(index), coeurCurrent.toText(locuteur, interlocuteur))
+      index += 1
+      
+    if len(coeurCurrent.liens) > 0:
+      for lien in coeurCurrent.liens:
+        dot.node(str(index), lien.coeur.toText(locuteur, interlocuteur))
+        dot.edge(str(indexParent), str(index))
+        index += 1
+        dot = self.getGraph(locuteur, interlocuteur, dot=dot, index=index, coeurCurrent=lien.coeur, indexParent=index-1)
+    
+    return dot
 
 
   def toText(self, locuteur, interlocuteur, coeurCurrent=None, prefixe=""):
+    """
+    Génère le texte pour l'histoire.
+    La façon dont s'enchaine l'histoire dépend des caractéristiques du locuteur et de l'interlocuteur
+    - si le locuteur est "mystérieux", il aura peu tendance à ajouter les liens
+    - si le locuteur est "bavard", lorsqu'il précise un lien, il aura tendance à en préciser beaucoup. Ceci est à différencer de "mystérieux".
+    Par exemple si le coeur actuel à 3 liens : cause, conséquence et suite. S'il est mystérieux il aura peu tendance à préciser les liens. Si toutefois il
+    décide de préciser un ou plusieurs le lies, le nombre de liens précisés dépendra de s'il est bavard ou non.
+    - si l'interlocuteur a de la "curiosite", il aura tendance a poser des questions.
+    
+    A VERIFIER : j'ai l'impression qu'actuellement le locuteur ne peux enchainer les liens si l'interlocuteur ne lui pose pas de questions.
+    EN COURS: ajout de la transmission d'infos
+
+      Parameters
+      ----------
+      locuteur : Personnage
+          C'est celui qui raconte l'histoire
+      interlocuteur : Personnage
+          C'est celui qui écoute l'histoire
+      coeurCurrent : Coeur, optional
+          Correspond au coeur actuel. Cela permet d'appeler récursivement la fonction toText notamment.
+          Si n'est pas précisé, coeurCurrent vaut l'head de l'histoire. Ensuite si l'interlocuteur pose une question
+          On peut rappeler toText mais en précisant que l'on ne démarre plus de head mais du coeur suivant.
+      prefixe : str, optional
+          Préfixe en début de phrase, par exemple "Parce que + ...."".
+
+      Returns
+      -------
+      s : string
+          Texte de la discussion
+
+      """
     if coeurCurrent is None: coeurCurrent = self.head
+    
+    # Ajouter l'histoire
+    indexHist = interlocuteur.indexHistoire(self.titre)
+    if indexHist == -1:
+        interlocuteur.histoires.append(Histoire(head=coeurCurrent, titre=self.titre))
+        indexHist = interlocuteur.indexHistoire(self.titre)
+        
 
     s = ""
     s1 = prefixe + coeurCurrent.toText(locuteur, interlocuteur)
