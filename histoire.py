@@ -11,27 +11,58 @@ from psclib.diversifieur import correct
 from psclib.lien import CAUSE, CONSEQUENCE, SUITE
 
 
+dictExp = {}
 
 def ajouterPonctuation(s):
   return s[:1].upper() + s[1:] + "."
 
 
+
+def buildQuestionsReponses():
+    """
+    Récupère depuis les fichiers .txt les questions réponses scriptées
+    pour les demandes de cause, consequence et suite.
+    """ 
+    global dictExp
+    dictExp = {}
+    
+    chemin_base = "psclib/fichiers_txt/questions_reponses/"
+    liste1 = ["demander", "ne_pas_savoir"] # Les types de réponses scriptées
+    liste2 = [[CAUSE, "cause"], [CONSEQUENCE, "consequence"], [SUITE, "suite"]] # Les différents liens
+    
+    for ext1 in liste1:
+        chemin_intermediaire = chemin_base + ext1 + "_"
+        dictExp[ext1] = {}
+        for elt2 in liste2:
+            index, ext2 = elt2[0], elt2[1]
+            chemin = chemin_intermediaire + ext2 + ".txt"
+            f = open(chemin, "r", encoding="ISO-8859-1")
+            liste = f.readlines()
+            f.close()
+            
+            dictExp[ext1][index] = []
+            for ligne in liste:
+                l1 = ligne.replace("\n","").split("=")[0]
+                if len(l1) > 1:
+                    dictExp[ext1][index].append(l1)
+    
+    print("Expressions chargées.")
+
+
 def demanderLien(typeLien):
-  dictExp = {}
-  dictExp[CAUSE] = ["Mais Pourquoi ?"]
-  dictExp[CONSEQUENCE] = ["Et donc ?"]
-  dictExp[SUITE] = ["Et ensuite ?"]
+  global dictExp
+  if len(dictExp.keys()) == 0:
+      buildQuestionsReponses()
+  return random.choice(dictExp["demander"][typeLien])
 
   return random.choice(dictExp[typeLien])
 
 
 def nePasSavoirLien(typeLien):
-  dictExp = {}
-  dictExp[CAUSE] = ["Je ne sais pas pourquoi..."]
-  dictExp[CONSEQUENCE] = ["J\'en sais rien"]
-  dictExp[SUITE] = ["Bah rien."]
-
-  return random.choice(dictExp[typeLien])
+  global dictExp
+  if len(dictExp.keys()) == 0:
+      buildQuestionsReponses()
+  return random.choice(dictExp["ne_pas_savoir"][typeLien])
 
 
 

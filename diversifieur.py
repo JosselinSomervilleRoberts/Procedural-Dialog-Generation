@@ -43,7 +43,7 @@ def buildSynonyms():
     """ 
     global syns
     
-    f = open("psclib/synonymes_tries.txt", "r", encoding="ISO-8859-1")
+    f = open("psclib/fichiers_txt/synonymes/synonymes_tries.txt", "r", encoding="ISO-8859-1")
     liste = f.readlines()
     f.close()
     
