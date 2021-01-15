@@ -152,6 +152,9 @@ class Personnage(Objet):
       self.age = None
       self.humeur = None
       self.animaux = []
+      self.pere = None
+      self.mere = None
+      self.enfants = []
 
       if not(dico is None):
         #juste pour comparer facilement
@@ -167,6 +170,12 @@ class Personnage(Objet):
             self.humeur = dico["humeur"] #Humeur est un string (remplacer par une caractéristique CaracChiffree ?)
         if "animaux" in dico:
             self.animaux = dico["animaux"] #Animaux est une liste d'objets (désignant des animaux de compagnie)
+        if "pere" in dico:
+            self.pere = dico["pere"] #Père est un string ou objet ou personnage
+        if "mere" in dico:
+            self.mere = dico["mere"] #Mère est un string ou objet ou personnage
+        if "pere" in dico:
+            self.enfants = dico["enfants"] #Enfants est une liste de strings ou objets ou personnages
       #rajouter famille, métier, etc (pas que des valeurs fixes)
    
       if not (self.prenom is None) and not (self.nom is None):
@@ -205,6 +214,14 @@ class Personnage(Objet):
             for animal in dico["animaux"]:
               if animal not in self.animaux:
                   self.animaux.append(animal)
+          if "pere" in dico and not self.pere: #Seulement si pas encore d'info sur le père
+            self.pere = dico["pere"]
+          if "mere" in dico and not self.mere: #Seulement si pas encore d'info sur la mère
+            self.mere = dico["mere"]
+          if "enfants" in dico: #Ajout
+            for enfant in dico["enfants"]:
+              if enfant not in self.enfants:
+                self.enfants.append(enfant)
 
 
   def toText(self, locuteur=None, interlocuteur=None):
