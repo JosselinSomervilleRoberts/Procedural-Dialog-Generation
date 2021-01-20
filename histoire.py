@@ -9,7 +9,7 @@ import random
 from math import log
 from psclib.caracteristique import Caracteristique
 from psclib.diversifieur import correct
-from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, CAUSE, CONSEQUENCE, SUITE, Lien
+from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, OBJECTIF, CAUSE, CONSEQUENCE, SUITE, Lien
 
 
 
@@ -30,7 +30,7 @@ def buildQuestionsReponses():
     
     chemin_base = "psclib/fichiers_txt/questions_reponses/"
     liste1 = ["demander", "demander_avec_phrase", "ne_pas_savoir", "rappel", "mots_liaisons_continuer", "mots_liaisons_recommencer", "retour_arriere"] # Les types de réponses scriptées
-    liste2 = [[COMPLEMENT_LIEU, "lieu"], [COMPLEMENT_TEMPS, "temps"], [COMPLEMENT_MANIERE, "maniere"], [CAUSE, "cause"], [CONSEQUENCE, "consequence"], [SUITE, "suite"]] # Les différents liens
+    liste2 = [[COMPLEMENT_LIEU, "lieu"], [COMPLEMENT_TEMPS, "temps"], [COMPLEMENT_MANIERE, "maniere"], [OBJECTIF, "objectif"], [CAUSE, "cause"], [CONSEQUENCE, "consequence"], [SUITE, "suite"]] # Les différents liens
     
     for ext1 in liste1:
         chemin_intermediaire = chemin_base + "/" + ext1 + "/" + ext1 + "_"
@@ -357,9 +357,9 @@ class Histoire:
       # Sinon on ajoute le lien
       # Il faut choisir si le lien sera ajouté comme suite à la phrase ou comme une question
       # D'abord, on ajoute les précisions.
-      # Pour que la phrase est du sens, il faut ordonner les précisions dans l'ordre CAUSE, CONSEQUENCE, SUITE
+      # Pour que la phrase est du sens, il faut ordonner les précisions dans l'ordre OBJECTIF, CAUSE, CONSEQUENCE, SUITE
       # Par exemple, Marcel promène son chien car il avait envie donc ils vont au parc et ils s'amusent (CAUSE, CONSEQUENCE, SUITE)
-      # Mais: Marcel promène son chien et ils s'amusent car il vait envie donc ils vont au parc (SUITE, CAUSE, CONSEQUENCE) -> pas le même sens
+      # Mais: Marcel promène son chien et ils s'amusent car il avait envie donc ils vont au parc (SUITE, CAUSE, CONSEQUENCE) -> pas le même sens
       liensAPreciser = sorted(liensAPreciser, key=lambda x: 1000*x.typeLien + x.importance) # On trie par type de lien puis par importance
       
 

@@ -74,6 +74,8 @@ class Coeur:
       if complement is None: complement = Maniere(name=name)
       coeur = CoeurComplement(complement, self)
       self.liens.append(Lien(coeur, COMPLEMENT_MANIERE, importance=importance))
+      
+  
 
 
 
