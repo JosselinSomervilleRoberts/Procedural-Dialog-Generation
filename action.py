@@ -65,7 +65,7 @@ class Action :
       self.expressions = expressions #Liste couple [proba(float), string]
       self.adverbes = adverbes #Liste adverbes (liste str)
 
-  def toText(self, mode, temps, personne):
+  def toText(self, mode, temps, personne, useTranslation=True, useCorrection=True):
     """
     - mode: str. ("indicatif", "imperatif", "subjonctif", "conditionnel", ...)
     - temps: str. ("présent", "imparfait", "futur", ...)

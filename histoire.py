@@ -264,7 +264,7 @@ class Histoire:
 
 
 
-  def toText(self, locuteur, interlocuteur, coeurActuel=None, phrasesPrecedentes="", debutPhrase="", liensAExplorer=None, liensADemander=None): 
+  def toText(self, locuteur, interlocuteur, coeurActuel=None, phrasesPrecedentes="", debutPhrase="", liensAExplorer=None, liensADemander=None, useTranslation=True, useCorrection=True): 
     # Si on commence à raconter l'histoire, on commence par le début
     if coeurActuel is None: coeurActuel = self.head
     
@@ -273,7 +273,7 @@ class Histoire:
     if liensADemander is None: liensADemander = []
     
     # On transforme le coeur actuel en texte
-    debutPhrase += coeurActuel.toText(locuteur, interlocuteur)
+    debutPhrase += coeurActuel.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
     
     # On trie les liens par importance
     liens = sorted(coeurActuel.liens, key=lambda x: x.importance)
@@ -290,7 +290,7 @@ class Histoire:
       
       # Si on arrete l'histoire (i.e. on a choisi lienFin)
       if lienChoisi.coeur is None: # C'est le lien de fin
-        return phrasesPrecedentes + "\n" + interlocuteur.imprimer(ajouterPonctuation(debutPhrase))
+        return phrasesPrecedentes + "\n" + interlocuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
       
       # On ajoute des précisions (éventuellement)
       sommeImportance = sum([lien.importance for lien in liens])
@@ -336,10 +336,10 @@ class Histoire:
               probaRecommencer -= 0.5
               
           if random.random() <= probaRecommencer: # On recommence une phrase
-              debutPhrase += ". " + random.choice(mots_liaisons_recommencer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur)
+              debutPhrase += ". " + random.choice(mots_liaisons_recommencer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
               liensDansLaPhrase = 1
           else: # On continue dans la même phrase
-              debutPhrase += " " + random.choice(mots_liaisons_continuer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur)
+              debutPhrase += " " + random.choice(mots_liaisons_continuer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
               liensDansLaPhrase += 1
               
           # Pour chaque précision, si la précision se poursuivait, on ne la suivra pas car on va suivre lienChoisi
@@ -369,11 +369,11 @@ class Histoire:
       
       # Enfin, on ajoute le lienChoisi
       # (On recommence une phrase pour ça)
-      debutPhrase += ". " + random.choice(mots_liaisons_recommencer[lienChoisi.typeLien])
-      return self.toText(locuteur, interlocuteur, coeurActuel=lienChoisi.coeur, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, liensAExplorer=liensAExplorer, liensADemander=liensADemander)
+      debutPhrase += ". " + random.choice(mots_liaisons_recommencer[lienChoisi.typeLien]) + " "
+      return self.toText(locuteur, interlocuteur, coeurActuel=lienChoisi.coeur, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, liensAExplorer=liensAExplorer, liensADemander=liensADemander, useTranslation=useTranslation, useCorrection=useCorrection)
       
     else: # IL N'Y A PAS DE LIEN
-        return phrasesPrecedentes + "\n" + interlocuteur.imprimer(ajouterPonctuation(debutPhrase))
+        return phrasesPrecedentes + "\n" + interlocuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
      
       
       

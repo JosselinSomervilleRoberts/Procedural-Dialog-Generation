@@ -20,12 +20,11 @@ import random
 
 cg = Conjugator(lang='fr')
 tool = language_tool_python.LanguageToolPublicAPI('fr')
-useTranslation = True
+#useTranslation = True
 syns = {}
 
 ts = None
-if useTranslation:
-  ts = google_translator()
+ts = google_translator()
   
   
 COURANT = 1
@@ -152,7 +151,7 @@ def get_syn(s, registre=None):
 
 
 
-def correct(s):
+def correct(s, useCorrection=True):
   """
   Fonction qui corrige un morceau de phrase ave le correcteur de OpenOffice
     
@@ -164,11 +163,14 @@ def correct(s):
   """
   global tool
   
-  return tool.correct(s)
+  if useCorrection:
+      return tool.correct(s)
+  else:
+      return s
 
 
 
-def correctOld(s):
+def correctOld(s, useTranslation=True):
   """
   Fonction qui corrige un morceau de phrase avec le double traducteur
 
@@ -178,7 +180,7 @@ def correctOld(s):
   Renvoie:
   - s2: str. (la correction)
   """
-  global useTranslation, ts
+  global ts
 
   if not(useTranslation):
     return s
@@ -192,7 +194,7 @@ def correctOld(s):
 
 
 
-def diversifier(s):
+def diversifier(s, useTranslation=True):
   """
   Fonction qui diverifie un morceau de phrase avec le traducteur en apssant aps plusieurs languages
 
@@ -202,7 +204,7 @@ def diversifier(s):
   Renvoie:
   - s2: str. (l'expression diversifiée)
   """
-  global useTranslation, ts
+  global ts
 
   if not(useTranslation):
     return s

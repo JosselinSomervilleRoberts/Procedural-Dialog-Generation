@@ -21,17 +21,17 @@ def connait(p1,p2): #p1 et p2 sont des objets Personnage
   return False
 
 #----------- L'introduction du dialogue
-def intro(p1,p2) : #p1 et p2 sont des objets Personnage
+def intro(p1,p2, useTranslation=True, useCorrection=True) : #p1 et p2 sont des objets Personnage
   etat = int(connait(p1,p2)) + 2*int(connait(p2,p1)) #etat est un entier
 
   if etat==0 : #les deux personnages ne se connaissent pas
-    return accroche0(p1,p2)
+    return accroche0(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   if etat==1 : #p1 connait p2 mais pas l'inverse
-    return accroche1(p1,p2)
+    return accroche1(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   if etat==2 : #p2 connait p1 mais pas l'inverse
-    return accroche1(p2,p1)
+    return accroche1(p2,p1, useTranslation=useTranslation, useCorrection=useCorrection)
   if etat==3 : #Les deux personnages se connaissent
-    return accroche2(p1,p2)
+    return accroche2(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
 
   print("GROS PROBLEME DANS INTRO")
   return ""
@@ -64,27 +64,27 @@ def intersection(histsA, histsB) : #On part de deux listes d'objets Histoire A e
   return resteA, resteB, intersection
 
 #------------- Les accroches, pour introduire le dialogue -------------- IL FAUT FAIRE L'ETAPE DE PRESENTATION ELEMENTAIRE
-def accroche0(p1, p2) : #Les deux personnages ne se connaissent pas -> Chacun se crée une représentation de l'autre
+def accroche0(p1, p2, useTranslation=True, useCorrection=True) : #Les deux personnages ne se connaissent pas -> Chacun se crée une représentation de l'autre
   p, q = switcheroo(p1,p2) #On ne s'intéresse qu'au premier objet renvoyé
-  s = p.imprimer("Bonjour étranger, je ne vous ai jamais vu ici...")
-  s += "\n" + q.imprimer("Bonjour, moi non plus. Je m'appelle " + q.prenom + " " + q.nom + ". Et vous?")
-  s += "\n" + p.imprimer("Moi je m'appelle " + p.prenom + " " + p.nom + ". Enchanté, " + q.prenom + " " + q.nom +". ", diversify=False)
-  s += "\n" + q.imprimer("Enchanté, " + p.prenom + " " + p.nom +". ", diversify=False)
+  s = p.imprimer("Bonjour étranger, je ne vous ai jamais vu ici...", useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + q.imprimer("Bonjour, moi non plus. Je m'appelle " + q.prenom + " " + q.nom + ". Et vous?", useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + p.imprimer("Moi je m'appelle " + p.prenom + " " + p.nom + ". Enchanté, " + q.prenom + " " + q.nom +". ", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + q.imprimer("Enchanté, " + p.prenom + " " + p.nom +". ", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
   p1.contacts.append(p2.copyStrip())
   p2.contacts.append(p1.copyStrip())
   return s
 
-def accroche1(p1, p2) : #p1 connaît p2 mais pas l'inverse -> p2 se crée une représentation de p1
-  s = p1.imprimer(diversifier("Bonjour ! Vous êtes "+p2.prenom+" "+p2.nom+", c'est ça ?"))
-  s += "\n" + p2.imprimer("Euh, oui. Je ne vous connais pas, vous êtes... ?")
-  s += "\n" + p1.imprimer(p1.prenom+" "+p1.nom+", enchanté. J'ai entendu parler de vous, c'est pour ça haha.")
-  s += "\n" + p2.imprimer("Haha en effet.", diversify=False)
+def accroche1(p1, p2, useTranslation=True, useCorrection=True) : #p1 connaît p2 mais pas l'inverse -> p2 se crée une représentation de p1
+  s = p1.imprimer("Bonjour ! Vous êtes "+p2.prenom+" "+p2.nom+", c'est ça ?", useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + p2.imprimer("Euh, oui. Je ne vous connais pas, vous êtes... ?", useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + p1.imprimer(p1.prenom+" "+p1.nom+", enchanté. J'ai entendu parler de vous, c'est pour ça haha.", useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + p2.imprimer("Haha en effet.", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
   p2.contacts.append(p1.copyStrip())
   return s
 
-def accroche2(p1, p2) : #Les deux personnages se connaissent
-  s = p1.imprimer("Salut mon pote !")
-  s += "\n" + p2.imprimer("Salut à toi également l'ami !")
+def accroche2(p1, p2, useTranslation=True, useCorrection=True) : #Les deux personnages se connaissent
+  s = p1.imprimer("Salut mon pote !", useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + p2.imprimer("Salut à toi également l'ami !", useTranslation=useTranslation, useCorrection=useCorrection)
   return s
 
 #------------- Les personnages ne racontent pas forcément leurs histoires jusqu'au bout
@@ -92,15 +92,15 @@ def testContinuer(p1,p2) : #On détermine si la conversation continue (=True) ou
   return bool(random.getrandbits(1)) ############ FONCTION TEMPORAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIREEEEEEEEEEEEEEEEEEE
 
 #------------- La fin du dialogue
-def fin(p1,p2) : #Fonction temporaire (à redéfinir pour prendre en compte les affinités entre les personnages)
-  s = p1.imprimer("Bon, c'était sympa de discuter.")
-  s += "\n" + p2.imprimer("Oui totalement !", diversify=False)
-  s += "\n" + p1.imprimer("Allez, à la prochaine fois !")
-  s += "\n" + p2.imprimer("Salut !", diversify=False)
+def fin(p1,p2, useTranslation=True, useCorrection=True) : #Fonction temporaire (à redéfinir pour prendre en compte les affinités entre les personnages)
+  s = p1.imprimer("Bon, c'était sympa de discuter.", useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + p2.imprimer("Oui totalement !", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + p1.imprimer("Allez, à la prochaine fois !", useTranslation=useTranslation, useCorrection=useCorrection)
+  s += "\n" + p2.imprimer("Salut !", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
   return s
 
 #------------- Les transitions (pas entamé pour le moment)
-def transition() :
+def transition(useTranslation=True, useCorrection=True) :
   return "---"
 
 #------------- Détermination du locuteur et de l'interlocuteur / du cas où les personnages n'ont rien à raconter (pas d'histoire / histoires connues par les deux)
@@ -119,9 +119,9 @@ def quiparle(p1,p2) :
 
 
 #------------- #Fonction d'affichage de l'histoire ----------------------------- A DEVELOPPER PLUS TARD, pour prendre en compte le fait que l'histoire ne soit pas forcément racontée en entier
-def raconter(loc, interloc) :
+def raconter(loc, interloc, useTranslation=True, useCorrection=True) :
   histoire = pickStory(loc, interloc)
-  s = histoire.toText(loc, interloc)
+  s = histoire.toText(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection)
   return s, histoire #On retourne l'histoire racontée, pour l'ajouter plus tard dans la liste d'histoires connues par l'interlocuteur
 
 #------------- #Fonction de sélection de l'histoire à raconter, qui n'est pas dans la liste des histoires connues par l'interlocuteur
@@ -134,15 +134,15 @@ def pickStory(loc, interloc) :
 
 
 #-------------------------------------------------- La fonction (principale) du dialogue ----------------------------------------------
-def dialogue(p1,p2) :
-  s = intro(p1,p2) #L'intro
+def dialogue(p1,p2, useTranslation=True, useCorrection=True) :
+  s = intro(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
   continuer = True
   premierCycle = True #Indicateur
   while continuer :
     loc, interloc = quiparle(p1,p2) #On décide qui parle
     if loc!=None : #Cas normal : un personnage a une histoire à raconter
-      s += "\n" + transition() #à définir
-      s1, histoire = raconter(loc, interloc) #On choisit et raconte une histoire
+      s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
+      s1, histoire = raconter(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection) #On choisit et raconte une histoire
       s += "\n" + s1
       #interloc.histoires.append(histoire) #L'interlocuteur connaît maintenant l'histoire qu'on lui a raconté (à modifier, car en réalité il ne connait pas forcément TOUTE l'histoire)
       continuer = testContinuer(loc,interloc) #On teste si les personnages continuent de dialoguer
@@ -151,5 +151,5 @@ def dialogue(p1,p2) :
       if premierCycle : #Cas où les personnages n'ont rien échangé avant que le dialogue se termine
         s += "\n" + "~~ Les deux personnages n'ont rien à se dire... Une gêne sensible s'installe... ~~"
     premierCycle = False
-  s += "\n" + fin(p1,p2)
+  s += "\n" + fin(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   return s

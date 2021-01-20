@@ -56,7 +56,7 @@ class Objet:
     return -1 # On ne renvoie pas None car None correspond au fait qu'on ne connaisse pas la valeur, ici ça veut dire qu'elle n'existe pas (c'est différent)
 
 
-  def toText(self, types=None, locuteur=None, interlocuteur=None, mentionProprio=True):
+  def toText(self, types=None, locuteur=None, interlocuteur=None, mentionProprio=True, useTranslation=True, useCorrection=True):
     """
     Si la liste des \"noms\" est fournie, choisi au hasard pami ces noms
     Sinon crée un nom à partir du libellé, des caracs et du proprio
@@ -98,7 +98,7 @@ class Objet:
 
     # On ajoute les caracteristiques
     for c in caracs_a_preciser:
-      exp += " " + c.toText() + " et"
+      exp += " " + c.toText(useTranslation=useTranslation, useCorrection=useCorrection) + " et"
     if len(caracs_a_preciser) > 0:
       exp = exp[:-3]
 
@@ -112,7 +112,7 @@ class Objet:
     elif mentionProprio:
       exp += " de " + self.proprio.prenom + " " + self.proprio.nom
     
-    exp = correct(exp)
+    exp = correct(exp, useCorrection=useCorrection)
     return exp
 
 
@@ -189,8 +189,8 @@ class Personnage(Objet):
     return Personnage({"nom":self.nom, "prenom":self.prenom, "sexe":self.sexe})
   
 
-  def imprimer(self, texte, diversify=True) : #Méthode pour faire parler le personnage (on ajoute juste qui parle avant le texte)
-    if diversify: texte = diversifier(texte)
+  def imprimer(self, texte, diversify=True, useTranslation=True, useCorrection=True) : #Méthode pour faire parler le personnage (on ajoute juste qui parle avant le texte)
+    if diversify: texte = diversifier(texte, useTranslation=useTranslation)
     return self.prenom + " " + self.nom + " : " + texte
     
   
@@ -224,7 +224,7 @@ class Personnage(Objet):
                 self.enfants.append(enfant)
 
 
-  def toText(self, locuteur=None, interlocuteur=None):
+  def toText(self, locuteur=None, interlocuteur=None, useTranslation=True, useCorrection=True):
     return self.prenom + " " + self.nom
 
 

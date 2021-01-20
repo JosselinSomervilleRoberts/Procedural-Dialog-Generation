@@ -21,7 +21,7 @@ class CoeurAction(Coeur) :
     self.lieu = lieu
     self.moment = moment # A DEFINIR
     
-  def toText(self, locuteur=None, interlocuteur=None, sujetMentionedBefore=False):
+  def toText(self, locuteur=None, interlocuteur=None, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
     if not(type(self.sujet) == list):
       self.sujet = [self.sujet]
     if locuteur is None : locuteur = Personnage()
@@ -44,7 +44,7 @@ class CoeurAction(Coeur) :
       exp = ""
       if not(usePronom):
         for suj in self.sujet:
-          exp += suj.toText(locuteur=locuteur, interlocuteur=interlocuteur) + " et "
+          exp += suj.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " et "
         exp = exp[:-4]
         exp += " " + vb.replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","")
       else:
@@ -52,12 +52,12 @@ class CoeurAction(Coeur) :
       s += exp + " "
 
     if self.cod is not None :
-      s+= self.cod.toText(locuteur=locuteur, interlocuteur=interlocuteur) + " "
+      s+= self.cod.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " "
     if self.lieu is not None :
       s+= self.lieu + " "
 
     if self.moment is not None :
-      s+= self.moment.toText() + " "
+      s+= self.moment.toText(useTranslation=useTranslation, useCorrection=useCorrection) + " "
     s = s[:-1]
     self.transmissionInfos(locuteur, interlocuteur)
-    return correct(s)
+    return correct(s, useCorrection=useCorrection)

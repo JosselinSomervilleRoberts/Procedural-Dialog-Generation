@@ -18,7 +18,7 @@ class CoeurDescriptif(Coeur):
     self.sujet = sujet
     self.carac = carac
 
-  def toText(self, locuteur=None, interlocuteur=None, sujetMentionedBefore=False):
+  def toText(self, locuteur=None, interlocuteur=None, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
     if not(type(self.sujet) == list):
       self.sujet = [self.sujet]
     if locuteur is None : locuteur = Personnage()
@@ -39,13 +39,13 @@ class CoeurDescriptif(Coeur):
     exp = ""
     if not(usePronom):
       for suj in self.sujet:
-        exp += suj.toText(locuteur=locuteur, interlocuteur=interlocuteur) + " et "
+        exp += suj.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " et "
       exp = exp[:-4]
       exp += " " + vb.replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","")
     else:
       exp = vb
 
-    exp += " " + self.carac.toText()
-    s = correct(exp)
+    exp += " " + self.carac.toText(useTranslation=useTranslation, useCorrection=useCorrection)
+    s = correct(exp, useCorrection=useCorrection)
     self.transmissionInfos(locuteur, interlocuteur)
     return s

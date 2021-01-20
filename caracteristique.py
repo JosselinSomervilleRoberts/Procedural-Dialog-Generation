@@ -60,7 +60,7 @@ class Caracteristique:
       return self.lib == other.lib
     return False
 
-  def toText(self, value):
+  def toText(self, value, useTranslation=True, useCorrection=True):
     prep = ""
     i = len(self.intervals) - 1
     continuer = True
@@ -71,7 +71,7 @@ class Caracteristique:
         continuer = False
       i -= 1
 
-    return correct(prep + " " + get_syn(self.lib)*self.keepLib)
+    return correct(prep + " " + get_syn(self.lib)*self.keepLib, useCorrection=useCorrection)
 
 
 class CaracChiffree:
@@ -93,8 +93,8 @@ class CaracChiffree:
     if isinstance(other, Caracteristique) : return self.carac == other
     raise RuntimeError("Impossible de comparer une CaracChiffrée avec ", type(other))
 
-  def toText(self):
-    return self.carac.toText(self.value)
+  def toText(self, useTranslation=True, useCorrection=True):
+    return self.carac.toText(self.value, useTranslation=useTranslation, useCorrection=useCorrection)
 
   def __eq__(self, other):
     if isinstance(other, self.__class__):
