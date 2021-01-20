@@ -18,7 +18,7 @@ class Action :
 
   def getAvailable():
     return ["manger", "aller", "courir", "marcher", "attaquer", "tomber", "casser", "chanter", "parler", "regarder", "raconter", "voir", "ecrire", "boire",
-            "crier", "sourir", "sauter", "ecouter", "dormir", "travailler", "trouver", "devenir", "balader", "ecraser", "rouler"]
+            "crier", "sourir", "sauter", "ecouter", "dormir", "travailler", "trouver", "devenir", "balader", "ecraser", "rouler", "soigner", "aller voir"]
 
   def getAlike(s):
     """ Renvoie toutes les actions qui contiennent s dans leur nom"""
@@ -57,7 +57,9 @@ class Action :
       if name == "tomber"  : self = Action.__init__(self, "tomber", [[1, "[(tomber)]"]] )
       if name == "travailler": self = Action.__init__(self, "travailler", [[0.8, "[(travailler)]"],[0.2, "[faire] un effort"]])
       if name == "trouver" : self = Action.__init__(self, "trouver", [[1, "[(trouver)]"]])     
-      if name == "voir"   : self = Action.__init__(self, "voir",  [[0.8, "[(voir)]"],[0.2, "[prendre] conscience de"]]) 
+      if name == "voir"   : self = Action.__init__(self, "voir",  [[0.8, "[(voir)]"],[0.2, "[prendre] conscience de"]])
+      if name == "soigner"   : self = Action.__init__(self, "soigner",  [[0.8, "[(soigner)]"],[0.2, "[guérir]"]])
+      if name == "aller voir"   : self = Action.__init__(self, "aller voir",  [[0.6, "[aller] voir"],[0.4, "[aller] consulter"]])
     else:
       self.lib = lib #str
       self.expressions = expressions #Liste couple [proba(float), string]
