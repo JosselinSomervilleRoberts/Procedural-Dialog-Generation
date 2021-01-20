@@ -5,11 +5,14 @@ Created on Mon Dec 28 00:23:22 2020
 @author: josse
 """
 
-"je ne suis plus raciste. youhou"
-#J'étais recherché ouais j'étais même pas au courant
+
 from psclib.objet import Personnage
 from psclib.diversifieur import correct
-from psclib.lien import CAUSE, CONSEQUENCE, SUITE
+from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, CAUSE, CONSEQUENCE, SUITE, Lien
+from psclib.complement import Complement
+from psclib.lieu import Lieu
+from psclib.moment import Moment
+import random
 
 
 # Classe abstraite qui définit la structure des coeurs et la manière dont ils s'enchaînent
@@ -49,3 +52,46 @@ class Coeur:
       if l.typeLien == SUITE :
         s += " puis "+ l.coeur.toText(p1,p2,suivre=False,pct=False)
     return correct(s)
+
+
+  def ajouterComplement(self, complement=None, name="", importance=1):
+      if complement is None: complement = Complement(name=name)
+      coeur = CoeurComplement(complement, self)
+      self.liens.append(Lien(coeur, COMPLEMENT, importance=importance))
+      
+  def ajouterLieu(self, complement=None, name="", lieu=None, rapport="", importance=1):
+      if complement is None: complement = Lieu(name=name, lieu=lieu, rapport=rapport)
+      coeur = CoeurComplement(complement, self)
+      self.liens.append(Lien(coeur, COMPLEMENT_LIEU, importance=importance))
+      
+  def ajouterMoment(self, complement=None, name="", moment=None, rapport="", importance=1):
+      if complement is None: complement = Moment(name=name, moment=moment, rapport=rapport)
+      coeur = CoeurComplement(complement, self)
+      self.liens.append(Lien(coeur, COMPLEMENT_TEMPS, importance=importance))
+      
+  def ajouterManiere(self, complement=None, name="", lieu=None, rapport="", importance=1):
+      if complement is None: complement = Lieu(name=name, lieu=lieu, rapport=rapport)
+      coeur = CoeurComplement(complement, self)
+      self.liens.append(Lien(coeur, COMPLEMENT_LIEU, importance=importance))
+
+
+
+
+
+
+class CoeurComplement(Coeur) :
+  
+    def __init__(self, complement = None, parent = None):
+        Coeur.__init__(self, None, None)
+        self.complement = complement
+        self.parent = parent
+    
+
+    def toText(self, locuteur=None, interlocuteur=None, autoriserRadoter=True, useTranslation=True, useCorrection=True): 
+        phrase = self.complement.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
+        
+        probaRadoter = 0.5*autoriserRadoter
+        if random.random() <= probaRadoter:
+            return self.parent.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " " + phrase
+            
+        return phrase

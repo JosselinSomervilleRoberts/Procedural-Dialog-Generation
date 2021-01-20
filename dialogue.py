@@ -145,27 +145,27 @@ def reaction(histoire,interloc) :
 def reactiontriste(interloc):    # reaction d'une histoire triste
     a = random.randint(1,2)
     if a == 1 :
-        s = interloc.imprimer("Ah c'est dommage!")
+        s = interloc.imprimer("Ah c'est dommage!", diversify=False)
     if a == 2 :   
-        s = interloc.imprimer("Oh la la c'est vraiment triste!")
+        s = interloc.imprimer("Oh la la c'est vraiment triste!", diversify=False)
     #if a == 3 :
     return s
 
 def reactionneutre(interloc):  # reaction d'une histoire neutre
     a = random.randint(1,2)
     if a == 1 :
-        s = interloc.imprimer("Ah bon.")
+        s = interloc.imprimer("Ah bon.", diversify=False)
     if a == 2 :   
-        s = interloc.imprimer("Oh.")
+        s = interloc.imprimer("Oh.", diversify=False)
     #if a == 3 :
     return s
 
 def reactionjoyeuse(interloc):  # reaction d'une histoire joyeuse
     a = random.randint(1,2)
     if a == 1 :
-        s = interloc.imprimer("Ah c'est bien!")
+        s = interloc.imprimer("Ah c'est bien!", diversify=False)
     if a == 2 :   
-        s = interloc.imprimer("Wow c'est cool!")
+        s = interloc.imprimer("Wow c'est cool!", diversify=False)
     #if a == 3 :
     return s
 #-------------------------------------------------- La fonction (principale) du dialogue ----------------------------------------------

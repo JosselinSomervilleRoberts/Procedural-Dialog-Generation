@@ -9,7 +9,7 @@ import random
 from math import log
 from psclib.caracteristique import Caracteristique
 from psclib.diversifieur import correct
-from psclib.lien import CAUSE, CONSEQUENCE, SUITE, Lien
+from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, CAUSE, CONSEQUENCE, SUITE, Lien
 
 
 
@@ -30,7 +30,7 @@ def buildQuestionsReponses():
     
     chemin_base = "psclib/fichiers_txt/questions_reponses/"
     liste1 = ["demander", "demander_avec_phrase", "ne_pas_savoir", "rappel"] # Les types de réponses scriptées
-    liste2 = [[CAUSE, "cause"], [CONSEQUENCE, "consequence"], [SUITE, "suite"]] # Les différents liens
+    liste2 = [[COMPLEMENT_LIEU, "cause"], [CAUSE, "cause"], [CONSEQUENCE, "consequence"], [SUITE, "suite"]] # Les différents liens
     
     for ext1 in liste1:
         chemin_intermediaire = chemin_base + ext1 + "_"
@@ -38,7 +38,7 @@ def buildQuestionsReponses():
         for elt2 in liste2:
             index, ext2 = elt2[0], elt2[1]
             chemin = chemin_intermediaire + ext2 + ".txt"
-            f = open(chemin, "r", encoding="ISO-8859-1")
+            f = open(chemin, "r", encoding="utf-8")
             liste = f.readlines()
             f.close()
             
@@ -289,9 +289,9 @@ class Histoire:
     if expUsed is None: expUsed = []
     
     # Mots pour continuer une phrase
-    mots_liaisons_continuer = {CAUSE: ["parce que", "car"], CONSEQUENCE: ["donc", "du coup"], SUITE: ["puis", "et puis", "et donc ensuite"]}
+    mots_liaisons_continuer = {COMPLEMENT_LIEU: [""], CAUSE: ["parce que", "car"], CONSEQUENCE: ["donc", "du coup"], SUITE: ["puis", "et puis", "et donc ensuite"]}
     # Mots pour recommencer une phrase
-    mots_liaisons_recommencer = {CAUSE: ["C\'est parce que"], CONSEQUENCE: ["Et donc", "Et du coup"], SUITE: ["Ensuite,"]}
+    mots_liaisons_recommencer = {COMPLEMENT_LIEU: [""], CAUSE: ["C\'est parce que"], CONSEQUENCE: ["Et donc", "Et du coup"], SUITE: ["Ensuite,"]}
     
     # On transforme le coeur actuel en texte
     debutPhrase += coeurActuel.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
@@ -302,11 +302,11 @@ class Histoire:
     
     if len(liens) > 0:
       # On ajoute un lien bidon qui correspond au fait de ne pas continuer
-      lienFin = Lien(coeur=None, typeLien=None, importance=1)
+      lienFin = Lien(coeur=None, typeLien=SUITE, importance=1)
       liens.append(lienFin)
       
       # On choisit au hasard un lien basé sur son importance
-      lienChoisi = random.choices(liens, weights=[lien.importance for lien in liens], k=1)[0]
+      lienChoisi = random.choices(liens, weights=[lien.importance * (lien.typeLien > 3) for lien in liens], k=1)[0] # lien.typeLien > 3 correspond au fait que ce n'est pas un complément
       liens.remove(lienChoisi) # On le retire de la liste des liens
       if lienFin in liens: liens.remove(lienFin) # On retire le lien bidon qui correspond à la fin
       
@@ -315,7 +315,7 @@ class Histoire:
         return phrasesPrecedentes + "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
       
       # On ajoute des précisions (éventuellement)
-      sommeImportance = sum([lien.importance for lien in liens])
+      sommeImportance = min(10,sum([lien.importance for lien in liens]))
       nbPrecisions = 0
       liensAPreciser = []
       
@@ -349,30 +349,45 @@ class Histoire:
       for i in range(len(liensAPreciser)):
           lien = liensAPreciser[i]
           
-          probaRecommencer = 0.2 + 0.01*len(debutPhrase.split(".")[-1]) + 0.1*nbCoeursDansLaPhrase # 20% + 1% par caractère + 10% par liens déja dans la phrase
+          if lien.typeLien in [COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE]: # C'est un complément
+              ajout = lien.coeur.toText(locuteur, interlocuteur, autoriserRadoter=False, useTranslation=useTranslation, useCorrection=useCorrection)
+              if lien.typeLien == COMPLEMENT_TEMPS:
+                  # On veut ajouter le CCT au début de la phrase,
+                  # Il faut donc retrouver le début de la phrase d'abord
+                  liste_phrases = debutPhrase.split(". ")
+                  liste_phrases[-1] = ajout + ", " + liste_phrases[-1]
+                  debutPhrase = ". ".join(liste_phrases) # On réassemble
+              else:
+                  debutPhrase += " " + ajout
           
-          if i == len(liensAPreciser) - 1: # Si c'est le dernier lien, proba de re commencer - 50%
-              probaRecommencer -= 0.5
+          else: # Ce n'est pas un complément
+          
+              probaRecommencer = (nbCoeursDansLaPhrase>1)*(0.2 + 0.01*len(debutPhrase.split(".")[-1]) + 0.1*nbCoeursDansLaPhrase) # 20% + 1% par caractère + 10% par liens déja dans la phrase
               
-          if random.random() <= probaRecommencer: # On recommence une phrase
-              debutPhrase += ". " + random.choice(mots_liaisons_recommencer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
-              nbCoeursDansLaPhrase = 1
-              phraseRecommencee = True
-          else: # On continue dans la même phrase
-              debutPhrase += " " + random.choice(mots_liaisons_continuer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
-              nbCoeursDansLaPhrase += 1
+              if i == len(liensAPreciser) - 1: # Si c'est le dernier lien, proba de re commencer - 50%
+                  probaRecommencer -= 0.5
+                  
               
-          # Pour chaque précision, si la précision se poursuivait, on ne la suivra pas car on va suivre lienChoisi
-          # Mais l'interlocuteur peut avoir envie de poser une question sur la suite de cette précision.
-          # On appelle ça : EXPLORER un lien.
-          if len(lien.coeur.liens) > 0:
-              # Son envie d'explorer va dépendre de :
-              # - l'importance du lien
-              # - la curiosité de l'interlocuteur
-              # - le nombre de précisions qu'il souhaite déja explorer
-              probaExplorer = 0.05 + 0.15*log(lien.importance) + 0.55*(interlocuteur.getCaracValue(Caracteristique(name="curiosite")) - 2*len(liensAExplorer))
-              if random.random() <= probaExplorer: # Si on explore le lien
-                  liensAExplorer.append([coeurActuel, lien])
+              if random.random() <= probaRecommencer: # On recommence une phrase
+                  debutPhrase += ". " + random.choice(mots_liaisons_recommencer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
+                  nbCoeursDansLaPhrase = 1
+                  phraseRecommencee = True
+              else: # On continue dans la même phrase
+                  debutPhrase += " " + random.choice(mots_liaisons_continuer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
+                  nbCoeursDansLaPhrase += 1
+                  
+              # Pour chaque précision, si la précision se poursuivait, on ne la suivra pas car on va suivre lienChoisi
+              # Mais l'interlocuteur peut avoir envie de poser une question sur la suite de cette précision.
+              # On appelle ça : EXPLORER un lien.
+              if len(lien.coeur.liens) > 0:
+                  # Son envie d'explorer va dépendre de :
+                  # - l'importance du lien
+                  # - la curiosité de l'interlocuteur
+                  # - le nombre de précisions qu'il souhaite déja explorer
+                  probaExplorer = 0.05 + 0.15*log(lien.importance) + 0.55*(interlocuteur.getCaracValue(Caracteristique(name="curiosite")) - 2*len(liensAExplorer))
+                  if random.random() <= probaExplorer: # Si on explore le lien
+                      liensAExplorer.append([coeurActuel, lien])
+                      
                   
       # Pour chaque lien non précisé, l'interlocuteur peut DEMANDER la précision
       # Il peut aussi demander des précisions dont le locuteur n'a pas la réponse (a ajouter)
@@ -412,7 +427,7 @@ class Histoire:
             demande = demanderAvecPhraseLien(lien.typeLien)
             expUsed.append(demande)
             if "[]" in demande:
-                phrase = coeurCurrent.toText(interlocuteur, locuteur)
+                phrase = coeurCurrent.toText(interlocuteur, locuteur, useTranslation=useTranslation, useCorrection=useCorrection)
                 demande = demande.replace("[]", phrase)
                 
             # On ajoute au texte
@@ -432,8 +447,8 @@ class Histoire:
             # Pour rappel, voici à quoi ressemble l'architecture : 
             # coeurCurrent (déja raconté)   -----lien----->   lien.coeur (déja raconté)   -----lienExploration----->   lienExploration.coeur (PAS ENCORE RACONTE)
             rappelExplo = rappel(lien.typeLien)
-            phrase1 = coeurCurrent.toText(interlocuteur, locuteur)
-            phrase2 = lien.coeur.toText(interlocuteur, locuteur)
+            phrase1 = coeurCurrent.toText(interlocuteur, locuteur, useTranslation=useTranslation, useCorrection=useCorrection)
+            phrase2 = lien.coeur.toText(interlocuteur, locuteur, useTranslation=useTranslation, useCorrection=useCorrection)
             rappelExplo = rappelExplo.replace("[]", phrase1).replace("()", phrase2)
             demande = rappelExplo + " " + demanderLien(lienExploration.typeLien)
             

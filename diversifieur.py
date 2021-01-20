@@ -19,13 +19,11 @@ import io
 import random
 
 cg = Conjugator(lang='fr')
-tool = language_tool_python.LanguageToolPublicAPI('fr')
-#useTranslation = True
+tool = None
+ts = None
 syns = {}
 
-ts = None
-ts = google_translator()
-  
+
   
 COURANT = 1
 FAMILIER = 2
@@ -163,6 +161,10 @@ def correct(s, useCorrection=True):
   """
   global tool
   
+  # On charge le correcteur s'il n'est pas chargé
+  if tool is None and useCorrection:
+      tool = language_tool_python.LanguageToolPublicAPI('fr')
+  
   if useCorrection:
       return tool.correct(s)
   else:
@@ -205,6 +207,10 @@ def diversifier(s, useTranslation=True):
   - s2: str. (l'expression diversifiée)
   """
   global ts
+  
+  # On charge le traducteur s'il n'est pas chargé
+  if ts is None and useTranslation:
+      ts = google_translator()
 
   if not(useTranslation):
     return s

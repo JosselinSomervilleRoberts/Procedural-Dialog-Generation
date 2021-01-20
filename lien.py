@@ -5,18 +5,16 @@ Created on Mon Dec 28 00:24:13 2020
 @author: josse
 """
 
+COMPLEMENT = 0
+COMPLEMENT_LIEU = 1
+COMPLEMENT_TEMPS = 2
+COMPLEMENT_MANIERE = 3
+CAUSE = 4
+CONSEQUENCE = 5
+SUITE = 6
+AJOUT = 7
+OBJECTIF = 8
 
-CAUSE = 1
-CONSEQUENCE = 2
-SUITE = 3
-
-
-#HEY c ets joss
-# test 2
-#☻ test 3
-# Les liens entre les coeurs
-#♥ hola olivier
-# salut tanguy
 
 class Lien :
 
