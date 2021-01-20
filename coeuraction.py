@@ -60,4 +60,5 @@ class CoeurAction(Coeur) :
       s+= self.moment.toText(useTranslation=useTranslation, useCorrection=useCorrection) + " "
     s = s[:-1]
     self.transmissionInfos(locuteur, interlocuteur)
-    return correct(s, useCorrection=useCorrection)
+    exp = correct(s, useCorrection=useCorrection)
+    return exp[0].lower() + exp[1:]

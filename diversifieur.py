@@ -216,7 +216,7 @@ def diversifier(s, useTranslation=True):
     return s
 
   l = ["en", "it", "pt", "de"]
-  nb_langues = random.randint(1,2) # Nombre de langues intermédiaires
+  nb_langues = random.randint(1,1) # Nombre de langues intermédiaires
 
   langues = []
   for i in range(nb_langues):

@@ -10,7 +10,7 @@ from psclib.complement import Complement
 
 class Lieu(Complement):
     
-    def __init__(self, name="", lieu=None, rapport=""):
+    def __init__(self, name=None, lieu=None, rapport=""):
         Complement.__init__(self, name=name)
         self.lieu = lieu
         self.rapport = rapport

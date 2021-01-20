@@ -113,7 +113,7 @@ class Objet:
       exp += " de " + self.proprio.prenom + " " + self.proprio.nom
     
     exp = correct(exp, useCorrection=useCorrection)
-    return exp
+    return exp[0].lower() + exp[1:]
 
 
 

@@ -12,7 +12,7 @@ class Complement():
     
     def __init__(self, name=None):
         self.name = name
-        if self.name is None: self.name = []
+        if self.name is None or name == "": self.name = []
         if type(self.name) == str: self.name = [self.name]
         
     def toText(self, locuteur=None, interlocuteur=None, useTranslation=True, useCorrection=True):

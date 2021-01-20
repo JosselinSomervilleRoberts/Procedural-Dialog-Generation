@@ -48,4 +48,4 @@ class CoeurDescriptif(Coeur):
     exp += " " + self.carac.toText(useTranslation=useTranslation, useCorrection=useCorrection)
     s = correct(exp, useCorrection=useCorrection)
     self.transmissionInfos(locuteur, interlocuteur)
-    return s
+    return s[0].lower() + s[1:]

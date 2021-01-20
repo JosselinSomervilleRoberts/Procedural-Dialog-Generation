@@ -55,7 +55,10 @@ def buildQuestionsReponses():
 def getExpression(key, typeLien, used=None):
     global dictExp
     if len(dictExp.keys()) == 0: buildQuestionsReponses()
-    if used is None: used = []    
+    if used is None: used = []
+    
+    # Si il n'y a pas d'expressions (notamment pour les compléments)
+    if len(dictExp[key][typeLien]) == 0: return "euh"
   
     # On enlève les expressions déja utilisées
     liste_exps = []

@@ -12,6 +12,7 @@ from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMEN
 from psclib.complement import Complement
 from psclib.lieu import Lieu
 from psclib.moment import Moment
+from psclib.maniere import Maniere
 import random
 
 
@@ -69,10 +70,10 @@ class Coeur:
       coeur = CoeurComplement(complement, self)
       self.liens.append(Lien(coeur, COMPLEMENT_TEMPS, importance=importance))
       
-  def ajouterManiere(self, complement=None, name="", lieu=None, rapport="", importance=1):
-      if complement is None: complement = Lieu(name=name, lieu=lieu, rapport=rapport)
+  def ajouterManiere(self, complement=None, name="", importance=1):
+      if complement is None: complement = Maniere(name=name)
       coeur = CoeurComplement(complement, self)
-      self.liens.append(Lien(coeur, COMPLEMENT_LIEU, importance=importance))
+      self.liens.append(Lien(coeur, COMPLEMENT_MANIERE, importance=importance))
 
 
 
