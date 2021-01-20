@@ -78,7 +78,7 @@ class Objet:
     if personne % 3 != 0:
       usePossessif = True
 
-    if not(self.noms is None) and len(self.noms) > 0:
+    if not(self.noms is None) and len(self.noms) > 0 and random.random() and self in interlocuteur.objets and random.random() >= 1/(1+len(self.noms)):
       return random.choice(self.noms)
 
 
@@ -113,6 +113,11 @@ class Objet:
       exp += " de " + self.proprio.prenom + " " + self.proprio.nom
     
     exp = correct(exp, useCorrection=useCorrection)
+    
+    if not(self in interlocuteur.objets):
+        interlocuteur.objets.append(self)
+        if not(self.noms is None) and len(self.noms) > 0 and random.random():
+            exp += ", " + random.choice(self.noms) + ","
     return exp[0].lower() + exp[1:]
 
 
@@ -138,8 +143,8 @@ class Personnage(Objet):
       if name == "lancelot": self = Personnage.__init__(self, dico={"nom":"Du Lac", "prenom":"Lancelot"})
       if name == "mickey": self = Personnage.__init__(self, dico={"nom":"Mouse", "prenom":"Mickey"})
       if name == "joe": self = Personnage.__init__(self, dico={"nom":"Dalton", "prenom":"Joe"})
-      if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=3)]})
-      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10)]})
+      if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=0)]})
+      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=0)]})
     else:
       Objet.__init__(self, dico=dico) # A RAJOUTER dico EN ARGUMENT
       self.setCarac(CaracChiffree(name="mysterieux", value=5), overWrite=False)
@@ -149,6 +154,7 @@ class Personnage(Objet):
       self.prenom = None
       self.id = None
       self.sexe = None
+      self.objets = []
       self.age = None
       self.humeur = None
       self.animaux = []
@@ -199,6 +205,13 @@ class Personnage(Objet):
       if p.id == id :
         return p
     return None
+
+
+  def ajouterPossession(self, dico):
+      dico["proprio"] = self
+      objet = Objet(dico)
+      self.objets.append(objet)
+      return objet
 
   def miseAJour(self, dico=None): #Utilisé pour mettre à jour une représentation à partir d'un dictionnaire d'informations
       if dico:

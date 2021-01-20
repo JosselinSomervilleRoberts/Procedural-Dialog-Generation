@@ -40,13 +40,13 @@ class CoeurAction(Coeur) :
       
     s = ""
     if self.action is not None :
-      vb = self.action.toText("indicatif","présent",personne)
+      vb = self.action.toText(self.mode, self.temps,personne)
       exp = ""
       if not(usePronom):
         for suj in self.sujet:
           exp += suj.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " et "
         exp = exp[:-4]
-        exp += " " + vb.replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","")
+        exp += " " + vb.replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","").replace("qu\'", "").replace("que ", "")
       else:
         exp = vb
       s += exp + " "

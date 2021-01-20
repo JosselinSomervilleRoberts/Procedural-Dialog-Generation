@@ -35,13 +35,13 @@ class CoeurDescriptif(Coeur):
     if sujetMentionedBefore or personne <= 2:
       usePronom = True
 
-    vb = cong("etre", "indicatif", "présent", personne)
+    vb = cong("etre", self.mode, self.temps, personne)
     exp = ""
     if not(usePronom):
       for suj in self.sujet:
         exp += suj.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " et "
       exp = exp[:-4]
-      exp += " " + vb.replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","")
+      exp += " " + vb.replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","").replace("qu\'", "").replace("que ", "")
     else:
       exp = vb
 

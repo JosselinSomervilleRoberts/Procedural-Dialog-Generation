@@ -12,7 +12,7 @@ from psclib.diversifieur import correct
 from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, OBJECTIF, CAUSE, CONSEQUENCE, SUITE, Lien
 
 
-
+STOP = -3
 dictExp = {}
 
 def ajouterPonctuation(s):
@@ -294,6 +294,8 @@ class Histoire:
 
 
   def toText(self, locuteur, interlocuteur, coeurActuel=None, phrasesPrecedentes="", debutPhrase="", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=True, useCorrection=True): 
+    global STOP
+      
     # Si on commence à raconter l'histoire, on commence par le début
     if coeurActuel is None: coeurActuel = self.head
     
@@ -309,12 +311,14 @@ class Histoire:
     mots_liaisons_recommencer = {COMPLEMENT_LIEU: [""], CAUSE: ["C\'est parce que"], CONSEQUENCE: ["Et donc", "Et du coup", "Du coup"], SUITE: ["Ensuite,", "Alors,"]}
     """
     
+    liens = []
     # On transforme le coeur actuel en texte
-    debutPhrase += coeurActuel.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
-    nbCoeursDansLaPhrase += 1
+    if not(coeurActuel == STOP):
+        debutPhrase += coeurActuel.toText(locuteur, interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
+        nbCoeursDansLaPhrase += 1
     
-    # On trie les liens par importance
-    liens = sorted(coeurActuel.liens, key=lambda x: x.importance)
+        # On trie les liens par importance
+        liens = sorted(coeurActuel.liens, key=lambda x: x.importance)
     
     if len(liens) > 0:
       # On ajoute un lien bidon qui correspond au fait de ne pas continuer
@@ -333,9 +337,6 @@ class Histoire:
       liens.remove(lienChoisi) # On le retire de la liste des liens
       if lienFin in liens: liens.remove(lienFin) # On retire le lien bidon qui correspond à la fin
       
-      # Si on arrete l'histoire (i.e. on a choisi lienFin)
-      if lienChoisi.coeur is None: # C'est le lien de fin
-        return phrasesPrecedentes + "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
       
       # On ajoute des précisions (éventuellement)
       sommeImportance = min(10,sum([lien.importance for lien in liens]))
@@ -427,6 +428,12 @@ class Histoire:
                   liensADemander.append([coeurActuel, l])
               
       
+        
+      # Si on arrete l'histoire (i.e. on a choisi lienFin)
+      if lienChoisi.coeur is None: # C'est le lien de fin
+        return self.toText(locuteur, interlocuteur, coeurActuel=STOP, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
+        #return phrasesPrecedentes + "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
+    
       # Enfin, on ajoute le lienChoisi
       # (On recommence une phrase pour ça)
       if phraseRecommencee or liensDansLaPhrase >= 1: # On a recommencé ou on a pas recommencé de phrase mais il y a eu des précisions

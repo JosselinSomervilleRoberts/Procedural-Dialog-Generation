@@ -8,7 +8,7 @@ Created on Mon Dec 28 00:23:22 2020
 
 from psclib.objet import Personnage
 from psclib.diversifieur import correct
-from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, CAUSE, CONSEQUENCE, SUITE, Lien
+from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, OBJECTIF, CAUSE, CONSEQUENCE, SUITE, Lien
 from psclib.complement import Complement
 from psclib.lieu import Lieu
 from psclib.moment import Moment
@@ -20,6 +20,9 @@ import random
 class Coeur:
   
   def __init__(self, liens=None, infos=None):
+    self.mode = "indicatif"
+    self.temps = "présent"
+    
     self.id = None # Champ à définir
     self.liens = liens
     if self.liens is None:
@@ -76,7 +79,10 @@ class Coeur:
       self.liens.append(Lien(coeur, COMPLEMENT_MANIERE, importance=importance))
       
   
-
+  def ajouterLien(self, lien):
+      self.liens.append(lien)
+      if lien.typeLien == OBJECTIF:
+          lien.coeur.mode = "subjonctif"
 
 
 
