@@ -129,10 +129,45 @@ def pickStory(loc, interloc) :
   resteLoc, resteInterloc, intersect = intersection(loc.histoires, interloc.histoires) #On prend les histoires que l'interlocuteur ne connaît pas
   return resteLoc[random.randrange(len(resteLoc))] #On en prend une au hasard
 
+#------------- #Fonction de réaction à la fin d'une histoire
+def reaction(histoire,interloc) :
+    if histoire.ton == "triste" :
+        return reactiontriste(interloc)  # reaction d'une histoire triste
+    if histoire.ton == "neutre" :
+        return reactionneutre(interloc)  # reaction d'une histoire neutre
+    if histoire.ton == "joyeuse" :
+        return reactionjoyeuse(interloc)  # reaction d'une histoire joyeuse
+    
+    return "Je m'en fiche."            # pas de reaction
 
 
+#------------- #Les réactions d'une histoire---------------------------------
+def reactiontriste(interloc):    # reaction d'une histoire triste
+    a = random.randint(1,2)
+    if a == 1 :
+        s = interloc.imprimer("Ah c'est dommage!")
+    if a == 2 :   
+        s = interloc.imprimer("Oh la la c'est vraiment triste!")
+    #if a == 3 :
+    return s
 
+def reactionneutre(interloc):  # reaction d'une histoire neutre
+    a = random.randint(1,2)
+    if a == 1 :
+        s = interloc.imprimer("Ah bon.")
+    if a == 2 :   
+        s = interloc.imprimer("Oh.")
+    #if a == 3 :
+    return s
 
+def reactionjoyeuse(interloc):  # reaction d'une histoire joyeuse
+    a = random.randint(1,2)
+    if a == 1 :
+        s = interloc.imprimer("Ah c'est bien!")
+    if a == 2 :   
+        s = interloc.imprimer("Wow c'est cool!")
+    #if a == 3 :
+    return s
 #-------------------------------------------------- La fonction (principale) du dialogue ----------------------------------------------
 def dialogue(p1,p2, useTranslation=True, useCorrection=True) :
   s = intro(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
@@ -144,6 +179,7 @@ def dialogue(p1,p2, useTranslation=True, useCorrection=True) :
       s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
       s1, histoire = raconter(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection) #On choisit et raconte une histoire
       s += "\n" + s1
+      s += "\n" + reaction(histoire,interloc)
       #interloc.histoires.append(histoire) #L'interlocuteur connaît maintenant l'histoire qu'on lui a raconté (à modifier, car en réalité il ne connait pas forcément TOUTE l'histoire)
       continuer = testContinuer(loc,interloc) #On teste si les personnages continuent de dialoguer
     else : #Les deux personnages n'ont pas d'histoire à se raconter
