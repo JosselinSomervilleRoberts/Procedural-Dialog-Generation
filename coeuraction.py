@@ -35,7 +35,7 @@ class CoeurAction(Coeur) :
       personne += 3
 
     usePronom = False
-    if sujetMentionedBefore or personne <= 2:
+    if sujetMentionedBefore or personne <= 2 or personne == 4 or personne == 5:
       usePronom = True
       
     s = ""

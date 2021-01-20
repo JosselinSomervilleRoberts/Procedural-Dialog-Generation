@@ -6,9 +6,11 @@ Created on Mon Dec 28 00:20:08 2020
 """
 #En bande organisée, personne peut nous canaliser
 import random
+from math import log
 from psclib.caracteristique import Caracteristique
 from psclib.diversifieur import correct
-from psclib.lien import CAUSE, CONSEQUENCE, SUITE
+from psclib.lien import CAUSE, CONSEQUENCE, SUITE, Lien
+
 
 
 dictExp = {}
@@ -100,7 +102,7 @@ class Histoire:
     return dot
 
 
-  def toText(self, locuteur, interlocuteur, coeurCurrent=None, prefixe=""):
+  def toTextOld(self, locuteur, interlocuteur, coeurCurrent=None, prefixe="", s0=""):
     """
     Génère le texte pour l'histoire.
     La façon dont s'enchaine l'histoire dépend des caractéristiques du locuteur et de l'interlocuteur
@@ -152,8 +154,25 @@ class Histoire:
 
       liensRacontes = []
       liensOmis = []
-
+      
+      # On ordonne les liens dans l'ordre CAUSE, CONSEQUENCE, SUITE
+      importanceTotale = 0
+      liste_liens = []
+      indexDebutConsequence = 0
       for lien in random.sample(coeurCurrent.liens, len(coeurCurrent.liens)):
+          importanceTotale += lien.importance
+          if lien.typeLien == CAUSE:
+              liste_liens = [lien] + liste_liens
+              indexDebutConsequence += 1
+          elif lien.typeLien == SUITE:
+              liste_liens += [lien]
+          else:
+              liste_liens = liste_liens[:indexDebutConsequence] + [lien] + liste_liens[indexDebutConsequence+1:]
+      
+
+      lienPrincipal = None
+      importanceLienPrincipal = 0
+      for lien in liste_liens:
         # Plus le perso est bavard plus il aura tendance à enchainer les liens
         # coeff Linéaire : bavard = 0 -> coeffDimin = 20, bavard=10 -> coeffDimin = 1.1
         coeff = 20 - 1.89*locuteur.getCaracValue(Caracteristique(name="bavard"))
@@ -161,25 +180,40 @@ class Histoire:
         exposant = 2.*((1.+(len(liensRacontes)/float(len(coeurCurrent.liens)))) / (1.+len(liensOmis)/float(len(coeurCurrent.liens))) - 0.5)/3.
         proba = probaRaconter / float(coeff**exposant)
 
-        if random.random() <= proba: # On raconte le lien
+        if lien.importance==3 or importanceTotale*random.random() <= (lien.importance**2)*proba: # On raconte le lien
           liensRacontes.append(lien)
+          if lien.importance > importanceLienPrincipal:
+              lienPrincipal = lien
         else:
           liensOmis.append(lien)
 
-      addLiens = True
-      for l in liensRacontes :
-        if l.typeLien == CAUSE and addLiens:
-          s1 += " parce que " + l.coeur.toText(locuteur, interlocuteur)
-        if l.typeLien == CONSEQUENCE and addLiens:
-          s1 += " donc "+ l.coeur.toText(locuteur, interlocuteur)
-        if l.typeLien == SUITE and addLiens:
-          s1 += " puis "+ l.coeur.toText(locuteur, interlocuteur)
-          addLiens = False
-          coeurCurrent = l.coeur
-          liensOmis = coeurCurrent.liens
-          liensRacontes = []
 
-      s += locuteur.imprimer(ajouterPonctuation(s1))
+
+
+      # - Si il y a plusieurs liens: on ajoute dans la même phrase tous les liens sauf le lienPrincipal,
+      # puis on met un point et on recommence une phrase avec le lien principal.
+      # - Si il n'y a qu'un seul lien, il y a une chance sur 2 de recommencer une phrase.
+      # Le lien principal doit être à la fin
+      liens_continuer = {CAUSE: " parce que ", CONSEQUENCE: " donc ", SUITE: " puis "}
+      liens_recommencer = {CAUSE: "C\'est parce que ", CONSEQUENCE: "Et donc ", SUITE: "Ensuite, "}
+      
+      if len(liensRacontes) == 1:
+        if random.random() <= 0.5:
+          s1 += ". " + liens_recommencer[liensRacontes[0].typeLien]
+        else:
+          s1 += liens_continuer[liensRacontes[0].typeLien]
+        return self.toText(locuteur, interlocuteur, coeurCurrent=liensRacontes[0].coeur, prefixe=s1, s0=s0)
+      
+      elif len(liensRacontes) > 1:    
+        for l in liensRacontes :
+          if not(l == lienPrincipal):
+            s1 += liens_continuer[liensRacontes[0].typeLien] + l.coeur.toText(locuteur, interlocuteur)
+        s1 += ". " + liens_recommencer[lienPrincipal.typeLien]
+        return self.toText(locuteur, interlocuteur, coeurCurrent=lienPrincipal.coeur, prefixe=s1, s0=s0)
+
+      s0 += "\n" + locuteur.imprimer(ajouterPonctuation(s1))
+
+
 
       # L'interlocuteur pose des questions
       # Plus le perso est curieux, plus il a de chance de demander les liens
@@ -191,13 +225,19 @@ class Histoire:
       if random.random() <= probaDemander:
         if len(liensOmis) > 0 and random.random() <= probaDemanderInfoExistante: # On demande une info existante
           l = random.choice(liensOmis)
-          s += "\n" + interlocuteur.imprimer(demanderLien(l.typeLien))
+          demande = demanderLien(l.typeLien)
+          if "[]" in demande:
+              phrase = coeurCurrent.toText(interlocuteur, locuteur)
+              demande = demande.replace("[]", phrase)
+                
+          s0 += "\n" + interlocuteur.imprimer(demande)
           
           dictPrefixe = {}
           dictPrefixe[CAUSE] = ["Parce que "]
           dictPrefixe[CONSEQUENCE] = ["Donc "]
           dictPrefixe[SUITE] = ["Ensuite, "]
-          s += "\n" + self.toText(locuteur, interlocuteur, coeurCurrent=l.coeur, prefixe=random.choice(dictPrefixe[l.typeLien]))
+          return self.toText(locuteur, interlocuteur, coeurCurrent=l.coeur, prefixe=random.choice(dictPrefixe[l.typeLien]), s0=s0)
+          #s0 += "\n" + self.toText(locuteur, interlocuteur, coeurCurrent=l.coeur, prefixe=random.choice(dictPrefixe[l.typeLien]))
         else:
           liensPossibles = [CAUSE, CONSEQUENCE, SUITE]
           # Il ne faut pas demander un lien qui a déjà été précisé
@@ -209,9 +249,133 @@ class Histoire:
             liensPossibles = [SUITE]
 
           typeLien = random.choice(liensPossibles)
-          s += "\n" + interlocuteur.imprimer(demanderLien(typeLien), diversify=False)
-          s += "\n" + locuteur.imprimer(nePasSavoirLien(typeLien), diversify=False)
+          demande = demanderLien(typeLien)
+          if "[]" in demande:
+              phrase = coeurCurrent.toText(interlocuteur, locuteur)
+              demande = demande.replace("[]", phrase)
+                
+          s0 += "\n" + interlocuteur.imprimer(demande)
+          #s0 += "\n" + interlocuteur.imprimer(demanderLien(typeLien), diversify=False)
+          s0 += "\n" + locuteur.imprimer(nePasSavoirLien(typeLien), diversify=False)
     else:
-      s += locuteur.imprimer(ajouterPonctuation(s1))
+      s0 += "\n" + locuteur.imprimer(ajouterPonctuation(s1))
+      
+    return s0 
 
-    return s
+
+
+  def toText(self, locuteur, interlocuteur, coeurActuel=None, phrasesPrecedentes="", debutPhrase="", liensAExplorer=None, liensADemander=None): 
+    # Si on commence à raconter l'histoire, on commence par le début
+    if coeurActuel is None: coeurActuel = self.head
+    
+    # Si il n'y a pas encore de DEMANDE ou D'EXPLORATION, alors les listes sont vides
+    if liensAExplorer is None: liensAExplorer = []
+    if liensADemander is None: liensADemander = []
+    
+    # On transforme le coeur actuel en texte
+    debutPhrase += coeurActuel.toText(locuteur, interlocuteur)
+    
+    # On trie les liens par importance
+    liens = sorted(coeurActuel.liens, key=lambda x: x.importance)
+    
+    if len(liens) > 0:
+      # On ajoute un lien bidon qui correspond au fait de ne pas continuer
+      lienFin = Lien(coeur=None, typeLien=None, importance=1)
+      liens.append(lienFin)
+      
+      # On choisit au hasard un lien basé sur son importance
+      lienChoisi = random.choices(liens, weights=[lien.importance for lien in liens], k=1)[0]
+      liens.remove(lienChoisi) # On le retire de la liste des liens
+      if lienFin in liens: liens.remove(lienFin) # On retire le lien bidon qui correspond à la fin
+      
+      # Si on arrete l'histoire (i.e. on a choisi lienFin)
+      if lienChoisi.coeur is None: # C'est le lien de fin
+        return phrasesPrecedentes + "\n" + interlocuteur.imprimer(ajouterPonctuation(debutPhrase))
+      
+      # On ajoute des précisions (éventuellement)
+      sommeImportance = sum([lien.importance for lien in liens])
+      nbPrecisions = 0
+      liensAPreciser = []
+      
+      random.shuffle(liens) # On mélange les liens car l'ordre importe (Plus on a fait de précisions, moins on a de chance d'en rajoute,
+      # donc les premiers liens sont favorisés)
+      for l in liens:
+          # Plus on est bavard, plus on a de chance de préciser les liens
+          # Plus le lien est important plus on a de chance de le préciser
+          # Plus on a fait de précisions, moins on a de chance d'en rajouter
+          probaPreciser = (0.25 + 0.07*locuteur.getCaracValue(Caracteristique(name="bavard"))) * l.importance / (sommeImportance*(1+nbPrecisions))
+          if random.random() <= probaPreciser: # Si on précise le lien
+              nbPrecisions += 1
+              liensAPreciser.append(l)
+      
+    
+      # Sinon on ajoute le lien
+      # Il faut choisir si le lien sera ajouté comme suite à la phrase ou comme une question
+      # D'abord, on ajoute les précisions.
+      # Pour que la phrase est du sens, il faut ordonner les précisions dans l'ordre CAUSE, CONSEQUENCE, SUITE
+      # Par exemple, Marcel promène son chien car il avait envie donc ils vont au parc et ils s'amusent (CAUSE, CONSEQUENCE, SUITE)
+      # Mais: Marcel promène son chien et ils s'amusent car il vait envie donc ils vont au parc (SUITE, CAUSE, CONSEQUENCE) -> pas le même sens
+      liensAPreciser = sorted(liensAPreciser, key=lambda x: 1000*x.typeLien + x.importance) # On trie par type de lien puis par importance
+      
+      # Mots pour continuer une phrase
+      mots_liaisons_continuer = {CAUSE: ["parce que", "car"], CONSEQUENCE: ["donc", "du coup"], SUITE: ["puis", "et puis", "et donc ensuite"]}
+      # Mots pour recommencer une phrase
+      mots_liaisons_recommencer = {CAUSE: ["C\'est parce que"], CONSEQUENCE: ["Et donc", "Et du coup"], SUITE: ["Ensuite,"]}
+      
+      # Pour l'instant, on va commencer avec quelque chose de simple pour choisir si on continue ou recommence une phrase
+      # - on recommence toujours une phrase pour le lienChoisi
+      # - pour les précisions, on recommence une phrase quand elle devient trop longue (dépend du nombre de caractères et du nombre de précisions)
+      # on fera juste en sorte d'éviter de recommencer une phrase pour la dernière précision pour éviter des phrases avec un seul coeur.
+      liensDansLaPhrase = 0
+      for i in range(len(liensAPreciser)):
+          lien = liensAPreciser[i]
+          
+          probaRecommencer = 0.2 + 0.01*len(debutPhrase.split(".")[-1]) + 0.1*liensDansLaPhrase # 20% + 1% par caractère + 10% par liens déja dans la phrase
+          
+          if i == len(liensAPreciser) - 1: # Si c'est le dernier lien, proba de re commencer - 50%
+              probaRecommencer -= 0.5
+              
+          if random.random() <= probaRecommencer: # On recommence une phrase
+              debutPhrase += ". " + random.choice(mots_liaisons_recommencer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur)
+              liensDansLaPhrase = 1
+          else: # On continue dans la même phrase
+              debutPhrase += " " + random.choice(mots_liaisons_continuer[lien.typeLien]) + " " + lien.coeur.toText(locuteur, interlocuteur)
+              liensDansLaPhrase += 1
+              
+          # Pour chaque précision, si la précision se poursuivait, on ne la suivra pas car on va suivre lienChoisi
+          # Mais l'interlocuteur peut avoir envie de poser une question sur la suite de cette précision.
+          # On appelle ça : EXPLORER un lien.
+          if len(lien.coeur.liens) > 0:
+              # Son envie d'explorer va dépendre de :
+              # - l'importance du lien
+              # - la curiosité de l'interlocuteur
+              # - le nombre de précisions qu'il souhaite déja explorer
+              probaExplorer = 0.05 + 0.15*log(lien.importance) + 0.55*(interlocuteur.getCaracValue(Caracteristique(name="curiosite")) - 2*len(liensAExplorer))
+              if random.random() <= probaExplorer: # Si on explore le lien
+                  liensAExplorer.append([coeurActuel, lien])
+                  
+      # Pour chaque lien non précisé, l'interlocuteur peut DEMANDER la précision
+      # Il peut aussi demander des précisions dont le locuteur n'a pas la réponse (a ajouter)
+      for l in liens:
+          if not(l in liensAPreciser): # Si le lien n'a pas été précisé
+              # Son envie dde demander va dépendre de :
+              # - l'importance du lien
+              # - la curiosité de l'interlocuteur
+              # - le nombre de précisions qu'il souhaite déja demander
+              probaDemander = 0.05 + 0.15*log(l.importance) + 0.55*(interlocuteur.getCaracValue(Caracteristique(name="curiosite")) - 2*len(liensADemander))
+              if random.random() <= probaDemander: # Si on demande le lien
+                  liensADemander.append([coeurActuel, l])
+              
+      
+      # Enfin, on ajoute le lienChoisi
+      # (On recommence une phrase pour ça)
+      debutPhrase += ". " + random.choice(mots_liaisons_recommencer[lienChoisi.typeLien])
+      return self.toText(locuteur, interlocuteur, coeurActuel=lienChoisi.coeur, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, liensAExplorer=liensAExplorer, liensADemander=liensADemander)
+      
+    else: # IL N'Y A PAS DE LIEN
+        return phrasesPrecedentes + "\n" + interlocuteur.imprimer(ajouterPonctuation(debutPhrase))
+     
+      
+      
+      
+        
