@@ -138,14 +138,14 @@ class Histoire:
       dot = Digraph(comment=self.titre)
       if coeurCurrent is None:
         coeurCurrent = self.head
-      dot.node(str(coeurCurrent.id), "<"+coeurCurrent.getGraphText().replace("\n","\n<br/>").replace("\n","\n<br/>")+">")
+      dot.node(str(coeurCurrent.id), "<"+coeurCurrent.getGraphText().replace("\n","\n<br/>").replace("\l","\l<br/>")+">")
       indexParent = coeurCurrent.id
       
     if len(coeurCurrent.liens) > 0:
       for lien in coeurCurrent.liens:
-        dot.node(str(lien.coeur.id), "<"+lien.coeur.getGraphText()+">")
+        dot.node(str(lien.coeur.id), "<"+lien.coeur.getGraphText().replace("\n","\n<br/>").replace("\l","\l<br/>")+">")
         
-        dot.edge(str(indexParent), str(lien.coeur.id), label="<"+lien.getGraphText()+">")
+        dot.edge(str(indexParent), str(lien.coeur.id), label="<"+lien.getGraphText().replace("\n","\n<br/>").replace("\l","\l<br/>")+">")
         dot = self.getGraph(dot=dot, coeurCurrent=lien.coeur, indexParent=lien.coeur.id)
     
     return dot
