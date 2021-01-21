@@ -11,6 +11,8 @@ from psclib.caracteristique import Caracteristique
 from psclib.diversifieur import correct
 from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, OBJECTIF, CAUSE, CONSEQUENCE, SUITE, Lien
 from psclib.coeuraction import CoeurAction
+from psclib.coeurdescriptif import CoeurDescriptif
+from psclib.coeur import CoeurComplement
 
 STOP = -3
 dictExp = {}
@@ -144,7 +146,11 @@ class Histoire:
     if len(coeurCurrent.liens) > 0:
       for lien in coeurCurrent.liens:
         if isinstance(lien.coeur, CoeurAction):
-            dot.attr('node', shape='circle')
+            dot.attr('node', shape='box')
+        if isinstance(lien.coeur, CoeurDescriptif):
+            dot.attr('node', shape='octagon')
+        if isinstance(lien.coeur, CoeurComplement):
+            dot.attr('node', shape='ellipse')
         dot.node(str(lien.coeur.id), "<"+lien.coeur.getGraphText()+">")
         
         dot.edge(str(indexParent), str(lien.coeur.id), label="<"+lien.getGraphText()+">")

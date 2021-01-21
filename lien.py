@@ -29,5 +29,5 @@ class Lien :
       dict_liens = {COMPLEMENT: "Complément", COMPLEMENT_LIEU: "Lieu", COMPLEMENT_TEMPS: "Moment", COMPLEMENT_MANIERE: "Manière",
                     OBJECTIF: "Objectif", CAUSE: "Cause", CONSEQUENCE: "Conséquence", AJOUT: "Ajout", SUITE: "Suite", LOINTAIN: "Lointain"}
       s = "<I>" + dict_liens[self.typeLien] + "</I>"
-      s+= "\n" + str(self.importance)
+      s+= """\n<br/><div align="center">""" + str(self.importance) + "</div>"
       return s

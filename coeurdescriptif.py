@@ -20,12 +20,14 @@ class CoeurDescriptif(Coeur):
     
     
   def getGraphText(self):
-      s = "<B>COEUR DESCRIPTIF</B>" + "\n"
+      s = """<table border="0" cellborder="0" cellspacing="0">\n"""
+      s+= """  <tr><td align="center"><b>COEUR DESCRIPTIF</b></td></tr>\n"""
       if type(self.sujet) == list:
-          s+= "<I>Sujet:</I> " + " et ".join([s.getGraphText() for s in self.sujet]) + "\l"
+          s+= """  <tr><td align="left"><I>Sujet:</I> """ + """ et """.join([s.getGraphText() for s in self.sujet]) + """</td></tr>\n"""
       else:
-          s+= "<I>Sujet:</I> " + self.sujet.getGraphText() + "\l"
-      s+= "<I>Caractéristique:</I> " + self.carac.getGraphText() + "\l"
+          s+= """  <tr><td align="left"><I>Sujet:</I> """ + self.sujet.getGraphText() + """</td></tr>\n"""
+      s+= """  <tr><td align="left"><I>Caractéristique:</I> """ + self.carac.getGraphText() + """</td></tr>\n"""
+      s+="""</table>"""
       return s
   
 
