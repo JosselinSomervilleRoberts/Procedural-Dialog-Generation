@@ -21,9 +21,9 @@ class Moment(Complement):
         if len(self.name) > 0: return self.name[0]
         rapport = self.rapport
         if rapport == "": rapport = "alors"
-        s = "Par rapport à un coeur\n"
-        s+= "   " + self.moment.getGraphText().replace("\n", "\n   ")
-        s+= "\nRapport: " + rapport
+        s = "Par rapport à un coeur\l"
+        s+= "   " + self.moment.getGraphText().replace("\l", "\l   ").replace("\n", "\l   ")
+        s+= "\l<I>Rapport:</I> " + rapport + " que "
         return s
   
         

@@ -21,8 +21,8 @@ class Lieu(Complement):
         rapport = self.rapport
         if rapport == "": rapport = "à"
         s = "Par rapport à un objet\n"
-        s+= "   Objet: " + self.moment.getGraphText().replace("\n", "\n   ")
-        s+= "\nRapport: " + rapport
+        s+= "   <I>Objet:</I> " + self.moment.getGraphText().replace("\n", "\l   ").replace("\l", "\l   ")
+        s+= "\l<I>Rapport:</I> " + rapport
         return s
         
         

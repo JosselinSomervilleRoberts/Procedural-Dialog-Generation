@@ -28,6 +28,6 @@ class Lien :
   def getGraphText(self):
       dict_liens = {COMPLEMENT: "Complément", COMPLEMENT_LIEU: "Lieu", COMPLEMENT_TEMPS: "Moment", COMPLEMENT_MANIERE: "Manière",
                     OBJECTIF: "Objectif", CAUSE: "Cause", CONSEQUENCE: "Conséquence", AJOUT: "Ajout", SUITE: "Suite", LOINTAIN: "Lointain"}
-      s = dict_liens[self.typeLien]
-      s+= "\n" + " " * int(float(len(s) - len(str(self.importance)))/2.) + str(self.importance)
+      s = "<I>" + dict_liens[self.typeLien] + "</I>"
+      s+= "\n" + str(self.importance)
       return s

@@ -20,12 +20,12 @@ class CoeurDescriptif(Coeur):
     
     
   def getGraphText(self):
-      s = "===== COEUR DESCRIPTIF =====" + "\n"
+      s = "<B>COEUR DESCRIPTIF</B>" + "\n"
       if type(self.sujet) == list:
-          s+= "Sujet: " + " et ".join([s.getGraphText() for s in self.sujet]) + "\n"
+          s+= "<I>Sujet:</I> " + " et ".join([s.getGraphText() for s in self.sujet]) + "\l"
       else:
-          s+= "Sujet: " + self.sujet.getGraphText() + "\n"
-      s+= "Caractéristique: " + self.carac.getGraphText()
+          s+= "<I>Sujet:</I> " + self.sujet.getGraphText() + "\l"
+      s+= "<I>Caractéristique:</I> " + self.carac.getGraphText() + "\l"
       return s
   
 

@@ -103,10 +103,10 @@ class CoeurComplement(Coeur) :
         
         
     def getGraphText(self):
-        s = "===== COEUR COMPLEMENT ====="
+        s = "<B>COEUR COMPLEMENT</B>"
         dict_comp = {COMPLEMENT: "Complément: ", COMPLEMENT_LIEU: "Lieu: ", COMPLEMENT_TEMPS: "Moment: ", COMPLEMENT_MANIERE: "Manière: "}
-        s+= "\n" + dict_comp[self.typeComplement]
-        s+= self.complement.getGraphText()
+        s+= "\n<I>" + dict_comp[self.typeComplement] + "</I>"
+        s+= self.complement.getGraphText() + "\l"
         return s
     
 
