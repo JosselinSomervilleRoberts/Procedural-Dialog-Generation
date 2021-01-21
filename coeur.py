@@ -15,15 +15,20 @@ from psclib.moment import Moment
 from psclib.maniere import Maniere
 import random
 
+idCounter = 1
+
 
 # Classe abstraite qui définit la structure des coeurs et la manière dont ils s'enchaînent
 class Coeur:
   
   def __init__(self, liens=None, infos=None):
+    global idCounter
+    self.id = idCounter
+    idCounter+= 1
+    
     self.mode = "indicatif"
     self.temps = "présent"
     
-    self.id = None # Champ à définir
     self.liens = liens
     if self.liens is None:
       self.liens = []

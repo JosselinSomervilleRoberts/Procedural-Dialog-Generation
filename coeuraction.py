@@ -23,13 +23,13 @@ class CoeurAction(Coeur) :
       
 
   def getGraphText(self):
-      s = "====== COEUR ACTION ======" + "\n"
+      s = "<B>COEUR ACTION</B>" + "\n"
       if type(self.sujet) == list:
-          s+= "Sujet: " + " et ".join([s.getGraphText() for s in self.sujet]) + "\n"
+          s+= "<I>Sujet:</I> " + " et ".join([s.getGraphText() for s in self.sujet]) + "\l"
       else:
-          s+= "Sujet: " + self.sujet.getGraphText() + "\n"
-      s+= "Action: " + self.action.getGraphText()
-      if not(self.cod is None): s+= "\n" + "Complément: " + self.cod.getGraphText()
+          s+= "<I>Sujet:</I> " + self.sujet.getGraphText() + "\l"
+      s+= "<I>Action:</I> " + self.action.getGraphText() + "\l"
+      if not(self.cod is None): s+= "<I>Complément:</I> " + self.cod.getGraphText() + "\l"
       return s
 
     

@@ -131,23 +131,22 @@ class Histoire:
     return dot
 
 
-  def getGraph(self, dot=None, index=1, coeurCurrent=None, indexParent=1):
+  def getGraph(self, dot=None, coeurCurrent=None, indexParent=1):
     from graphviz import Digraph
       
     if dot is None:
       dot = Digraph(comment=self.titre)
       if coeurCurrent is None:
         coeurCurrent = self.head
-      dot.node(str(index), coeurCurrent.getGraphText())
-      index += 1
+      dot.node(str(coeurCurrent.id), coeurCurrent.getGraphText())
+      indexParent = coeurCurrent.id
       
     if len(coeurCurrent.liens) > 0:
       for lien in coeurCurrent.liens:
-        dot.node(str(index), lien.coeur.getGraphText())
+        dot.node(str(lien.coeur.id), lien.coeur.getGraphText())
         
-        dot.edge(str(indexParent), str(index), label=lien.getGraphText())
-        index += 1
-        dot = self.getGraph(dot=dot, index=index, coeurCurrent=lien.coeur, indexParent=index-1)
+        dot.edge(str(indexParent), str(lien.coeur.id), label=lien.getGraphText())
+        dot = self.getGraph(dot=dot, coeurCurrent=lien.coeur, indexParent=lien.coeur.id)
     
     return dot
       
