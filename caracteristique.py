@@ -102,7 +102,7 @@ class CaracChiffree:
   def getGraphText(self):
       s = self.carac.getGraphText()
       if not(self.value is None):
-          s += "\l<I>Valeur:</I> " + str(self.value)
+          s += "<br/><I>Valeur:</I> " + str(self.value)
       return s
 
   def toText(self, useTranslation=True, useCorrection=True):
