@@ -10,7 +10,7 @@ from math import log
 from psclib.caracteristique import Caracteristique
 from psclib.diversifieur import correct
 from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, OBJECTIF, CAUSE, CONSEQUENCE, SUITE, Lien
-
+from psclib.coeuraction import CoeurAction
 
 STOP = -3
 dictExp = {}
@@ -143,6 +143,8 @@ class Histoire:
       
     if len(coeurCurrent.liens) > 0:
       for lien in coeurCurrent.liens:
+        if isinstance(lien.coeur, CoeurAction):
+            dot.attr('node', shape='circle')
         dot.node(str(lien.coeur.id), "<"+lien.coeur.getGraphText()+">")
         
         dot.edge(str(indexParent), str(lien.coeur.id), label="<"+lien.getGraphText()+">")

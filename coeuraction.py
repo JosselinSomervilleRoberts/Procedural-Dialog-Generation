@@ -23,7 +23,7 @@ class CoeurAction(Coeur) :
       
 
   def getGraphText(self):
-      s = """<table border="0" cellborder="0" cellspacing="0", style="border: none;">\n"""
+      s = """<table border="0" cellborder="0" cellspacing="0" style="border: none;">\n"""
       s+= """  <tr style="border: none;"><td align="center" style="border: none;"><b>COEUR ACTION</b></td></tr>\n"""
       if type(self.sujet) == list:
           s+= """  <tr style="border: none;"><td align="left" style="border: none;"><I>Sujet:</I> """ + """ et """.join([s.getGraphText() for s in self.sujet]) + """</td></tr>\n"""
