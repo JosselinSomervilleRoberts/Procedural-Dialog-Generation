@@ -65,6 +65,14 @@ class Action :
       self.lib = lib #str
       self.expressions = expressions #Liste couple [proba(float), string]
       self.adverbes = adverbes #Liste adverbes (liste str)
+      
+      
+  def getGraphText(self):
+      s = self.lib
+      if len(self.adverbes) > 0:
+          s += "\nAdverbes: " + ', '.join(self.adverbes)
+      return s
+  
 
   def toText(self, mode, temps, personne, useTranslation=True, useCorrection=True):
     """

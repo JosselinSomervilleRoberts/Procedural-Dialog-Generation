@@ -60,22 +60,22 @@ class Coeur:
 
   def ajouterComplement(self, complement=None, name="", importance=1):
       if complement is None: complement = Complement(name=name)
-      coeur = CoeurComplement(complement, self)
+      coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT)
       self.liens.append(Lien(coeur, COMPLEMENT, importance=importance))
       
   def ajouterLieu(self, complement=None, name="", lieu=None, rapport="", importance=1):
       if complement is None: complement = Lieu(name=name, lieu=lieu, rapport=rapport)
-      coeur = CoeurComplement(complement, self)
+      coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT_LIEU)
       self.liens.append(Lien(coeur, COMPLEMENT_LIEU, importance=importance))
       
   def ajouterMoment(self, complement=None, name="", moment=None, rapport="", importance=1):
       if complement is None: complement = Moment(name=name, moment=moment, rapport=rapport)
-      coeur = CoeurComplement(complement, self)
+      coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT_TEMPS)
       self.liens.append(Lien(coeur, COMPLEMENT_TEMPS, importance=importance))
       
   def ajouterManiere(self, complement=None, name="", importance=1):
       if complement is None: complement = Maniere(name=name)
-      coeur = CoeurComplement(complement, self)
+      coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT_MANIERE)
       self.liens.append(Lien(coeur, COMPLEMENT_MANIERE, importance=importance))
       
   
@@ -90,10 +90,19 @@ class Coeur:
 
 class CoeurComplement(Coeur) :
   
-    def __init__(self, complement = None, parent = None):
+    def __init__(self, complement = None, parent = None, typeComplement=COMPLEMENT):
         Coeur.__init__(self, None, None)
         self.complement = complement
         self.parent = parent
+        self.typeComplement = typeComplement
+        
+        
+    def getGraphText(self):
+        s = "===== COEUR COMPLEMENT ====="
+        dict_comp = {COMPLEMENT: "Complément: ", COMPLEMENT_LIEU: "Lieu: ", COMPLEMENT_TEMPS: "Moment: ", COMPLEMENT_MANIERE: "Manière: "}
+        s+= "\n" + dict_comp[self.typeComplement]
+        s+= self.complement.getGraphText()
+        return s
     
 
     def toText(self, locuteur=None, interlocuteur=None, autoriserRadoter=True, useTranslation=True, useCorrection=True): 

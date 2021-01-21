@@ -15,6 +15,12 @@ class Complement():
         if self.name is None or name == "": self.name = []
         if type(self.name) == str: self.name = [self.name]
         
+        
+    def getGraphText(self):
+        if len(self.name) > 0: return self.name[0]
+        return ""
+    
+        
     def toText(self, locuteur=None, interlocuteur=None, useTranslation=True, useCorrection=True):
         if len(self.name) > 0:
             return random.choice(self.name)

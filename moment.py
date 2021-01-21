@@ -16,6 +16,16 @@ class Moment(Complement):
         self.moment = moment # ceci est un coeur
         self.rapport = rapport
         
+    
+    def getGraphText(self):
+        if len(self.name) > 0: return self.name[0]
+        rapport = self.rapport
+        if rapport == "": rapport = "alors"
+        s = "Par rapport à un coeur\n"
+        s+= "   " + self.moment.getGraphText().replace("\n", "\n   ")
+        s+= "\nRapport: " + rapport
+        return s
+  
         
     def toText(self, locuteur=None, interlocuteur=None, useTranslation=True, useCorrection=True):
         # Si il existe des dénomitations définies pour le Lieu, on les utilises

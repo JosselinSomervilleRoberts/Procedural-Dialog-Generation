@@ -20,6 +20,18 @@ class CoeurAction(Coeur) :
     self.cod = cod
     self.lieu = lieu
     self.moment = moment # A DEFINIR
+      
+
+  def getGraphText(self):
+      s = "====== COEUR ACTION ======" + "\n"
+      if type(self.sujet) == list:
+          s+= "Sujet: " + " et ".join([s.getGraphText() for s in self.sujet]) + "\n"
+      else:
+          s+= "Sujet: " + self.sujet.getGraphText() + "\n"
+      s+= "Action: " + self.action.getGraphText()
+      if not(self.cod is None): s+= "\n" + "Complément: " + self.cod.getGraphText()
+      return s
+
     
   def toText(self, locuteur=None, interlocuteur=None, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
     if not(type(self.sujet) == list):

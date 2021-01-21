@@ -60,6 +60,11 @@ class Caracteristique:
       return self.lib == other.lib
     return False
 
+
+  def getGraphText(self):
+      return self.lib
+  
+
   def toText(self, value, useTranslation=True, useCorrection=True):
     prep = ""
     i = len(self.intervals) - 1
@@ -92,6 +97,13 @@ class CaracChiffree:
     if isinstance(other, CaracChiffree) : return self.carac == other.carac
     if isinstance(other, Caracteristique) : return self.carac == other
     raise RuntimeError("Impossible de comparer une CaracChiffrée avec ", type(other))
+    
+    
+  def getGraphText(self):
+      s = self.carac.getGraphText()
+      if not(self.value is None):
+          s += "\nValeur: " + str(self.value)
+      return s
 
   def toText(self, useTranslation=True, useCorrection=True):
     return self.carac.toText(self.value, useTranslation=useTranslation, useCorrection=useCorrection)

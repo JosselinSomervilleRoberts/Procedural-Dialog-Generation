@@ -23,3 +23,11 @@ class Lien :
     self.coeur = coeur # Objet Coeur vers lequel le lien pointe : ??? -> lien -> coeur
     self.typeLien = typeLien # Entier identifiant le type de lien (CAUSE = 1, CONSEQUENCE = 2, SUITE = 3)
     self.importance = importance
+    
+
+  def getGraphText(self):
+      dict_liens = {COMPLEMENT: "Complément", COMPLEMENT_LIEU: "Lieu", COMPLEMENT_TEMPS: "Moment", COMPLEMENT_MANIERE: "Manière",
+                    OBJECTIF: "Objectif", CAUSE: "Cause", CONSEQUENCE: "Conséquence", AJOUT: "Ajout", SUITE: "Suite", LOINTAIN: "Lointain"}
+      s = dict_liens[self.typeLien]
+      s+= "\n" + " " * int(float(len(s) - len(str(self.importance)))/2.) + str(self.importance)
+      return s

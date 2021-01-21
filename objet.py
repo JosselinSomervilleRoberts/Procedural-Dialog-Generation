@@ -56,6 +56,11 @@ class Objet:
     return -1 # On ne renvoie pas None car None correspond au fait qu'on ne connaisse pas la valeur, ici ça veut dire qu'elle n'existe pas (c'est différent)
 
 
+  def getGraphText(self):
+      if not(self.noms is None) and len(self.noms) > 0: return self.noms[0]
+      return self.toText()
+  
+
   def toText(self, types=None, locuteur=None, interlocuteur=None, mentionProprio=True, useTranslation=True, useCorrection=True):
     """
     Si la liste des \"noms\" est fournie, choisi au hasard pami ces noms
@@ -235,6 +240,10 @@ class Personnage(Objet):
             for enfant in dico["enfants"]:
               if enfant not in self.enfants:
                 self.enfants.append(enfant)
+                
+                
+  def getGraphText(self):
+      return self.toText()
 
 
   def toText(self, locuteur=None, interlocuteur=None, useTranslation=True, useCorrection=True):

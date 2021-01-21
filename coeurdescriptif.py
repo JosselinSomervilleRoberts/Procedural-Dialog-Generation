@@ -17,6 +17,17 @@ class CoeurDescriptif(Coeur):
     Coeur.__init__(self,liens,infos)
     self.sujet = sujet
     self.carac = carac
+    
+    
+  def getGraphText(self):
+      s = "===== COEUR DESCRIPTIF =====" + "\n"
+      if type(self.sujet) == list:
+          s+= "Sujet: " + " et ".join([s.getGraphText() for s in self.sujet]) + "\n"
+      else:
+          s+= "Sujet: " + self.sujet.getGraphText() + "\n"
+      s+= "Caractéristique: " + self.carac.getGraphText()
+      return s
+  
 
   def toText(self, locuteur=None, interlocuteur=None, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
     if not(type(self.sujet) == list):
