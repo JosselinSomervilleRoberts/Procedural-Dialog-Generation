@@ -23,7 +23,7 @@ class Moment(Complement):
         if rapport == "": rapport = "alors"
         s = "Par rapport à un coeur</td></tr>\n"
         s+= """<tr><td align="left"><I>Rapport:</I> """ + rapport + " que </td></tr>\n"
-        s+= """<tr><td align="left" style="margin-left= 30px"><font point-size='8'>""" + self.moment.getGraphText() + "</font>"
+        s+= """<tr><td align="right"><font point-size='10'>""" + self.moment.getGraphText().replace("center", "left") + "</font>"
         return s
   
         
