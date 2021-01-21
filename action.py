@@ -70,7 +70,8 @@ class Action :
   def getGraphText(self):
       s = self.lib
       if len(self.adverbes) > 0:
-          s += "<br/><I>Adverbes:</I> " + ', '.join(self.adverbes)
+          s += """</td></tr>\n"""
+          s += """<tr><td align="left"><I>Adverbes:</I> """ + ', '.join(self.adverbes)
       return s
   
 

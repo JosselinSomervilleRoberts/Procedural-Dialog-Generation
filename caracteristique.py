@@ -102,7 +102,8 @@ class CaracChiffree:
   def getGraphText(self):
       s = self.carac.getGraphText()
       if not(self.value is None):
-          s += "<br/><I>Valeur:</I> " + str(self.value)
+          s += """</td></tr>\n"""
+          s += """<tr><td align="left"><I>Valeur:</I> """ + str(self.value)
       return s
 
   def toText(self, useTranslation=True, useCorrection=True):
