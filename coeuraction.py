@@ -23,14 +23,14 @@ class CoeurAction(Coeur) :
       
 
   def getGraphText(self):
-      s = """<table>\n"""
-      s+= """  <tr><td align="center"><b>COEUR ACTION</b></td></tr>\n"""
+      s = """<table border="0" cellborder="0" cellspacing="0", style="border: none;">\n"""
+      s+= """  <tr style="border: none;"><td align="center" style="border: none;"><b>COEUR ACTION</b></td></tr>\n"""
       if type(self.sujet) == list:
-          s+= """  <tr><td align="left"><I>Sujet:</I> """ + """ et """.join([s.getGraphText() for s in self.sujet]) + """</td></tr>\n"""
+          s+= """  <tr style="border: none;"><td align="left" style="border: none;"><I>Sujet:</I> """ + """ et """.join([s.getGraphText() for s in self.sujet]) + """</td></tr>\n"""
       else:
-          s+= """  <tr><td align="left"><I>Sujet:</I> """ + self.sujet.getGraphText() + """</td></tr>\n"""
-      s+= """  <tr><td align="left"><I>Action:</I> """ + self.action.getGraphText() + """</td></tr>\n"""
-      if not(self.cod is None): s+= """  <tr><td align="left"><I>Complément:</I> """ + self.cod.getGraphText() + """</td></tr>\n"""
+          s+= """  <tr style="border: none;"><td align="left" style="border: none;"><I>Sujet:</I> """ + self.sujet.getGraphText() + """</td></tr>\n"""
+      s+= """  <tr style="border: none;"><td align="left" style="border: none;"><I>Action:</I> """ + self.action.getGraphText() + """</td></tr>\n"""
+      if not(self.cod is None): s+= """  <tr style="border: none;"><td align="left" style="border: none;"><I>Complément:</I> """ + self.cod.getGraphText() + """</td></tr>\n"""
       s+="""</table>"""
       return s
 
