@@ -330,6 +330,9 @@ class Histoire:
 
   def toText(self, locuteur, interlocuteur, date=None, coeurActuel=None, reponse=False, phrasesPrecedentes="", debutPhrase="", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=True, useCorrection=True): 
     global STOP
+    
+    # Pour avoir où placer le CCT
+    indexCCT = len(debutPhrase)
       
     # Si on commence à raconter l'histoire, on commence par le début
     # Il faut créer l'histoire dans la mémoire de l'interlocuteur
@@ -417,9 +420,10 @@ class Histoire:
               if lien.typeLien == COMPLEMENT_TEMPS:
                   # On veut ajouter le CCT au début de la phrase,
                   # Il faut donc retrouver le début de la phrase d'abord
-                  liste_phrases = debutPhrase.split(". ")
-                  liste_phrases[-1] = ajout + ", " + liste_phrases[-1]
-                  debutPhrase = ". ".join(liste_phrases) # On réassemble
+                  debutPhrase = debutPhrase[:indexCCT] + ajout + ", " + debutPhrase[indexCCT:]
+                  #liste_phrases = debutPhrase.split(". ")
+                  #liste_phrases[-1] = ajout + ", " + liste_phrases[-1]
+                  #debutPhrase = ". ".join(liste_phrases) # On réassemble
               else:
                   debutPhrase += " " + ajout
           

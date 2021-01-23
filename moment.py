@@ -34,15 +34,17 @@ class Moment(Complement):
         print("moment to text")
         if not(self.date is None) and not(date is None):
             exp = None
-            delta = self.date - date
+            delta = self.date.date() - date.date()
             liste_vals = [[timedelta(days=365), "années"], [timedelta(days=30), "mois"], [timedelta(days=7), "semaines"], [timedelta(days=1), "jours"]]
             for couple in liste_vals:
                 val, lib = couple[0], couple[1]
                 if exp is None:
                     k = int(abs(delta) /val)
+                    print(abs(delta), val, k)
                     if k == 1: lib = lib[:-1] # On enlève le s
-                    exp = "il y a " + str(k) + " " + lib.replace("moi", "mois")
-            if delta > timedelta():
+                    if k > 1:
+                        exp = "il y a " + str(k) + " " + lib.replace("moi", "mois")
+            if delta > timedelta() and not(exp is None):
                 exp = exp.replace("il y a", "dans")
             if exp is None:
                 exp = "aujourd'hui"
@@ -51,6 +53,11 @@ class Moment(Complement):
                 exp = "demain"
             elif timedelta(days=-2) < delta <= timedelta(days=-1):
                 exp = "hier"
+                
+            if self.date.hour != 0:
+                exp += ", à " + str(self.date.hour) + "h"
+                if self.date.minute != 0:
+                    exp += str(self.date.minute)
             
             return exp
                         
