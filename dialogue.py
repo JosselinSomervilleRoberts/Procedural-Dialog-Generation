@@ -119,9 +119,9 @@ def quiparle(p1,p2) :
 
 
 #------------- #Fonction d'affichage de l'histoire ----------------------------- A DEVELOPPER PLUS TARD, pour prendre en compte le fait que l'histoire ne soit pas forcément racontée en entier
-def raconter(loc, interloc, useTranslation=True, useCorrection=True) :
+def raconter(loc, interloc, date=None, useTranslation=True, useCorrection=True) :
   histoire = pickStory(loc, interloc)
-  s = histoire.toText(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection)
+  s = histoire.toText(loc, interloc, date=date, useTranslation=useTranslation, useCorrection=useCorrection)
   return s, histoire #On retourne l'histoire racontée, pour l'ajouter plus tard dans la liste d'histoires connues par l'interlocuteur
 
 #------------- #Fonction de sélection de l'histoire à raconter, qui n'est pas dans la liste des histoires connues par l'interlocuteur
@@ -169,7 +169,7 @@ def reactionjoyeuse(interloc):  # reaction d'une histoire joyeuse
     #if a == 3 :
     return s
 #-------------------------------------------------- La fonction (principale) du dialogue ----------------------------------------------
-def dialogue(p1,p2, useTranslation=True, useCorrection=True) :
+def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
   s = intro(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
   continuer = True
   premierCycle = True #Indicateur
@@ -177,7 +177,7 @@ def dialogue(p1,p2, useTranslation=True, useCorrection=True) :
     loc, interloc = quiparle(p1,p2) #On décide qui parle
     if loc!=None : #Cas normal : un personnage a une histoire à raconter
       s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
-      s1, histoire = raconter(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection) #On choisit et raconte une histoire
+      s1, histoire = raconter(loc, interloc, date=date, useTranslation=useTranslation, useCorrection=useCorrection) #On choisit et raconte une histoire
       s += "\n" + s1
       s += "\n" + reaction(histoire,interloc)
       #interloc.histoires.append(histoire) #L'interlocuteur connaît maintenant l'histoire qu'on lui a raconté (à modifier, car en réalité il ne connait pas forcément TOUTE l'histoire)

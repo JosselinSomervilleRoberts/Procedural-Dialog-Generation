@@ -26,7 +26,7 @@ class Lieu(Complement):
         return s
         
         
-    def toText(self, locuteur=None, interlocuteur=None, useTranslation=True, useCorrection=True):
+    def toText(self, locuteur=None, interlocuteur=None, date=None, useTranslation=True, useCorrection=True):
         # Si il existe des dénomitations définies pour le Lieu, on les utilises
         exp = Complement.toText(self, locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
         if exp != "COMPLEMENT NON DEFINI": return exp

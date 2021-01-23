@@ -21,14 +21,16 @@ idCounter = 1
 # Classe abstraite qui définit la structure des coeurs et la manière dont ils s'enchaînent
 class Coeur:
   
-  def __init__(self, liens=None, infos=None):
+  def __init__(self, liens=None, infos=None, ton=None):
     global idCounter
     self.id = idCounter
     idCounter+= 1
     
     self.mode = "indicatif"
     self.temps = "présent"
+    self.date = None
     
+    self.ton = None
     self.liens = liens
     if self.liens is None:
       self.liens = []
@@ -73,8 +75,9 @@ class Coeur:
       coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT_LIEU)
       self.liens.append(Lien(coeur, COMPLEMENT_LIEU, importance=importance))
       
-  def ajouterMoment(self, complement=None, name="", moment=None, rapport="", importance=1):
-      if complement is None: complement = Moment(name=name, moment=moment, rapport=rapport)
+  def ajouterMoment(self, complement=None, name="", moment=None, rapport="", date=None, importance=1):
+      if complement is None: complement = Moment(name=name, moment=moment, rapport=rapport, date=date)
+      if not(date is None): self.date = date # On ajoute le temps
       coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT_TEMPS)
       self.liens.append(Lien(coeur, COMPLEMENT_TEMPS, importance=importance))
       
@@ -88,6 +91,10 @@ class Coeur:
       self.liens.append(lien)
       if lien.typeLien == OBJECTIF:
           lien.coeur.mode = "subjonctif"
+      if lien.typeLien == SUITE or lien.typeLien == CONSEQUENCE or lien.typeLien == CAUSE:
+          if not(self.date is None) and lien.coeur.date is None: lien.coeur.date = self.date
+      
+      print(self.id, "(", self.date, ")", "----" + str(lien.typeLien) + "---->", lien.coeur.id, "(", self.date, ")")
 
 
 
@@ -112,11 +119,11 @@ class CoeurComplement(Coeur) :
         return s
     
 
-    def toText(self, locuteur=None, interlocuteur=None, autoriserRadoter=True, useTranslation=True, useCorrection=True): 
-        phrase = self.complement.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)
+    def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, autoriserRadoter=True, useTranslation=True, useCorrection=True):
+        phrase = self.complement.toText(locuteur=locuteur, interlocuteur=interlocuteur, date=date, useTranslation=useTranslation, useCorrection=useCorrection)
         
         probaRadoter = 0.5*autoriserRadoter
         if random.random() <= probaRadoter:
-            return self.parent.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " " + phrase
+            return self.parent.toText(locuteur=locuteur, interlocuteur=interlocuteur, date=date, premierCoeur=True, useTranslation=useTranslation, useCorrection=useCorrection) + " " + phrase
             
         return phrase

@@ -148,8 +148,8 @@ class Personnage(Objet):
       if name == "lancelot": self = Personnage.__init__(self, dico={"nom":"Du Lac", "prenom":"Lancelot"})
       if name == "mickey": self = Personnage.__init__(self, dico={"nom":"Mouse", "prenom":"Mickey"})
       if name == "joe": self = Personnage.__init__(self, dico={"nom":"Dalton", "prenom":"Joe"})
-      if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=0)]})
-      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=0)]})
+      if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=10)]})
+      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10)]})
     else:
       Objet.__init__(self, dico=dico) # A RAJOUTER dico EN ARGUMENT
       self.setCarac(CaracChiffree(name="mysterieux", value=5), overWrite=False)

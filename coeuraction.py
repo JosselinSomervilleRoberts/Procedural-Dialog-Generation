@@ -35,7 +35,26 @@ class CoeurAction(Coeur) :
       return s
 
     
-  def toText(self, locuteur=None, interlocuteur=None, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
+  def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
+    # On gère les temps
+    print("self.date=", self.date)
+    print("date=", date)
+    if self.mode != "subjonctif":
+        self.mode = "indicatif"
+        if self.date is None or date is None:
+            self.temps = "présent"
+        else:
+            if self.date.date() == date.date():
+                self.temps = "présent"
+            elif self.date.date() < date.date():
+                if premierCoeur:
+                    self.temps = "imparfait"
+                else:
+                    self.temps = "passé-composé"
+            else:
+                self.temps = "futur-simple"
+                
+        
     if not(type(self.sujet) == list):
       self.sujet = [self.sujet]
     if locuteur is None : locuteur = Personnage()
