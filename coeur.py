@@ -73,18 +73,23 @@ class Coeur:
   def ajouterLieu(self, complement=None, name="", lieu=None, rapport="", importance=1):
       if complement is None: complement = Lieu(name=name, lieu=lieu, rapport=rapport)
       coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT_LIEU)
-      self.liens.append(Lien(coeur, COMPLEMENT_LIEU, importance=importance))
+      lien = Lien(coeur, COMPLEMENT_LIEU, importance=importance)
+      if not(self.date is None) and lien.coeur.date is None: lien.coeur.date = self.date
+      self.liens.append(lien)
       
   def ajouterMoment(self, complement=None, name="", moment=None, rapport="", date=None, importance=1):
       if complement is None: complement = Moment(name=name, moment=moment, rapport=rapport, date=date)
       if not(date is None): self.date = date # On ajoute le temps
       coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT_TEMPS)
+      if not(date is None): coeur.date = date
       self.liens.append(Lien(coeur, COMPLEMENT_TEMPS, importance=importance))
       
   def ajouterManiere(self, complement=None, name="", importance=1):
       if complement is None: complement = Maniere(name=name)
       coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT_MANIERE)
-      self.liens.append(Lien(coeur, COMPLEMENT_MANIERE, importance=importance))
+      lien = Lien(coeur, COMPLEMENT_MANIERE, importance=importance)
+      if not(self.date is None) and lien.coeur.date is None: lien.coeur.date = self.date
+      self.liens.append(lien)
       
   
   def ajouterLien(self, lien):
@@ -94,7 +99,7 @@ class Coeur:
       if lien.typeLien == SUITE or lien.typeLien == CONSEQUENCE or lien.typeLien == CAUSE:
           if not(self.date is None) and lien.coeur.date is None: lien.coeur.date = self.date
       
-      print(self.id, "(", self.date, ")", "----" + str(lien.typeLien) + "---->", lien.coeur.id, "(", self.date, ")")
+      #print(self.id, "(", self.date, ")", "----" + str(lien.typeLien) + "---->", lien.coeur.id, "(", self.date, ")")
 
 
 

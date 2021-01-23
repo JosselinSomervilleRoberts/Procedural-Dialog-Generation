@@ -37,8 +37,6 @@ class CoeurAction(Coeur) :
     
   def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
     # On gère les temps
-    print("self.date=", self.date)
-    print("date=", date)
     if self.mode != "subjonctif":
         self.mode = "indicatif"
         if self.date is None or date is None:

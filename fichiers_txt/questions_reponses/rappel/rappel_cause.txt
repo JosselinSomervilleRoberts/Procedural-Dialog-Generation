@@ -1,2 +1,2 @@
-Donc, à cause de (), [].
-Si j'ai bien compris, parce que (), [].
+Donc, à cause de [2], [1].
+Si j'ai bien compris, parce que [2], [1].

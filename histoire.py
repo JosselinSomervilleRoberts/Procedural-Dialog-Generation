@@ -14,6 +14,9 @@ from psclib.coeuraction import CoeurAction
 from psclib.coeurdescriptif import CoeurDescriptif
 from psclib.coeur import CoeurComplement
 
+import re
+from psclib.diversifieur import cong
+
 STOP = -3
 dictExp = {}
 
@@ -54,7 +57,7 @@ def buildQuestionsReponses():
     
     
     
-def getExpression(key, typeLien, used=None):
+def getExpression(key, typeLien, dateCoeur=None, date=None, used=None):
     global dictExp
     if len(dictExp.keys()) == 0: buildQuestionsReponses()
     if used is None: used = []
@@ -68,34 +71,87 @@ def getExpression(key, typeLien, used=None):
         if not(exp in used):
             liste_exps.append(exp)
 
+    exp = None
     if len(liste_exps) > 0: # Si il y a des expressions que l'on a pas encore utilisées
         choix = random.choice(liste_exps)
         used.append(choix)
-        return choix
+        exp = choix
     else: # Si on a déja tout utilisé
-        return random.choice(dictExp[key][typeLien])
+        exp = random.choice(dictExp[key][typeLien])
+    
+    
+    # On conjugue éventuellement les [...]
+    c = re.search(r'\[[^0-9]*\]', exp)
+    while not(c is None):
+      v = c.group(0)[1:-1] # On trouve le verbe
+      temps = None
+      
+      if dateCoeur is None or date is None:
+          temps = "imparfait"
+      else:
+            if dateCoeur.date() == date.date():
+                temps = "passé-composé"
+            elif dateCoeur.date() < date.date():
+                temps = "passé-composé"
+            else:
+                temps = "futur-simple"
+            
+      v_conj = cong(v, "indicatif", temps, 3).replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","").replace("qu\'", "").replace("que ", "")
+      exp = exp.replace("[" + v + "]", v_conj)
+      c = re.search(r'\[[^0-9]*\]', exp)
+      
+      
+    # On conjugue éventuellement les {...}
+    c = re.search(r'\{.*\}', exp)
+    while not(c is None):
+      v = c.group(0)[1:-1] # On trouve le verbe
+      temps = None
+      
+      if dateCoeur is None or date is None:
+          temps = "présent"
+      else:
+            if dateCoeur.date() == date.date():
+                temps = "imparfait"
+            elif dateCoeur.date() < date.date():
+                temps = "imparfait"
+            else:
+                temps = "futur-simple"
+            
+      v_conj = cong(v, "indicatif", temps, 3).replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","").replace("qu\'", "").replace("que ", "")
+      exp = exp.replace("{" + v + "}", v_conj)
+      c = re.search(r'\{.*\}', exp)
+      
+      
+    # On remplace les trucs du genre "ce est" par "c'est"
+    c = re.search(r'[Cc]e [eé]', exp)
+    while not(c is None):
+        index = c.span()[0] + 1
+        exp = exp[:index] + "'" + exp[index+2:]
+        c = re.search(r'[Cc]e [eé]', exp)
+    
+    return exp
 
 
-def demanderLien(typeLien, used=None):
-  return getExpression("demander", typeLien, used)
+def demanderLien(typeLien, dateCoeur=None, date=None, used=None):
+  return getExpression("demander", typeLien, dateCoeur, date, used)
 
-def demanderAvecPhraseLien(typeLien, used=None):
-  return getExpression("demander_avec_phrase", typeLien, used)
+def demanderAvecPhraseLien(typeLien, dateCoeur=None, date=None, used=None):
+  return getExpression("demander_avec_phrase", typeLien, dateCoeur, date, used)
 
-def nePasSavoirLien(typeLien, used=None):
-  return getExpression("ne_pas_savoir", typeLien, used)
+def nePasSavoirLien(typeLien, dateCoeur=None, date=None, used=None):
+  return getExpression("ne_pas_savoir", typeLien, dateCoeur, date, used)
 
-def rappel(typeLien, used=None):
-  return getExpression("rappel", typeLien, used)
+def rappel(typeLien, dateCoeur=None, date=None, used=None):
+  return getExpression("rappel", typeLien, dateCoeur, date, used)
 
-def motsLiasonsContinuer(typeLien, used=None):
-  return getExpression("mots_liaisons_continuer", typeLien, used)
+def motsLiasonsContinuer(typeLien, dateCoeur=None, date=None, used=None):
+  return getExpression("mots_liaisons_continuer", typeLien, dateCoeur, date, used)
 
-def motsLiasonsRecommencer(typeLien, used=None):
-  return getExpression("mots_liaisons_recommencer", typeLien, used)
+def motsLiasonsRecommencer(typeLien, dateCoeur=None, date=None, used=None):
+  return getExpression("mots_liaisons_recommencer", typeLien, dateCoeur, date, used)
 
-def retourArriere(typeLien, used=None):
-  return getExpression("retour_arriere", typeLien, used)
+def retourArriere(typeLien, dateCoeur=None, date=None, used=None):
+  return getExpression("retour_arriere", typeLien, dateCoeur, date, used)
 
 
 
@@ -437,11 +493,11 @@ class Histoire:
                   
               
               if random.random() <= probaRecommencer: # On recommence une phrase
-                  debutPhrase += ". " + motsLiasonsRecommencer(lien.typeLien, expUsed) + " " + lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
+                  debutPhrase += ". " + motsLiasonsRecommencer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " " + lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
                   nbCoeursDansLaPhrase = 1
                   phraseRecommencee = True
               else: # On continue dans la même phrase
-                  debutPhrase += " " + motsLiasonsContinuer(lien.typeLien, expUsed) + " " + lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
+                  debutPhrase += " " + motsLiasonsContinuer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " " + lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
                   nbCoeursDansLaPhrase += 1
                   
               # Pour chaque précision, si la précision se poursuivait, on ne la suivra pas car on va suivre lienChoisi
@@ -484,20 +540,20 @@ class Histoire:
           # Comme la définition des liens est faite par ordre de priorité, on peut simplement faire une comparaison sur le type
           if lastLien.typeLien >= lienChoisi.typeLien:
               debutPhrase += ". "
-              retour = retourArriere(lienChoisi.typeLien, expUsed)
+              retour = retourArriere(lienChoisi.typeLien, dateCoeur=lienChoisi.coeur.date, date=date, used=expUsed)
               phrase1 = coeurActuel.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
-              retour = retour.replace("[]", phrase1)
+              retour = retour.replace("[1]", phrase1)
               debutPhrase += retour + " "
           else:
-              debutPhrase += ". " + motsLiasonsRecommencer(lienChoisi.typeLien, expUsed) + " "
+              debutPhrase += ". " + motsLiasonsRecommencer(lienChoisi.typeLien, dateCoeur=lienChoisi.coeur.date, date=date, used=expUsed) + " "
           nbCoeursDansLaPhrase = 1
       else: # On a pas recommencé de phrase et il n'y a eu aucune précision.
           probaRecommencer = (nbCoeursDansLaPhrase>1)*(0.2 + 0.002*len(debutPhrase.split(".")[-1]) + 0.1*nbCoeursDansLaPhrase) # 20% + 0.2% par caractère + 10% par liens déja dans la phrase
           if random.random() <= probaRecommencer:
-              debutPhrase += ". " + motsLiasonsRecommencer(lienChoisi.typeLien, expUsed) + " "
+              debutPhrase += ". " + motsLiasonsRecommencer(lienChoisi.typeLien, dateCoeur=lienChoisi.coeur.date, date=date, used=expUsed) + " "
               nbCoeursDansLaPhrase = 1
           else:
-              debutPhrase += " " + motsLiasonsContinuer(lienChoisi.typeLien, expUsed) + " "
+              debutPhrase += " " + motsLiasonsContinuer(lienChoisi.typeLien, dateCoeur=lienChoisi.coeur.date, date=date, used=expUsed) + " "
               nbCoeursDansLaPhrase += 1
               
       return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienChoisi.coeur, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
@@ -509,15 +565,15 @@ class Histoire:
             d = random.choice(liensADemander)
             coeurCurrent, lien = d[0], d[1]
             liensADemander.remove(d)
-            demande = demanderAvecPhraseLien(lien.typeLien, expUsed)
-            if "[]" in demande:
+            demande = demanderAvecPhraseLien(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed)
+            if "[1]" in demande:
                 phrase = coeurCurrent.toText(interlocuteur, locuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
-                demande = demande.replace("[]", phrase)
+                demande = demande.replace("[1]", phrase)
                 
             # On ajoute au texte
             phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
             phrasesPrecedentes += "\n" + interlocuteur.imprimer(demande, useTranslation=useTranslation, useCorrection=useCorrection)
-            debutPhrase = motsLiasonsRecommencer(lien.typeLien, expUsed) + " "
+            debutPhrase = motsLiasonsRecommencer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lien.coeur, reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
             
         elif len(liensAExplorer) > 0:
@@ -529,16 +585,16 @@ class Histoire:
             lienExploration = sorted(lien.coeur.liens, key=lambda x: x.importance) [-1]
             # Pour rappel, voici à quoi ressemble l'architecture : 
             # coeurCurrent (déja raconté)   -----lien----->   lien.coeur (déja raconté)   -----lienExploration----->   lienExploration.coeur (PAS ENCORE RACONTE)
-            rappelExplo = rappel(lien.typeLien, expUsed)
+            rappelExplo = rappel(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed)
             phrase1 = coeurCurrent.toText(interlocuteur, locuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
             phrase2 = lien.coeur.toText(interlocuteur, locuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
-            rappelExplo = rappelExplo.replace("[]", phrase1).replace("()", phrase2)
-            demande = rappelExplo + " " + demanderLien(lienExploration.typeLien)
+            rappelExplo = rappelExplo.replace("[1]", phrase1).replace("[2]", phrase2)
+            demande = rappelExplo + " " + demanderLien(lienExploration.typeLien, dateCoeur=lienExploration.coeur.date, date=date, used=expUsed)
             
             # On ajoute au texte
             phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
             phrasesPrecedentes += "\n" + interlocuteur.imprimer(demande, useTranslation=useTranslation, useCorrection=useCorrection)
-            debutPhrase = motsLiasonsRecommencer(lienExploration.typeLien, expUsed) + " "
+            debutPhrase = motsLiasonsRecommencer(lienExploration.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
             
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienExploration.coeur, reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
             

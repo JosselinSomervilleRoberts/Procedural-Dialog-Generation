@@ -1,1 +1,1 @@
-Alors pour résumer, [] donc ().
+Alors pour résumer, [1] donc [2].

@@ -1,2 +1,2 @@
-Et c'est parce que [] que
-Vu que [],
+Et c'est parce que [1] que
+Vu que [1],

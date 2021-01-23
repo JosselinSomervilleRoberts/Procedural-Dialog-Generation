@@ -31,7 +31,6 @@ class Moment(Complement):
         
     def toText(self, locuteur=None, interlocuteur=None, date=None, useTranslation=True, useCorrection=True):
         # Si on a définit la date
-        print("moment to text")
         if not(self.date is None) and not(date is None):
             exp = None
             delta = self.date.date() - date.date()
@@ -40,7 +39,6 @@ class Moment(Complement):
                 val, lib = couple[0], couple[1]
                 if exp is None:
                     k = int(abs(delta) /val)
-                    print(abs(delta), val, k)
                     if k == 1: lib = lib[:-1] # On enlève le s
                     if k > 1:
                         exp = "il y a " + str(k) + " " + lib.replace("moi", "mois")

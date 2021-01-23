@@ -1,2 +1,2 @@
-Et après que [] ?
-Tu as dit que [], et ensuite il s'est passé quoi ?
+Et après que [1] ?
+Tu as dit que [1], et ensuite il [se passer] quoi ?
