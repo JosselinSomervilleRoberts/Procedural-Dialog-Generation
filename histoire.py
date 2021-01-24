@@ -166,6 +166,9 @@ class Histoire:
     self.personnes = personnes # ___, personnages évoqués dans l'histoire (c'est là pour le moment, à voir si ça sera utile ou non)
     self.conteur = conteur # ___, Narrateur originel de l'histoire, pour différencier les histoires personnelles des histoires rapportées
     
+    self.liensAExplorer = []
+    self.liensADemander = []
+    
     
 
   def getGraphDialog(self, locuteur, interlocuteur, dot=None, index=1, coeurCurrent=None, indexParent=1):
@@ -389,17 +392,45 @@ class Histoire:
     
     # Pour avoir où placer le CCT
     indexCCT = len(debutPhrase)
-      
-    # Si on commence à raconter l'histoire, on commence par le début
-    # Il faut créer l'histoire dans la mémoire de l'interlocuteur
-    if coeurActuel is None:
-        coeurActuel = self.head
-        #interlocuteur.
+    
     
     # Si il n'y a pas encore de DEMANDE ou D'EXPLORATION, alors les listes sont vides
     if liensAExplorer is None: liensAExplorer = []
     if liensADemander is None: liensADemander = []
     if expUsed is None: expUsed = []
+    
+      
+    # Si on commence à raconter l'histoire, on commence par le début
+    # Il faut créer l'histoire dans la mémoire de l'interlocuteur
+    if coeurActuel is None:
+        coeurActuel = self.head
+        indexHist = interlocuteur.ajouterHistoire(self.titre, head = self.head, ton = self.ton, personnes = self.personnes, conteur = locuteur)
+        
+        texteCoeur = coeurActuel.toText(locuteur, interlocuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
+        if texteCoeur[-1] == ",": texteCoeur = texteCoeur[:-1]
+        phraseStart = "Je t'ai raconté que " + texteCoeur + " ?"
+        phrasesPrecedentes = locuteur.imprimer(phraseStart, useTranslation=useTranslation, useCorrection=useCorrection)
+        
+        if indexHist == -1:
+            phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non, racontes !", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+        else:
+            conteur = interlocuteur.histoires[indexHist].conteur
+            if conteur == locuteur:
+                phrasesPrecedentes += "\n" + interlocuteur.imprimer("Oui tu m'en as déja parlé", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+            else:
+                phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non mais " + conteur.toText(interlocuteur, locuteur, useTranslation, useCorrection) + " m'a déja raconté.", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+            
+            liensAExplorer += interlocuteur.histoires[indexHist].liensAExplorer
+            liensADemander += interlocuteur.histoires[indexHist].liensADemander
+            if len(liensAExplorer) > 0 or len(liensADemander) > 0:
+                phrasesPrecedentes += "\n" + interlocuteur.imprimer("Mais je ne sais pas encore tout de cette histoire, notamment, ", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+            
+            return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase="", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=useTranslation, useCorrection=useCorrection)
+        
+        return self.toText(locuteur, interlocuteur, date=date, coeurActuel=self.head, reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase="Alors, ", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=useTranslation, useCorrection=useCorrection)
+            
+            
+    
     
     """
     # Mots pour continuer une phrase
@@ -571,7 +602,8 @@ class Histoire:
                 demande = demande.replace("[1]", phrase)
                 
             # On ajoute au texte
-            phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
+            if len(debutPhrase) > 0:
+                phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
             phrasesPrecedentes += "\n" + interlocuteur.imprimer(demande, useTranslation=useTranslation, useCorrection=useCorrection)
             debutPhrase = motsLiasonsRecommencer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lien.coeur, reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
@@ -592,14 +624,17 @@ class Histoire:
             demande = rappelExplo + " " + demanderLien(lienExploration.typeLien, dateCoeur=lienExploration.coeur.date, date=date, used=expUsed)
             
             # On ajoute au texte
-            phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
+            if len(debutPhrase) > 0:
+                phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
             phrasesPrecedentes += "\n" + interlocuteur.imprimer(demande, useTranslation=useTranslation, useCorrection=useCorrection)
             debutPhrase = motsLiasonsRecommencer(lienExploration.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
             
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienExploration.coeur, reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
             
         else: # Il n'y a pas de liens a demander ni explorer
-            return phrasesPrecedentes + "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
+            if len(debutPhrase) > 0:
+                phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
+            return phrasesPrecedentes
      
       
       

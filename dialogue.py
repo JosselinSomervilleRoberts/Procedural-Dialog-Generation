@@ -45,12 +45,16 @@ def switcheroo(a,b) : #Echange aléatoirement a et b (peu importe ce que sont a 
 
 #------------- Fonction annexe
 def intersection(histsA, histsB) : #On part de deux listes d'objets Histoire A et B, et on construit l'intersection, le reste de A et le reste B
-  resteA, resteB, intersection = [], [], []
+  resteA, resteB, intersection, intersectionDif = [], [], [], []
   for a in histsA : #construction de l'intersection et du reste de histsA
     isInB = False
     for b in histsB :
       if a.titre==b.titre :
-        intersection.append(a)
+        print(a.conteur, b.conteur)
+        if a.conteur == b.conteur:
+            intersection.append(a)
+        else:
+            intersectionDif.append(a)
         isInB = True
     if not (isInB) :
       resteA.append(a)
@@ -61,7 +65,8 @@ def intersection(histsA, histsB) : #On part de deux listes d'objets Histoire A e
         isInI = True
     if not (isInI) :
       resteB.append(b)
-  return resteA, resteB, intersection
+      
+  return resteA, resteB, intersection, intersectionDif
 
 #------------- Les accroches, pour introduire le dialogue -------------- IL FAUT FAIRE L'ETAPE DE PRESENTATION ELEMENTAIRE
 def accroche0(p1, p2, useTranslation=True, useCorrection=True) : #Les deux personnages ne se connaissent pas -> Chacun se crée une représentation de l'autre
@@ -105,10 +110,13 @@ def transition(useTranslation=True, useCorrection=True) :
 
 #------------- Détermination du locuteur et de l'interlocuteur / du cas où les personnages n'ont rien à raconter (pas d'histoire / histoires connues par les deux)
 def quiparle(p1,p2) :
-  hists1, hists2, intersect = intersection(p1.histoires, p2.histoires)
+  hists1, hists2, intersect, intersectionDif = intersection(p1.histoires, p2.histoires)
   if len(hists1)==0 :
     if len(hists2)==0 : #Les deux personnages n'ont rien à dire
-      return None, None #Cas particulier
+      if len(intersectionDif) > 0:
+          return p1, p2
+      else:
+          return None, None #Cas particulier
     else : #p1 n'a rien à dire, mais p2 si -> p2 est le locuteur (1ère position)
       return p2, p1
   else :
@@ -126,8 +134,12 @@ def raconter(loc, interloc, date=None, useTranslation=True, useCorrection=True) 
 
 #------------- #Fonction de sélection de l'histoire à raconter, qui n'est pas dans la liste des histoires connues par l'interlocuteur
 def pickStory(loc, interloc) :
-  resteLoc, resteInterloc, intersect = intersection(loc.histoires, interloc.histoires) #On prend les histoires que l'interlocuteur ne connaît pas
-  return resteLoc[random.randrange(len(resteLoc))] #On en prend une au hasard
+  resteLoc, resteInterloc, intersect, intersectionDif = intersection(loc.histoires, interloc.histoires) #On prend les histoires que l'interlocuteur ne connaît pas
+  if len(resteLoc) > 0:
+      return resteLoc[random.randrange(len(resteLoc))] #On en prend une au hasard
+  else:
+      if len(intersectionDif) > 0: return intersectionDif[random.randrange(len(intersectionDif))]
+      return None
 
 #------------- #Fonction de réaction à la fin d'une histoire
 def reaction(histoire,interloc) :

@@ -9,7 +9,7 @@ from psclib.diversifieur import correct, diversifier, get_syn
 from psclib.caracteristique import CaracChiffree
 import random
 
-class Objet:
+class Objet(object):
 
   def __init__(self, dico=None):
     self.id = None
@@ -152,9 +152,10 @@ class Personnage(Objet):
       if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10)]})
     else:
       Objet.__init__(self, dico=dico) # A RAJOUTER dico EN ARGUMENT
-      self.setCarac(CaracChiffree(name="mysterieux", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="bavard", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="curiosite", value=5), overWrite=False)
+      self.setCarac(CaracChiffree(name="politesse", value=5), overWrite=False)
+      self.setCarac(CaracChiffree(name="compassion", value=5), overWrite=False)
       self.nom = None
       self.prenom = None
       self.id = None
@@ -260,3 +261,25 @@ class Personnage(Objet):
           if not(h is None) and not(h.titre is None) and h.titre == titre:
               return i
       return -1
+  
+    
+  def ajouterHistoire(self, titre, head = None, ton = None, personnes = None, conteur = None):
+      """Ajoute l'histoire au personnage s'il ne la connait pas déja et renvoie -1 dans ce cas
+      S'il la connait déja ne l'ajoute pas et renvoie sont index"""
+      from psclib.histoire import Histoire
+      from copy import copy
+      
+      index = self.indexHistoire(titre)
+      
+      if index == -1:
+          headCopied = copy(head)
+          h = Histoire(head = headCopied, ton = ton, titre = titre, personnes = personnes, conteur = conteur)
+          self.histoires.append(h)
+          return -1
+      return index
+  
+    
+  def creerHistoire(self, hist):
+      if not(hist is None) and self.indexHistoire(hist.titre) == -1:
+          hist.conteur = self
+          self.histoires.append(hist)

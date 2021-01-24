@@ -21,10 +21,14 @@ idCounter = 1
 # Classe abstraite qui définit la structure des coeurs et la manière dont ils s'enchaînent
 class Coeur:
   
-  def __init__(self, liens=None, infos=None, ton=None):
+  def __init__(self, liens=None, infos=None, ton=None, id=None):
     global idCounter
-    self.id = idCounter
-    idCounter+= 1
+    
+    if id is None:
+        self.id = idCounter
+        idCounter+= 1
+    else:
+        self.id = id
     
     self.mode = "indicatif"
     self.temps = "présent"
