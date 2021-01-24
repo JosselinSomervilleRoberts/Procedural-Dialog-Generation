@@ -68,4 +68,11 @@ class Moment(Complement):
         # Sinon on crée une expression à partir de l'OBJET lieu et de son rapport (sur, à coté, ...)
         rapport = self.rapport
         if rapport == "": rapport = "alors"
+        print("moment:", self.moment, " /self.date:", self.date, "date:", date)
+        
+        """
+        if self.moment is None:
+            return ""
+        """
+        
         return rapport + " que " + self.moment.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection)

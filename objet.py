@@ -9,10 +9,17 @@ from psclib.diversifieur import correct, diversifier, get_syn
 from psclib.caracteristique import CaracChiffree, Caracteristique
 import random
 
+idCounter = 1
+
+
+
 class Objet(object):
 
   def __init__(self, dico=None):
-    self.id = None
+    global idCounter
+    self.id = idCounter
+    idCounter+= 1
+    
     self.lib = None
     self.proprio = None
     self.caracs = []
@@ -28,6 +35,13 @@ class Objet(object):
         self.caracs = dico["caracs"]
       if "noms" in dico:
         self.noms = dico["noms"]
+        
+        
+  def __eq__(self, other):
+      if other is None: return False
+      if not(isinstance(other, Objet)): return False
+      return self.id == other.id
+    
     
   def __str__(self):
     return str([self.id,self.proprio,self.caracs,self.noms])
@@ -80,7 +94,7 @@ class Objet(object):
 
     listePossessifs = ["mon", "ton", "son", "mes", "tes", "leurs"]
     usePossessif = False
-    if personne % 3 != 0:
+    if personne != 3 and personne != 6:
       usePossessif = True
 
     if not(self.noms is None) and len(self.noms) > 0 and random.random() and self in interlocuteur.objets and random.random() >= 1/(1+len(self.noms)):
@@ -149,7 +163,7 @@ class Personnage(Objet):
       if name == "mickey": self = Personnage.__init__(self, dico={"nom":"Mouse", "prenom":"Mickey"})
       if name == "joe": self = Personnage.__init__(self, dico={"nom":"Dalton", "prenom":"Joe"})
       if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=10)]})
-      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10)]})
+      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=0)]})
     else:
       Objet.__init__(self, dico=dico) # A RAJOUTER dico EN ARGUMENT
       self.setCarac(CaracChiffree(name="bavard", value=5), overWrite=False)
@@ -157,6 +171,7 @@ class Personnage(Objet):
       self.setCarac(CaracChiffree(name="politesse", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="compassion", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="hésitation", value=10), overWrite=False)
+      self.setCarac(CaracChiffree(name="memoire", value=0), overWrite=False)
       
       self.ticsLangages = {"": 1, "genre": 2, "wesh,": 1, "en fait": 1, "du coup": 0}
       
@@ -204,6 +219,13 @@ class Personnage(Objet):
       self.histoires = [] #Liste d'objets Histoire, représente les histoires connues par le personnage, peu importe qu'il soit le narrateur ou non
 
 
+
+  def __eq__(self, other):
+      if other is None: return False
+      if not(isinstance(other, Personnage)): return False
+      return self.prenom == other.prenom and self.nom == other.nom
+  
+    
   def getTic(self, interlocuteur=None, ajouterTic=True):
       s = ""
       
@@ -296,6 +318,8 @@ class Personnage(Objet):
       
       if index == -1:
           headCopied = copy(head)
+          headCopied.liens = []
+          headCopied.date = None
           h = Histoire(head = headCopied, ton = ton, titre = titre, personnes = personnes, conteur = conteur)
           self.histoires.append(h)
           return -1

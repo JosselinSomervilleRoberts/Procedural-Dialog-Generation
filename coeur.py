@@ -72,6 +72,12 @@ class Coeur:
     return correct(s)
 
 
+  def __eq__(self, other):
+      if other is None: return False
+      if not(isinstance(other, Coeur)): return False
+      return self.id == other.id
+
+
   def ajouterComplement(self, complement=None, name="", importance=1):
       if complement is None: complement = Complement(name=name)
       coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT)
@@ -108,7 +114,13 @@ class Coeur:
       # Pour la concordance des temps
       if lien.typeLien == OBJECTIF:
           lien.coeur.mode = "subjonctif"
-      if lien.typeLien == SUITE or lien.typeLien == CONSEQUENCE or lien.typeLien == CAUSE:
+      elif lien.typeLien == COMPLEMENT_TEMPS:
+          if not(lien.coeur.date is None):
+              self.date = lien.coeur.date # On ajoute le temps
+          else:
+              print("PROBLEME DATE")
+      #if lien.typeLien == SUITE or lien.typeLien == CONSEQUENCE or lien.typeLien == CAUSE:
+      else:
           if not(self.date is None) and lien.coeur.date is None: lien.coeur.date = self.date
           
          

@@ -22,7 +22,7 @@ class Type:
 class Caracteristique:
 
   def getAvailable():
-    return ["politesse", "beaute", "compassion", "couleur", "taille", "tailleH", "metier", "ageH", "mysterieux", "bavard", "curiosite", "colere", "hésitation"]
+    return ["politesse", "beaute", "compassion", "couleur", "taille", "tailleH", "metier", "ageH", "mysterieux", "bavard", "curiosite", "colere", "hésitation", "memoire"]
 
   def getAlike(s):
     """ Renvoie toutes les caractéristiques qui contiennent s dans leur nom"""
@@ -48,6 +48,7 @@ class Caracteristique:
       if name == "politesse" : Caracteristique.__init__(self, "poli",[liste_types["caractere"]])
       if name == "compassion" : Caracteristique.__init__(self, "compassionnel",[liste_types["caractere"]])
       if name == "hésitation" : Caracteristique.__init__(self, "hésitant",[liste_types["caractere"]])
+      if name == "memoire" : Caracteristique.__init__(self, "mémoire",[liste_types["caractere"]])
     else:
       self.lib = lib # adjectif de la caracterisitque (par exemple beau) : str
       self.keepLib = keepLib # Est ce qu'on affiche le libellé apres le facteur d echelle : bool

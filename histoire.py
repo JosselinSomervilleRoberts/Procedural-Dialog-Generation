@@ -13,6 +13,7 @@ from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMEN
 from psclib.coeuraction import CoeurAction
 from psclib.coeurdescriptif import CoeurDescriptif
 from psclib.coeur import CoeurComplement
+from copy import copy, deepcopy
 
 import re
 from psclib.diversifieur import cong
@@ -265,7 +266,7 @@ class Histoire:
           coeurs1 = coeurs1[1:]
           if coeur.id in [c.id for c in coeurs2]:
               inBoth.append(coeur)
-              indexIn2 = coeurs2.index(coeur)
+              indexIn2 = [c.id for c in coeurs2].index(coeur.id)
               coeurs2 = coeurs2[:indexIn2] + coeurs2[indexIn2 + 1:]
           else:
               in1butNot2.append(coeur)
@@ -274,6 +275,9 @@ class Histoire:
       diff["in1butNot2"] = in1butNot2
       diff["in2butNot1"] = in2butNot1
       
+      print("\n\nEN COMMUN")
+      print(inBoth)
+      print("\n\n")
       return diff
           
           
@@ -442,7 +446,11 @@ class Histoire:
 
 
 
-  def toText(self, locuteur, interlocuteur, date=None, coeurActuel=None, reponse=False, phrasesPrecedentes="", debutPhrase="", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=True, useCorrection=True): 
+  def toText(self, locuteur, interlocuteur, date=None, coeurActuel=None, histInterlocuteur=None, coeurInterlocuteur=None, 
+             reponse=False, phrasesPrecedentes="", debutPhrase="", nbCoeursDansLaPhrase=0, expUsed=None,
+             liensAExplorer=None, liensADemander=None, 
+             useTranslation=True, useCorrection=True): 
+      
     global STOP
     
     # Pour avoir où placer le CCT
@@ -460,13 +468,15 @@ class Histoire:
     if coeurActuel is None:
         coeurActuel = self.head
         indexHist = interlocuteur.ajouterHistoire(self.titre, head = self.head, ton = self.ton, personnes = self.personnes, conteur = locuteur)
+        histInterlocuteur = interlocuteur.histoires[indexHist]
+        coeurInterlocuteur = histInterlocuteur.head
         
         texteCoeur = coeurActuel.toText(locuteur, interlocuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
         if texteCoeur[-1] == ",": texteCoeur = texteCoeur[:-1]
         phraseStart = "Je t'ai raconté que " + texteCoeur + " ?"
         phrasesPrecedentes = locuteur.imprimer(phraseStart, useTranslation=useTranslation, useCorrection=useCorrection)
         
-        if indexHist == -1:
+        if True:#indexHist == -1:
             phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non, racontes !", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
         else:
             conteur = interlocuteur.histoires[indexHist].conteur
@@ -480,9 +490,15 @@ class Histoire:
             if len(liensAExplorer) > 0 or len(liensADemander) > 0:
                 phrasesPrecedentes += "\n" + interlocuteur.imprimer("Mais je ne sais pas encore tout de cette histoire, notamment, ", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
             
-            return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase="", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=useTranslation, useCorrection=useCorrection)
+            return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
+                               reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase="", nbCoeursDansLaPhrase=0, expUsed=None,
+                               liensAExplorer=None, liensADemander=None,
+                               useTranslation=useTranslation, useCorrection=useCorrection)
         
-        return self.toText(locuteur, interlocuteur, date=date, coeurActuel=self.head, reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=locuteur.getTic(interlocuteur, False) + "alors, ", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=useTranslation, useCorrection=useCorrection)
+        return self.toText(locuteur, interlocuteur, date=date, coeurActuel=self.head, histInterlocuteur=histInterlocuteur,  coeurInterlocuteur=coeurInterlocuteur,
+                           reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=locuteur.getTic(interlocuteur, False) + "alors, ", nbCoeursDansLaPhrase=0, expUsed=None,
+                           liensAExplorer=None, liensADemander=None,
+                           useTranslation=useTranslation, useCorrection=useCorrection)
             
             
     
@@ -523,7 +539,7 @@ class Histoire:
       
       
       # On ajoute des précisions (éventuellement)
-      sommeImportance = min(10,sum([lien.importance for lien in liens]))
+      sommeImportance = max(1,min(10,sum([lien.importance for lien in liens])))
       nbPrecisions = 0
       liensAPreciser = []
       
@@ -557,6 +573,7 @@ class Histoire:
       phraseRecommencee = False
       for i in range(len(liensAPreciser)):
           lien = liensAPreciser[i]
+          vaEtreExplore = False
           
           if lien.typeLien in [COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE]: # C'est un complément
               ajout = locuteur.getTic(interlocuteur) + lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, autoriserRadoter=False, useTranslation=useTranslation, useCorrection=useCorrection)
@@ -564,13 +581,10 @@ class Histoire:
                   # On veut ajouter le CCT au début de la phrase,
                   # Il faut donc retrouver le début de la phrase d'abord
                   debutPhrase = debutPhrase[:indexCCT] + ajout + ", " + debutPhrase[indexCCT:]
-                  #liste_phrases = debutPhrase.split(". ")
-                  #liste_phrases[-1] = ajout + ", " + liste_phrases[-1]
-                  #debutPhrase = ". ".join(liste_phrases) # On réassemble
               else:
-                  debutPhrase += " " + ajout
+                  debutPhrase += " " + ajout                    
           
-          else: # Ce n'est pas un complément
+          else: # Ce n'est pas un complément              
               liensDansLaPhrase += 1
               lastLien = lien
               probaRecommencer = (nbCoeursDansLaPhrase>1)*(0.2 + 0.002*len(debutPhrase.split(".")[-1]) + 0.1*nbCoeursDansLaPhrase) # 20% + 0.2% par caractère + 10% par liens déja dans la phrase
@@ -598,6 +612,24 @@ class Histoire:
                   probaExplorer = 0.05 + 0.15*log(lien.importance) + 0.55*(interlocuteur.getCaracValue(Caracteristique(name="curiosite")) - 2*len(liensAExplorer))
                   if random.random() <= probaExplorer: # Si on explore le lien
                       liensAExplorer.append([coeurActuel, lien])
+                      vaEtreExplorer = True
+                 
+                      
+          # On l'ajoute à la mémoire de l'interlocuteur
+          if not(vaEtreExplore):
+              probaRetenir = (interlocuteur.getCaracValue(Caracteristique(name="memoire")) / 10.) ** (0.33)
+              
+              if random.random() <= probaRetenir:
+                  coeurPrecisionCopy = deepcopy(lien.coeur)
+                  coeurPrecisionCopy.liens = []
+                  if lien.typeLien != COMPLEMENT_TEMPS:
+                      coeurPrecisionCopy.date = None
+                  lienCopy = Lien(coeur=coeurPrecisionCopy, typeLien=lien.typeLien, importance=lien.importance)
+                  coeurInterlocuteur.ajouterLien(lienCopy)
+              #elif lien.typeLien == COMPLEMENT_TEMPS:
+                      
+            
+             
                       
                   
       # Pour chaque lien non précisé, l'interlocuteur peut DEMANDER la précision
@@ -616,13 +648,31 @@ class Histoire:
         
       # Si on arrete l'histoire (i.e. on a choisi lienFin)
       if lienChoisi.coeur is None: # C'est le lien de fin
-        return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
+        return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
+                           phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, expUsed=expUsed,
+                           liensAExplorer=liensAExplorer, liensADemander=liensADemander,
+                           useTranslation=useTranslation, useCorrection=useCorrection)
         #return phrasesPrecedentes + "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
     
-      # Enfin, on ajoute le lienChoisi
+    
+    
+    
+      # =============== Enfin, on ajoute le lienChoisi ===================================== #
+      
+      # On l'ajoute à la mémoire de l'interlocuteur
+      coeurPrincipalCopy = deepcopy(lienChoisi.coeur)
+      coeurPrincipalCopy.liens = []
+      lienChoisiCopy = Lien(coeur=coeurPrincipalCopy, typeLien=lienChoisi.typeLien, importance=lienChoisi.importance)
+      coeurInterlocuteur.ajouterLien(lienChoisiCopy)
+      
+      # On change de coeurActuel pour l'interlocuteur
+      coeurInterlocuteur = coeurPrincipalCopy
+      
+        
+      # On ajoute sont texte
       # (On recommence une phrase pour ça)
       if phraseRecommencee or liensDansLaPhrase >= 1: # On a recommencé ou on a pas recommencé de phrase mais il y a eu des précisions
-          
+ 
           # Si on a dit un truc plus prioritaire, il faut repréciser le coeur. (RETOUR ARRIERE)
           # Comme la définition des liens est faite par ordre de priorité, on peut simplement faire une comparaison sur le type
           if lastLien.typeLien >= lienChoisi.typeLien:
@@ -643,7 +693,12 @@ class Histoire:
               debutPhrase += " " + motsLiasonsContinuer(lienChoisi.typeLien, dateCoeur=lienChoisi.coeur.date, date=date, used=expUsed) + " "
               nbCoeursDansLaPhrase += 1
               
-      return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienChoisi.coeur, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
+      return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienChoisi.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
+                         phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, expUsed=expUsed,
+                         liensAExplorer=liensAExplorer, liensADemander=liensADemander,
+                         useTranslation=useTranslation, useCorrection=useCorrection)
+  
+      # ==================================================================================== #
       
     else: # IL N'Y A PAS DE LIEN
         # L'interlocuteur peut maintenant poser ses questions (DEMANDE puis EXPLORATION)
@@ -662,7 +717,10 @@ class Histoire:
                 phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
             phrasesPrecedentes += "\n" + interlocuteur.imprimer(demande, useTranslation=useTranslation, useCorrection=useCorrection)
             debutPhrase = motsLiasonsRecommencer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
-            return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lien.coeur, reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
+            return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lien.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
+                               reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, expUsed=expUsed,
+                               liensAExplorer=liensAExplorer, liensADemander=liensADemander,
+                               useTranslation=useTranslation, useCorrection=useCorrection)
             
         elif len(liensAExplorer) > 0:
             d = random.choice(liensAExplorer)
@@ -685,7 +743,10 @@ class Histoire:
             phrasesPrecedentes += "\n" + interlocuteur.imprimer(demande, useTranslation=useTranslation, useCorrection=useCorrection)
             debutPhrase = motsLiasonsRecommencer(lienExploration.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
             
-            return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienExploration.coeur, reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, liensAExplorer=liensAExplorer, liensADemander=liensADemander, expUsed=expUsed, useTranslation=useTranslation, useCorrection=useCorrection)
+            return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienExploration.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
+                               reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, expUsed=expUsed,
+                               liensAExplorer=liensAExplorer, liensADemander=liensADemander,
+                               useTranslation=useTranslation, useCorrection=useCorrection)
             
         else: # Il n'y a pas de liens a demander ni explorer
             if len(debutPhrase) > 0:

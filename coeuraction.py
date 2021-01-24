@@ -37,8 +37,11 @@ class CoeurAction(Coeur) :
     # On gère les temps
     if self.mode != "subjonctif":
         self.mode = "indicatif"
+        
         if self.date is None or date is None:
             self.temps = "présent"
+        elif type(self.date) == str:
+            pass
         else:
             if self.date.date() == date.date():
                 self.temps = "présent"
