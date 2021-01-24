@@ -222,6 +222,61 @@ class Histoire:
         dot = self.getGraph(dot=dot, coeurCurrent=lien.coeur, indexParent=lien.coeur.id)
     
     return dot
+
+
+
+  def getCoeurs(self):
+      """Renvoie tous les coeurs de l'histoire"""
+      
+      if self.head is None:
+          return []
+      
+      aTraiter = [self.head]
+      coeurs = []
+      while len(aTraiter) > 0:
+          # On enlève le coeur actuel
+          coeur = aTraiter[0]
+          coeurs.append(coeur)
+          aTraiter = aTraiter[1:]
+          
+          # On ajoute les coeurs liés au coeur actuel
+          aTraiter += [l.coeur for l in coeur.liens]
+          
+      return coeurs
+          
+
+  def getDifferences(self, hist2):
+      diff = {}
+      
+      if not(self.titre == hist2.titre):
+          raise NameError("Deux histoires n'ayant pas le même notre ne peuvent pas être comparées: " + str(self.titre) + " / " + str(hist2.titre))
+
+      diff["conteur"] = self.conteur != hist2.conteur
+      diff["ton"] = self.ton != hist2.ton
+      
+      coeurs1 = self.getCoeurs()
+      coeurs2 = hist2.getCoeurs()
+      
+      # COmparaison des coeurs présents
+      in1butNot2, in2butNot1, inBoth = [], [], []
+      
+      while len(coeurs1) > 0:
+          coeur = coeurs1[0]
+          coeurs1 = coeurs1[1:]
+          if coeur.id in [c.id for c in coeurs2]:
+              inBoth.append(coeur)
+              indexIn2 = coeurs2.index(coeur)
+              coeurs2 = coeurs2[:indexIn2] + coeurs2[indexIn2 + 1:]
+          else:
+              in1butNot2.append(coeur)
+              
+      in2butNot1 = coeurs2.copy()
+      diff["in1butNot2"] = in1butNot2
+      diff["in2butNot1"] = in2butNot1
+      
+      return diff
+          
+          
       
 
 
@@ -303,7 +358,7 @@ class Histoire:
         exposant = 2.*((1.+(len(liensRacontes)/float(len(coeurCurrent.liens)))) / (1.+len(liensOmis)/float(len(coeurCurrent.liens))) - 0.5)/3.
         proba = probaRaconter / float(coeff**exposant)
 
-        if lien.importance==3 or importanceTotale*random.random() <= (lien.importance**2)*proba: # On raconte le lien
+        if lien.importance == 3 or importanceTotale*random.random() <= (lien.importance**2)*proba: # On raconte le lien
           liensRacontes.append(lien)
           if lien.importance > importanceLienPrincipal:
               lienPrincipal = lien
@@ -427,7 +482,7 @@ class Histoire:
             
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase="", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=useTranslation, useCorrection=useCorrection)
         
-        return self.toText(locuteur, interlocuteur, date=date, coeurActuel=self.head, reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase="Alors, ", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=useTranslation, useCorrection=useCorrection)
+        return self.toText(locuteur, interlocuteur, date=date, coeurActuel=self.head, reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=locuteur.getTic(interlocuteur, False) + "alors, ", nbCoeursDansLaPhrase=0, liensAExplorer=None, liensADemander=None, expUsed=None, useTranslation=useTranslation, useCorrection=useCorrection)
             
             
     
@@ -442,6 +497,7 @@ class Histoire:
     liens = []
     # On transforme le coeur actuel en texte
     if not(coeurActuel == STOP):
+        debutPhrase += locuteur.getTic(interlocuteur)
         debutPhrase += coeurActuel.toText(locuteur, interlocuteur, date=date, premierCoeur=(nbCoeursDansLaPhrase==0) and not(reponse), useTranslation=useTranslation, useCorrection=useCorrection)
         nbCoeursDansLaPhrase += 1
     
@@ -503,7 +559,7 @@ class Histoire:
           lien = liensAPreciser[i]
           
           if lien.typeLien in [COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE]: # C'est un complément
-              ajout = lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, autoriserRadoter=False, useTranslation=useTranslation, useCorrection=useCorrection)
+              ajout = locuteur.getTic(interlocuteur) + lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, autoriserRadoter=False, useTranslation=useTranslation, useCorrection=useCorrection)
               if lien.typeLien == COMPLEMENT_TEMPS:
                   # On veut ajouter le CCT au début de la phrase,
                   # Il faut donc retrouver le début de la phrase d'abord

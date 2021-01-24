@@ -6,7 +6,7 @@ Created on Sun Dec 27 23:50:39 2020
 """
 
 from psclib.diversifieur import correct, diversifier, get_syn
-from psclib.caracteristique import CaracChiffree
+from psclib.caracteristique import CaracChiffree, Caracteristique
 import random
 
 class Objet(object):
@@ -156,17 +156,24 @@ class Personnage(Objet):
       self.setCarac(CaracChiffree(name="curiosite", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="politesse", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="compassion", value=5), overWrite=False)
+      self.setCarac(CaracChiffree(name="hésitation", value=10), overWrite=False)
+      
+      self.ticsLangages = {"": 1, "genre": 2, "wesh,": 1, "en fait": 1, "du coup": 0}
+      
       self.nom = None
       self.prenom = None
       self.id = None
       self.sexe = None
-      self.objets = []
       self.age = None
+      
+      self.objets = []
+      
       self.humeur = None
       self.animaux = []
       self.pere = None
       self.mere = None
       self.enfants = []
+      
 
       if not(dico is None):
         #juste pour comparer facilement
@@ -196,6 +203,22 @@ class Personnage(Objet):
       self.contacts = [] #Liste d'objets Personnage, représente les gens connus par le personnage (ainsi que, plus tard, les informations connues par le personnage sur ses contacts)
       self.histoires = [] #Liste d'objets Histoire, représente les histoires connues par le personnage, peu importe qu'il soit le narrateur ou non
 
+
+  def getTic(self, interlocuteur=None, ajouterTic=True):
+      s = ""
+      
+      if ajouterTic:
+          tic = random.choices(list(self.ticsLangages.keys()), weights=list(self.ticsLangages.values()), k=1)[0]
+          s += tic
+          if tic != "":
+              s += " "
+              
+      probaHesiter = 0.075*self.getCaracValue(Caracteristique(name="hésitation"))
+      if random.random() <= probaHesiter:
+          nbPoints = random.randint(3 , 3 + int(0.35*self.getCaracValue(Caracteristique(name="hésitation"))))
+          s += "euh" + "."*nbPoints + " " 
+      
+      return s
   
   def copyStrip(self): #Retourne les caractéristiques de base sous forme d'un dictionnaire
     return Personnage({"nom":self.nom, "prenom":self.prenom, "sexe":self.sexe})

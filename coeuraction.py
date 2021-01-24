@@ -13,13 +13,11 @@ from psclib.diversifieur import correct
 # Coeurs d'action, représente une action, une étape, dans la narration
 class CoeurAction(Coeur) :
   
-  def __init__(self, sujet = None, action = None, cod = None, lieu = None, moment = None, liens =  None, infos=None):
-    Coeur.__init__(self, liens,infos)
+  def __init__(self, sujet = None, action = None, cod = None, liens =  None, infos=None, parent=None, importance=None):
+    Coeur.__init__(self, liens=liens, infos=infos, parent=parent, importance=importance)
     self.sujet = sujet
     self.action = action
     self.cod = cod
-    self.lieu = lieu
-    self.moment = moment # A DEFINIR
       
 
   def getGraphText(self):
@@ -84,11 +82,7 @@ class CoeurAction(Coeur) :
 
     if self.cod is not None :
       s+= self.cod.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " "
-    if self.lieu is not None :
-      s+= self.lieu + " "
-
-    if self.moment is not None :
-      s+= self.moment.toText(useTranslation=useTranslation, useCorrection=useCorrection) + " "
+    
     s = s[:-1]
     self.transmissionInfos(locuteur, interlocuteur)
     exp = correct(s, useCorrection=useCorrection)

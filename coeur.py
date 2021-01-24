@@ -21,7 +21,7 @@ idCounter = 1
 # Classe abstraite qui définit la structure des coeurs et la manière dont ils s'enchaînent
 class Coeur:
   
-  def __init__(self, liens=None, infos=None, ton=None, id=None):
+  def __init__(self, liens=None, infos=None, ton=None, id=None, parent=None, importance=None):
     global idCounter
     
     if id is None:
@@ -29,6 +29,9 @@ class Coeur:
         idCounter+= 1
     else:
         self.id = id
+        
+    self.importance = importance
+    self.parent = parent
     
     self.mode = "indicatif"
     self.temps = "présent"
@@ -97,11 +100,18 @@ class Coeur:
       
   
   def ajouterLien(self, lien):
+      # On ajoute le lien
       self.liens.append(lien)
+      if lien.coeur.parent is None: lien.coeur.parent = self
+      if lien.coeur.importance is None: lien.coeur.importance = lien.importance
+      
+      # Pour la concordance des temps
       if lien.typeLien == OBJECTIF:
           lien.coeur.mode = "subjonctif"
       if lien.typeLien == SUITE or lien.typeLien == CONSEQUENCE or lien.typeLien == CAUSE:
           if not(self.date is None) and lien.coeur.date is None: lien.coeur.date = self.date
+          
+         
       
       #print(self.id, "(", self.date, ")", "----" + str(lien.typeLien) + "---->", lien.coeur.id, "(", self.date, ")")
 
@@ -111,10 +121,9 @@ class Coeur:
 
 class CoeurComplement(Coeur) :
   
-    def __init__(self, complement = None, parent = None, typeComplement=COMPLEMENT):
-        Coeur.__init__(self, None, None)
+    def __init__(self, complement = None, parent = None, typeComplement=COMPLEMENT, importance=None):
+        Coeur.__init__(self, liens=None, infos=None, ton=None, id=None, parent=parent, importance=importance)
         self.complement = complement
-        self.parent = parent
         self.typeComplement = typeComplement
         
         
