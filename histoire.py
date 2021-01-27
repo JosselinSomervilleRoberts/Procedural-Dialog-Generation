@@ -467,6 +467,25 @@ class Histoire:
     if liensADemander is None: liensADemander = []
     if expUsed is None: expUsed = []
     
+    
+    # On oublie potentiellement certaines questions
+    liste_questions = [liensAExplorer, liensADemander]
+    for questions in liste_questions:
+        nbQuestions = len(questions)
+        toBeRemoved = []
+        
+        for i in range(nbQuestions):
+            probaOublier = 1 - ((nbQuestions - i)**0.5)*(interlocuteur.getCaracValue(Caracteristique(name="memoire")) / 10.) ** (0.33)
+            if random.random() <= probaOublier:
+                toBeRemoved.append(questions[i])
+          
+        if len(toBeRemoved):
+            #print("ON OUBLIE UNE QUESTION !!!!!!")
+            #print("len before:", len(questions))
+            for elt in toBeRemoved:
+                questions.remove(elt)
+            #print("len after:", len(questions))
+    
       
     # Si on commence à raconter l'histoire, on commence par le début
     # Il faut créer l'histoire dans la mémoire de l'interlocuteur
