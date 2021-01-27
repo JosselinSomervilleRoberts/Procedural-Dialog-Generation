@@ -50,7 +50,7 @@ def intersection(histsA, histsB) : #On part de deux listes d'objets Histoire A e
     isInB = False
     for b in histsB :
       if a.titre==b.titre :
-        print(a.conteur, b.conteur)
+        #print(a.conteur, b.conteur)
         if a.conteur == b.conteur:
             intersection.append(a)
         else:

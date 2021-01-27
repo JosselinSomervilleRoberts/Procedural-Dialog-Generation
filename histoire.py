@@ -497,7 +497,7 @@ class Histoire:
             
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
                                reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase="", nbCoeursDansLaPhrase=0, expUsed=None,
-                               liensAExplorer=None, liensADemander=None,
+                               liensAExplorer=liensAExplorer, liensADemander=liensADemander,
                                useTranslation=useTranslation, useCorrection=useCorrection)
         
         return self.toText(locuteur, interlocuteur, date=date, coeurActuel=self.head, histInterlocuteur=histInterlocuteur,  coeurInterlocuteur=coeurInterlocuteur,
@@ -709,6 +709,23 @@ class Histoire:
       # ==================================================================================== #
       
     else: # IL N'Y A PAS DE LIEN
+    
+        # Le locuteur peut décider de partir
+        probaPartir = 1 - (0.4 + 0.05*locuteur.getCaracValue(Caracteristique(name="bavard")))
+        if random.random() <= probaPartir:
+            # On ajoute au texte
+            if len(debutPhrase) > 0:
+                phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
+                
+            # On enregistre les demandes de l'interlocuteur
+            histInterlocuteur.liensAExplorer += liensAExplorer
+            histInterlocuteur.liensADemander += liensADemander
+            
+            phrasesPrecedentes += "\n" + locuteur.imprimer("Bon, sur ce, je dois filer moi !", useTranslation=useTranslation, useCorrection=useCorrection)
+            return phrasesPrecedentes
+    
+    
+    
         # L'interlocuteur peut maintenant poser ses questions (DEMANDE puis EXPLORATION)
         
         if len(liensADemander) > 0:
