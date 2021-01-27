@@ -146,7 +146,7 @@ def exemple(name, graph=False):
         print(dialogue(jackie, marcel, date=ajd, useTranslation=False, useCorrection=False))
         
         if graph:
-            persos = [marcel, jackie, kevin]
+            persos = [marcel, jackie]
             for p in persos:
                 dot = p.histoires[0].getGraph()
                 dot.render("histoire_1_" + p.toText(), view=True, format="png")
