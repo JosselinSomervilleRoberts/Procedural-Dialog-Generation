@@ -616,21 +616,24 @@ class Histoire:
                   # - le nombre de précisions qu'il souhaite déja explorer
                   probaExplorer = 0.05 + 0.15*log(lien.importance) + 0.55*(interlocuteur.getCaracValue(Caracteristique(name="curiosite")) - 2*len(liensAExplorer))
                   if random.random() <= probaExplorer: # Si on explore le lien
-                      liensAExplorer.append([coeurActuel, lien])
-                      vaEtreExplorer = True
+                      vaEtreExplore = True
                  
                       
           # On l'ajoute à la mémoire de l'interlocuteur
-          if not(vaEtreExplore):
+          if True:
               probaRetenir = (interlocuteur.getCaracValue(Caracteristique(name="memoire")) / 10.) ** (0.33)
               
-              if random.random() <= probaRetenir:
+              coeurPrecisionCopy = None
+              if vaEtreExplore or random.random() <= probaRetenir:
                   coeurPrecisionCopy = deepcopy(lien.coeur)
                   coeurPrecisionCopy.liens = []
                   if lien.typeLien != COMPLEMENT_TEMPS:
                       coeurPrecisionCopy.date = None
                   lienCopy = Lien(coeur=coeurPrecisionCopy, typeLien=lien.typeLien, importance=lien.importance)
                   coeurInterlocuteur.ajouterLien(lienCopy)
+                  
+              if vaEtreExplore:
+                  liensAExplorer.append([coeurActuel, lien, coeurPrecisionCopy])
               #elif lien.typeLien == COMPLEMENT_TEMPS:
                       
             
@@ -647,7 +650,7 @@ class Histoire:
               # - le nombre de précisions qu'il souhaite déja demander
               probaDemander = 0.05 + 0.15*log(l.importance) + 0.55*(interlocuteur.getCaracValue(Caracteristique(name="curiosite")) - 2*len(liensADemander))
               if random.random() <= probaDemander: # Si on demande le lien
-                  liensADemander.append([coeurActuel, l])
+                  liensADemander.append([coeurActuel, l, coeurInterlocuteur])
               
       
         
@@ -710,7 +713,20 @@ class Histoire:
         
         if len(liensADemander) > 0:
             d = random.choice(liensADemander)
-            coeurCurrent, lien = d[0], d[1]
+            coeurCurrent, lien, coeurInterloc = d[0], d[1], d[2]
+            
+            # On retourne au bon endroit de l'histoire
+            coeurInterlocuteur = coeurInterloc
+            
+            # On l'ajoute à la mémoire de l'interlocuteur
+            coeurReponseCopy = deepcopy(lien.coeur)
+            coeurReponseCopy.liens = []
+            lienDemandeCopy = Lien(coeur=coeurReponseCopy, typeLien=lien.typeLien, importance=lien.importance)
+            coeurInterlocuteur.ajouterLien(lienDemandeCopy)
+              
+            # On change de coeurActuel pour l'interlocuteur
+            coeurInterlocuteur = coeurReponseCopy
+            
             liensADemander.remove(d)
             demande = interlocuteur.getTic(interlocuteur) + demanderAvecPhraseLien(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed)
             if "[1]" in demande:
@@ -729,11 +745,27 @@ class Histoire:
             
         elif len(liensAExplorer) > 0:
             d = random.choice(liensAExplorer)
-            coeurCurrent, lien = d[0], d[1]
-            liensAExplorer.remove(d)
+            coeurCurrent, lien, coeurInterloc = d[0], d[1], d[2]
             
             # On choisit le lien le plus important pour la suite de l'exploration
             lienExploration = sorted(lien.coeur.liens, key=lambda x: x.importance) [-1]
+            
+            # On retourne au bon endroit de l'histoire
+            coeurInterlocuteur = coeurInterloc
+            
+            # On l'ajoute à la mémoire de l'interlocuteur
+            coeurReponseCopy = deepcopy(lienExploration.coeur)
+            coeurReponseCopy.liens = []
+            lienExplorationCopy = Lien(coeur=coeurReponseCopy, typeLien=lienExploration.typeLien, importance=lienExploration.importance)
+            coeurInterlocuteur.ajouterLien(lienExplorationCopy)
+              
+            # On change de coeurActuel pour l'interlocuteur
+            coeurInterlocuteur = coeurReponseCopy
+            
+            
+            liensAExplorer.remove(d)
+            
+            
             # Pour rappel, voici à quoi ressemble l'architecture : 
             # coeurCurrent (déja raconté)   -----lien----->   lien.coeur (déja raconté)   -----lienExploration----->   lienExploration.coeur (PAS ENCORE RACONTE)
             rappelExplo = rappel(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed)
