@@ -574,7 +574,7 @@ class Histoire:
           # Plus le lien est important plus on a de chance de le préciser
           # Plus on a fait de précisions, moins on a de chance d'en rajouter
           probaPreciser = (0.25 + 0.07*locuteur.getCaracValue(Caracteristique(name="bavard"))) * l.importance / (sommeImportance*(1+nbPrecisions))
-          if random.random() <= probaPreciser: # Si on précise le lien
+          if random.random() <= probaPreciser and l.importance > 0: # Si on précise le lien
               nbPrecisions += 1
               liensAPreciser.append(l)
       
@@ -668,7 +668,7 @@ class Histoire:
               # - la curiosité de l'interlocuteur
               # - le nombre de précisions qu'il souhaite déja demander
               probaDemander = 0.05 + 0.15*log(l.importance) + 0.55*(interlocuteur.getCaracValue(Caracteristique(name="curiosite")) - 2*len(liensADemander))
-              if random.random() <= probaDemander: # Si on demande le lien
+              if random.random() <= probaDemander and l.importance > 0: # Si on demande le lien
                   liensADemander.append([coeurActuel, l, coeurInterlocuteur])
               
       
