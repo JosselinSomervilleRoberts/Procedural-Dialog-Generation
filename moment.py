@@ -23,7 +23,7 @@ class Moment(Complement):
         if len(self.name) > 0: return self.name[0]
         
         if not(self.date is None):
-            s= """<tr><td align="left"><I>Date:</I> """ + str(self.date) + "</td></tr>\n"
+            s= str(self.date) 
             return s
         
         rapport = self.rapport
