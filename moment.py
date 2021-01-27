@@ -21,6 +21,11 @@ class Moment(Complement):
     
     def getGraphText(self):
         if len(self.name) > 0: return self.name[0]
+        
+        if not(self.date is None):
+            s= """<tr><td align="left"><I>Date:</I> """ + str(self.date) + "</td></tr>\n"
+            return s
+        
         rapport = self.rapport
         if rapport == "": rapport = "alors"
         s = "Par rapport à un coeur</td></tr>\n"

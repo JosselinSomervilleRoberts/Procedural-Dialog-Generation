@@ -141,7 +141,7 @@ class CoeurComplement(Coeur) :
         
     def getGraphText(self):
         s = """<table border="0" cellborder="0" cellspacing="0">\n"""
-        s+= """  <tr><td align="center"><b>COMPLEMENT</b></td></tr>\n"""
+        s+= """  <tr><td align="center"><b>COMPLEMENT (""" + str(self.id) + """)</b></td></tr>\n"""
         dict_comp = {COMPLEMENT: "Complément: ", COMPLEMENT_LIEU: "Lieu: ", COMPLEMENT_TEMPS: "Moment: ", COMPLEMENT_MANIERE: "Manière: "}
         s+= """  <tr><td align="left"><I>""" + dict_comp[self.typeComplement] + "</I>"
         s+= self.complement.getGraphText() + """</td></tr>\n"""

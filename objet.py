@@ -177,8 +177,6 @@ class Personnage(Objet):
       self.setCarac(CaracChiffree(name="memoire", value=5), overWrite=False)
       
       self.ticsLangages = {"": 1, "genre": 0, "wesh,": 0, "en fait": 0, "du coup": 0}
-      if "ticsLangages" in dico:
-          self.ticsLangages = dico["ticsLangages"] 
       
       self.nom = None
       self.prenom = None
@@ -196,6 +194,8 @@ class Personnage(Objet):
       
 
       if not(dico is None):
+        if "ticsLangages" in dico:
+          self.ticsLangages = dico["ticsLangages"] 
         #juste pour comparer facilement
         if "nom" in dico:
           self.nom = dico["nom"] #Nom est un string
