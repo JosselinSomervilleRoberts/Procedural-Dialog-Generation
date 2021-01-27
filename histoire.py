@@ -12,6 +12,7 @@ from psclib.diversifieur import correct
 from psclib.lien import COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE, OBJECTIF, CAUSE, CONSEQUENCE, SUITE, Lien
 from psclib.coeuraction import CoeurAction
 from psclib.coeurdescriptif import CoeurDescriptif
+from psclib.coeurdescriptifverbal import CoeurDescriptifVerbal
 from psclib.coeur import CoeurComplement
 from copy import copy, deepcopy
 
@@ -204,6 +205,8 @@ class Histoire:
         dot.attr('node', shape='box')
       if isinstance(coeurCurrent, CoeurDescriptif):
         dot.attr('node', shape='octagon')
+      if isinstance(coeurCurrent, CoeurDescriptifVerbal):
+        dot.attr('node', shape='polygon')
       if isinstance(coeurCurrent, CoeurComplement):
         dot.attr('node', shape='ellipse')
       dot.node(str(coeurCurrent.id), "<"+coeurCurrent.getGraphText()+">")
@@ -272,12 +275,14 @@ class Histoire:
               in1butNot2.append(coeur)
               
       in2butNot1 = coeurs2.copy()
+      
       diff["in1butNot2"] = in1butNot2
       diff["in2butNot1"] = in2butNot1
-      
+      """
       print("\n\nEN COMMUN")
       print(inBoth)
       print("\n\n")
+      """
       return diff
           
           
@@ -476,7 +481,7 @@ class Histoire:
         phraseStart = "Je t'ai raconté que " + texteCoeur + " ?"
         phrasesPrecedentes = locuteur.imprimer(phraseStart, useTranslation=useTranslation, useCorrection=useCorrection)
         
-        if True:#indexHist == -1:
+        if indexHist == -1: #True
             phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non, racontes !", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
         else:
             conteur = interlocuteur.histoires[indexHist].conteur
@@ -707,7 +712,7 @@ class Histoire:
             d = random.choice(liensADemander)
             coeurCurrent, lien = d[0], d[1]
             liensADemander.remove(d)
-            demande = demanderAvecPhraseLien(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed)
+            demande = interlocuteur.getTic(interlocuteur) + demanderAvecPhraseLien(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed)
             if "[1]" in demande:
                 phrase = coeurCurrent.toText(interlocuteur, locuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
                 demande = demande.replace("[1]", phrase)
@@ -735,7 +740,7 @@ class Histoire:
             phrase1 = coeurCurrent.toText(interlocuteur, locuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
             phrase2 = lien.coeur.toText(interlocuteur, locuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
             rappelExplo = rappelExplo.replace("[1]", phrase1).replace("[2]", phrase2)
-            demande = rappelExplo + " " + demanderLien(lienExploration.typeLien, dateCoeur=lienExploration.coeur.date, date=date, used=expUsed)
+            demande = interlocuteur.getTic(interlocuteur) +  rappelExplo + " " +  interlocuteur.getTic(interlocuteur) +  demanderLien(lienExploration.typeLien, dateCoeur=lienExploration.coeur.date, date=date, used=expUsed)
             
             # On ajoute au texte
             if len(debutPhrase) > 0:

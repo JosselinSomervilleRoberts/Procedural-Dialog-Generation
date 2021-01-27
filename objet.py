@@ -144,7 +144,7 @@ class Objet(object):
 class Personnage(Objet):
 
   def getAvailable():
-    return ["inconnu", "lancelot", "mickey", "joe", "marcel", "jackie"]
+    return ["inconnu", "lancelot", "mickey", "joe", "marcel", "jackie", "kevin"]
 
   def getAlike(s):
     """ Renvoie tous les Personnage qui contiennent s dans leur nom"""
@@ -163,17 +163,22 @@ class Personnage(Objet):
       if name == "mickey": self = Personnage.__init__(self, dico={"nom":"Mouse", "prenom":"Mickey"})
       if name == "joe": self = Personnage.__init__(self, dico={"nom":"Dalton", "prenom":"Joe"})
       if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=10)]})
-      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=0)]})
+      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10)]})
+      if name == "kevin": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Kev", "ticsLangages": {"": 1, "genre": 1, "wesh,": 8, "en fait": 1, "du coup": 1},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=2), 
+                                                                            CaracChiffree(name="hésitation", value=10), CaracChiffree(name="memoire", value=2)]})
     else:
       Objet.__init__(self, dico=dico) # A RAJOUTER dico EN ARGUMENT
       self.setCarac(CaracChiffree(name="bavard", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="curiosite", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="politesse", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="compassion", value=5), overWrite=False)
-      self.setCarac(CaracChiffree(name="hésitation", value=10), overWrite=False)
-      self.setCarac(CaracChiffree(name="memoire", value=0), overWrite=False)
+      self.setCarac(CaracChiffree(name="hésitation", value=5), overWrite=False)
+      self.setCarac(CaracChiffree(name="memoire", value=5), overWrite=False)
       
-      self.ticsLangages = {"": 1, "genre": 2, "wesh,": 1, "en fait": 1, "du coup": 0}
+      self.ticsLangages = {"": 1, "genre": 0, "wesh,": 0, "en fait": 0, "du coup": 0}
+      if "ticsLangages" in dico:
+          self.ticsLangages = dico["ticsLangages"] 
       
       self.nom = None
       self.prenom = None
