@@ -21,9 +21,13 @@ def connait(p1,p2): #p1 et p2 sont des objets Personnage
   return False
 
 #----------- L'introduction du dialogue
-def intro(p1,p2, useTranslation=True, useCorrection=True) : #p1 et p2 sont des objets Personnage
+def intro(p1,p2, useTranslation=True, useCorrection=True) : #p1 et p2 sont des objets Personnage, p1 est le locuteur et p2 l'interlocuteur
   etat = int(connait(p1,p2)) + 2*int(connait(p2,p1)) #etat est un entier
-
+  
+  for personne in p1.famille :
+      if personne.id == p2.id :
+          return accrocheFamille(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
+  
   if etat==0 : #les deux personnages ne se connaissent pas
     return accroche0(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   if etat==1 : #p1 connait p2 mais pas l'inverse
@@ -91,6 +95,37 @@ def accroche2(p1, p2, useTranslation=True, useCorrection=True) : #Les deux perso
   s = p1.imprimer("Salut mon pote !", useTranslation=useTranslation, useCorrection=useCorrection)
   s += "\n" + p2.imprimer("Salut à toi également l'ami !", useTranslation=useTranslation, useCorrection=useCorrection)
   return s
+
+def accrocheFamille(p1, p2,useTranslation=True, useCorrection=True):
+    if p1.pere.id == p2.id or p1.mere.id == p2.id :
+        if p1.pere.id == p2.id :
+            s = p1.imprimer("Salut Papa !",  useTranslation=useTranslation, useCorrection=useCorrection)
+        else :
+            s = p1.imprimer("Salut Maman !",  useTranslation=useTranslation, useCorrection=useCorrection)
+        if p1.sexe == "m":
+            s += "\n" + p2.imprimer("Coucou mon fils !", useTranslation=useTranslation, useCorrection=useCorrection)
+        if p2.sexe == "f":
+            s += "\n" + p2.imprimer("Coucou ma fille !", useTranslation=useTranslation, useCorrection=useCorrection)
+        else :
+            s += "\n" + p2.imprimer("Coucou " + p2.prenom + " !", useTranslation=useTranslation, useCorrection=useCorrection)
+    else : #p2 est un enfant de p1
+        if random.randint(0,1):
+            if p2.sexe == "m":
+                s = p1.imprimer("Coucou mon fils !", useTranslation=useTranslation, useCorrection=useCorrection)
+            if p2.sexe == "f":
+                s = p1.imprimer("Coucou ma fille !", useTranslation=useTranslation, useCorrection=useCorrection)
+            else :
+                s = p1.imprimer("Coucou " + p2.prenom + " !", useTranslation=useTranslation, useCorrection=useCorrection)
+            if p1.sexe == "m" :
+                s += "\n" + p2.imprimer("Salut Papa !", useTranslation=useTranslation, useCorrection=useCorrection)
+            if p1.sexe == "f" : 
+                s += "\n" + p2.imprimer("Salut Maman !", useTranslation=useTranslation, useCorrection=useCorrection)
+            else :
+                s += "\n" + p2.imprimer("Salut !", useTranslation=useTranslation, useCorrection=useCorrection)
+    s += "\n" + p1.imprimer("Il y a un truc que je veux te raconter.",  useTranslation=useTranslation, useCorrection=useCorrection)
+    if random.randint(0,1):
+        s += "\n" + p2.imprimer("Je t'écoute.",  useTranslation=useTranslation, useCorrection=useCorrection)          
+    return s
 
 #------------- Les personnages ne racontent pas forcément leurs histoires jusqu'au bout
 def testContinuer(p1,p2) : #On détermine si la conversation continue (=True) ou se termine (=False) selon les affinités des personnages (et une part d'aléatoire)
@@ -182,11 +217,13 @@ def reactionjoyeuse(interloc):  # reaction d'une histoire joyeuse
     return s
 #-------------------------------------------------- La fonction (principale) du dialogue ----------------------------------------------
 def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
-  s = intro(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
+  loc, interloc = quiparle(p1,p2)
+  s = intro(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
   continuer = True
   premierCycle = True #Indicateur
   while continuer :
-    loc, interloc = quiparle(p1,p2) #On décide qui parle
+    if not premierCycle :
+       loc, interloc = quiparle(p1,p2) #On décide qui parle
     if loc!=None : #Cas normal : un personnage a une histoire à raconter
       s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
       s1, histoire = raconter(loc, interloc, date=date, useTranslation=useTranslation, useCorrection=useCorrection) #On choisit et raconte une histoire

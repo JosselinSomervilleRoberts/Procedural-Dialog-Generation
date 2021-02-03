@@ -188,9 +188,11 @@ class Personnage(Objet):
       
       self.humeur = None
       self.animaux = []
+      self.famille = [] #contient le père, la mère et les enfants
       self.pere = None
       self.mere = None
       self.enfants = []
+      self.token = None
       
 
       if not(dico is None):
@@ -213,12 +215,13 @@ class Personnage(Objet):
             self.pere = dico["pere"] #Père est un string ou objet ou personnage
         if "mere" in dico:
             self.mere = dico["mere"] #Mère est un string ou objet ou personnage
-        if "pere" in dico:
+        if "enfants" in dico:
             self.enfants = dico["enfants"] #Enfants est une liste de strings ou objets ou personnages
       #rajouter famille, métier, etc (pas que des valeurs fixes)
    
       if not (self.prenom is None) and not (self.nom is None):
         self.id = self.prenom+self.nom #Id est un string (plus simple pour comparer des personnages)
+        self.token = self.prenom + " " + self.nom + " :"
 
       self.contacts = [] #Liste d'objets Personnage, représente les gens connus par le personnage (ainsi que, plus tard, les informations connues par le personnage sur ses contacts)
       self.histoires = [] #Liste d'objets Histoire, représente les histoires connues par le personnage, peu importe qu'il soit le narrateur ou non
@@ -285,12 +288,15 @@ class Personnage(Objet):
                   self.animaux.append(animal)
           if "pere" in dico and not self.pere: #Seulement si pas encore d'info sur le père
             self.pere = dico["pere"]
+            self.famille.append(dico["pere"])
           if "mere" in dico and not self.mere: #Seulement si pas encore d'info sur la mère
             self.mere = dico["mere"]
+            self.famille.append(dico["mere"])
           if "enfants" in dico: #Ajout
             for enfant in dico["enfants"]:
               if enfant not in self.enfants:
                 self.enfants.append(enfant)
+                self.famille.append(enfant)
                 
                 
   def getGraphText(self):
