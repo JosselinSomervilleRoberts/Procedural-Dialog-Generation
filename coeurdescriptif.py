@@ -31,7 +31,9 @@ class CoeurDescriptif(Coeur):
       return s
   
 
-  def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
+  def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, lastMentioned=None, useTranslation=True, useCorrection=True):
+    if lastMentioned is None: lastMentioned = [None, None]
+      
     # On gère les temps
     if self.mode != "subjonctif":
         self.mode = "indicatif"
@@ -48,8 +50,18 @@ class CoeurDescriptif(Coeur):
       
     if not(type(self.sujet) == list):
       self.sujet = [self.sujet]
+      
+      
+    genreSujet = None
+    for s in self.sujet:
+        if s.genre == 1:
+            genreSujet = 1
+        elif s.genre==2 and genreSujet is None:
+            genreSujet = 2
+      
     if locuteur is None : locuteur = Personnage()
     if interlocuteur is None : interlocuteur = Personnage() 
+    
     personne = 3
     if locuteur in self.sujet:
       personne = 1
@@ -59,8 +71,13 @@ class CoeurDescriptif(Coeur):
       personne += 3
 
     usePronom = False
-    if sujetMentionedBefore or personne <= 2:
+    if personne%3 != 0:
       usePronom = True
+    elif self.sujet in lastMentioned:
+        usePronom = True
+    else:
+        if not(genreSujet is None):
+            lastMentioned[genreSujet-1] = self.sujet
 
     vb = cong("etre", self.mode, self.temps, personne)
     exp = ""
@@ -70,6 +87,7 @@ class CoeurDescriptif(Coeur):
       exp = exp[:-4]
       exp += " " + vb.replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","").replace("qu\'", "").replace("que ", "")
     else:
+      if genreSujet == 2: vb = vb.replace("il ", "elle ").replace("ils ", "elles ")
       exp = vb
 
     exp += " " + self.carac.toText(useTranslation=useTranslation, useCorrection=useCorrection)

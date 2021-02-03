@@ -27,6 +27,6 @@ class CoeurDescriptifVerbal(CoeurAction):
       return s
         
         
-    def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
+    def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, lastMentioned=None, useTranslation=True, useCorrection=True):
         # Change uniquement premierCoeur à Vrai pour la concordance des temps
-        return CoeurAction.toText(self, locuteur=locuteur, interlocuteur=interlocuteur, date=date, premierCoeur=True, sujetMentionedBefore=sujetMentionedBefore, useTranslation=useTranslation, useCorrection=useCorrection)
+        return CoeurAction.toText(self, locuteur=locuteur, interlocuteur=interlocuteur, date=date, premierCoeur=True, lastMentioned=lastMentioned, useTranslation=useTranslation, useCorrection=useCorrection)

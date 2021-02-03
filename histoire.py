@@ -452,7 +452,7 @@ class Histoire:
 
 
   def toText(self, locuteur, interlocuteur, date=None, coeurActuel=None, histInterlocuteur=None, coeurInterlocuteur=None, 
-             reponse=False, phrasesPrecedentes="", debutPhrase="", nbCoeursDansLaPhrase=0, expUsed=None,
+             reponse=False, phrasesPrecedentes="", debutPhrase="", nbCoeursDansLaPhrase=0, expUsed=None, lastMentioned=None,
              liensAExplorer=None, liensADemander=None, 
              useTranslation=True, useCorrection=True): 
       
@@ -466,6 +466,7 @@ class Histoire:
     if liensAExplorer is None: liensAExplorer = []
     if liensADemander is None: liensADemander = []
     if expUsed is None: expUsed = []
+    if lastMentioned is None: lastMentioned = [None, None]
     
     
     # On oublie potentiellement certaines questions
@@ -538,7 +539,7 @@ class Histoire:
     # On transforme le coeur actuel en texte
     if not(coeurActuel == STOP):
         debutPhrase += locuteur.getTic(interlocuteur)
-        debutPhrase += coeurActuel.toText(locuteur, interlocuteur, date=date, premierCoeur=(nbCoeursDansLaPhrase==0) and not(reponse), useTranslation=useTranslation, useCorrection=useCorrection)
+        debutPhrase += coeurActuel.toText(locuteur, interlocuteur, lastMentioned=lastMentioned, date=date, premierCoeur=(nbCoeursDansLaPhrase==0) and not(reponse), useTranslation=useTranslation, useCorrection=useCorrection)
         nbCoeursDansLaPhrase += 1
     
         # On trie les liens par importance
@@ -600,7 +601,7 @@ class Histoire:
           vaEtreExplore = False
           
           if lien.typeLien in [COMPLEMENT, COMPLEMENT_LIEU, COMPLEMENT_TEMPS, COMPLEMENT_MANIERE]: # C'est un complément
-              ajout = locuteur.getTic(interlocuteur) + lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, autoriserRadoter=False, useTranslation=useTranslation, useCorrection=useCorrection)
+              ajout = locuteur.getTic(interlocuteur) + lien.coeur.toText(locuteur, interlocuteur, lastMentioned=lastMentioned, date=date, premierCoeur=nbCoeursDansLaPhrase==0, autoriserRadoter=False, useTranslation=useTranslation, useCorrection=useCorrection)
               if lien.typeLien == COMPLEMENT_TEMPS:
                   # On veut ajouter le CCT au début de la phrase,
                   # Il faut donc retrouver le début de la phrase d'abord
@@ -618,11 +619,11 @@ class Histoire:
                   
               
               if random.random() <= probaRecommencer: # On recommence une phrase
-                  debutPhrase += ". " + motsLiasonsRecommencer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " " + lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
+                  debutPhrase += ". " + motsLiasonsRecommencer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " " + lien.coeur.toText(locuteur, interlocuteur, lastMentioned=lastMentioned, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
                   nbCoeursDansLaPhrase = 1
                   phraseRecommencee = True
               else: # On continue dans la même phrase
-                  debutPhrase += " " + motsLiasonsContinuer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " " + lien.coeur.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
+                  debutPhrase += " " + motsLiasonsContinuer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " " + lien.coeur.toText(locuteur, interlocuteur, lastMentioned=lastMentioned, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
                   nbCoeursDansLaPhrase += 1
                   
               # Pour chaque précision, si la précision se poursuivait, on ne la suivra pas car on va suivre lienChoisi
@@ -676,7 +677,7 @@ class Histoire:
       # Si on arrete l'histoire (i.e. on a choisi lienFin)
       if lienChoisi.coeur is None: # C'est le lien de fin
         return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
-                           phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, expUsed=expUsed,
+                           phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, expUsed=expUsed, lastMentioned=lastMentioned,
                            liensAExplorer=liensAExplorer, liensADemander=liensADemander,
                            useTranslation=useTranslation, useCorrection=useCorrection)
         #return phrasesPrecedentes + "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
@@ -705,7 +706,7 @@ class Histoire:
           if lastLien.typeLien >= lienChoisi.typeLien:
               debutPhrase += ". "
               retour = retourArriere(lienChoisi.typeLien, dateCoeur=lienChoisi.coeur.date, date=date, used=expUsed)
-              phrase1 = coeurActuel.toText(locuteur, interlocuteur, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
+              phrase1 = coeurActuel.toText(locuteur, interlocuteur, lastMentioned=lastMentioned, date=date, premierCoeur=nbCoeursDansLaPhrase==0, useTranslation=useTranslation, useCorrection=useCorrection)
               retour = retour.replace("[1]", phrase1)
               debutPhrase += retour + " "
           else:
@@ -721,7 +722,7 @@ class Histoire:
               nbCoeursDansLaPhrase += 1
               
       return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienChoisi.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
-                         phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, expUsed=expUsed,
+                         phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, expUsed=expUsed, lastMentioned=lastMentioned,
                          liensAExplorer=liensAExplorer, liensADemander=liensADemander,
                          useTranslation=useTranslation, useCorrection=useCorrection)
   
@@ -766,7 +767,7 @@ class Histoire:
             liensADemander.remove(d)
             demande = interlocuteur.getTic(interlocuteur) + demanderAvecPhraseLien(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed)
             if "[1]" in demande:
-                phrase = coeurCurrent.toText(interlocuteur, locuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
+                phrase = coeurCurrent.toText(interlocuteur, locuteur, lastMentioned=lastMentioned, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
                 demande = demande.replace("[1]", phrase)
                 
             # On ajoute au texte
@@ -775,7 +776,7 @@ class Histoire:
             phrasesPrecedentes += "\n" + interlocuteur.imprimer(demande, useTranslation=useTranslation, useCorrection=useCorrection)
             debutPhrase = motsLiasonsRecommencer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lien.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
-                               reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, expUsed=expUsed,
+                               reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, expUsed=expUsed, lastMentioned=lastMentioned,
                                liensAExplorer=liensAExplorer, liensADemander=liensADemander,
                                useTranslation=useTranslation, useCorrection=useCorrection)
             
@@ -805,8 +806,8 @@ class Histoire:
             # Pour rappel, voici à quoi ressemble l'architecture : 
             # coeurCurrent (déja raconté)   -----lien----->   lien.coeur (déja raconté)   -----lienExploration----->   lienExploration.coeur (PAS ENCORE RACONTE)
             rappelExplo = rappel(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed)
-            phrase1 = coeurCurrent.toText(interlocuteur, locuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
-            phrase2 = lien.coeur.toText(interlocuteur, locuteur, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
+            phrase1 = coeurCurrent.toText(interlocuteur, locuteur, lastMentioned=lastMentioned, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
+            phrase2 = lien.coeur.toText(interlocuteur, locuteur, lastMentioned=lastMentioned, date=date, premierCoeur=False, useTranslation=useTranslation, useCorrection=useCorrection)
             rappelExplo = rappelExplo.replace("[1]", phrase1).replace("[2]", phrase2)
             demande = interlocuteur.getTic(interlocuteur) +  rappelExplo + " " +  interlocuteur.getTic(interlocuteur) +  demanderLien(lienExploration.typeLien, dateCoeur=lienExploration.coeur.date, date=date, used=expUsed)
             
@@ -817,7 +818,7 @@ class Histoire:
             debutPhrase = motsLiasonsRecommencer(lienExploration.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
             
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienExploration.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
-                               reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, expUsed=expUsed,
+                               reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, expUsed=expUsed, lastMentioned=lastMentioned,
                                liensAExplorer=liensAExplorer, liensADemander=liensADemander,
                                useTranslation=useTranslation, useCorrection=useCorrection)
             

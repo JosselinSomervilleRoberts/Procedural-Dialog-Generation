@@ -149,11 +149,11 @@ class CoeurComplement(Coeur) :
         return s
     
 
-    def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, autoriserRadoter=True, useTranslation=True, useCorrection=True):
+    def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, lastMentioned=None, autoriserRadoter=True, useTranslation=True, useCorrection=True):
         phrase = self.complement.toText(locuteur=locuteur, interlocuteur=interlocuteur, date=date, useTranslation=useTranslation, useCorrection=useCorrection)
         
         probaRadoter = 0.5*autoriserRadoter
         if random.random() <= probaRadoter:
-            return self.parent.toText(locuteur=locuteur, interlocuteur=interlocuteur, date=date, premierCoeur=True, useTranslation=useTranslation, useCorrection=useCorrection) + " " + phrase
+            return self.parent.toText(locuteur=locuteur, interlocuteur=interlocuteur, lastMentioned=lastMentioned, date=date, premierCoeur=True, useTranslation=useTranslation, useCorrection=useCorrection) + " " + phrase
             
         return phrase

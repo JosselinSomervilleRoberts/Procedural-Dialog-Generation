@@ -22,6 +22,7 @@ cg = Conjugator(lang='fr')
 tool = None
 ts = None
 syns = {}
+genres = {}
 
 
   
@@ -29,6 +30,35 @@ COURANT = 1
 FAMILIER = 2
 SOUTENU = 3
 
+
+def buildGenres():
+    global genres
+    import sqlite3
+    conn = sqlite3.connect('psclib/databases/mots.db')
+    c = conn.cursor()
+    query_select = '''SELECT lemme, genre FROM liste_mots'''
+    c.execute(query_select)
+    record = c.fetchall()
+            
+    if record != None:
+        for ligne in record:
+            lemme = ligne[0]
+            genre = ligne[1]
+            
+            if genre != 0 and  not(lemme in genres):
+                genres[lemme] = genre
+                
+                
+def get_genre(s):
+    global genres
+    
+    if len(genres) == 0:
+        buildGenres()
+        
+    if s in genres:
+        return genres[s]
+    else:
+        return None
 
 
 def buildSynonyms():

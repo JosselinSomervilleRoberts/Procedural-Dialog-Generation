@@ -21,7 +21,6 @@ c.execute('''CREATE TABLE liste_mots (
     lemme      TEXT,
     type       INT,
     genre      INT,
-    nombre     INT,
     freq_livre REAL,
     freq_film  REAL
 );''')
@@ -66,34 +65,30 @@ for row in read_tsv:
             freq_f /= CORRECTION_VERBES
         
         genre = 0
-        if str(row[4]) == "m":
+        print(row[4])
+        if "m" in str(row[4]):
             genre = 1
-        elif str(row[4]) == "m":
+        elif "f" in str(row[4]):
+            print("feminin")
             genre = 2
-            
-        nombre = 0
-        if str(row[4]) == "s":
-            nombre = 1
-        elif str(row[4]) == "p":
-            nombre = 2
         
         if not(lemme in dictio):
-            dictio[lemme] = [nb_typ, freq_l, freq_f, genre, nombre]
+            dictio[lemme] = [nb_typ, freq_l, freq_f, genre]
         else:
-            if nb_typ == 0 and row[0].lower() == lemme:
-                dictio[lemme] = [nb_typ, dictio[lemme][1] + freq_l, dictio[lemme][2] + freq_f, genre, nombre]
-            elif nb_typ == 0:
-                dictio[lemme] = [nb_typ, dictio[lemme][1] + freq_l, dictio[lemme][2] + freq_f, dictio[lemme][3], dictio[lemme][4]]
+            if dictio[lemme][3] == 0:
+                dictio[lemme] = [nb_typ, dictio[lemme][1] + freq_l, dictio[lemme][2] + freq_f, genre]
+            else:
+                dictio[lemme] = [nb_typ, dictio[lemme][1] + freq_l, dictio[lemme][2] + freq_f, dictio[lemme][3]]
 
     except:
         print("NOT FLOAT : ", row)
         
  
-query_insert = '''INSERT INTO liste_mots(lemme, type, freq_livre, freq_film, genre, nombre) VALUES(?,?,?,?,?,?);'''
+query_insert = '''INSERT INTO liste_mots(lemme, type, freq_livre, freq_film, genre) VALUES(?,?,?,?,?);'''
 for lemme in dictio:
     print(lemme)
     values = dictio[lemme]
-    data_tuple = (lemme, values[0], values[1], values[2], values[3], values[4])
+    data_tuple = (lemme, values[0], values[1], values[2], values[3])
     c.execute(query_insert, data_tuple)
     conn.commit()
     

@@ -33,7 +33,9 @@ class CoeurAction(Coeur) :
       return s
 
     
-  def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, sujetMentionedBefore=False, useTranslation=True, useCorrection=True):
+  def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, lastMentioned=None, useTranslation=True, useCorrection=True):
+    if lastMentioned is None: lastMentioned = [None, None]
+      
     # On gère les temps
     if self.mode != "subjonctif":
         self.mode = "indicatif"
@@ -56,8 +58,17 @@ class CoeurAction(Coeur) :
         
     if not(type(self.sujet) == list):
       self.sujet = [self.sujet]
+    
+    genreSujet = None
+    for s in self.sujet:
+        if s.genre == 1:
+            genreSujet = 1
+        elif s.genre==2 and genreSujet is None:
+            genreSujet = 2
+      
     if locuteur is None : locuteur = Personnage()
     if interlocuteur is None : interlocuteur = Personnage() 
+    
     personne = 3
     if locuteur in self.sujet:
       personne = 1
@@ -67,24 +78,81 @@ class CoeurAction(Coeur) :
       personne += 3
 
     usePronom = False
-    if sujetMentionedBefore or personne <= 2 or personne == 4 or personne == 5:
+    if personne%3 != 0:
       usePronom = True
+    elif self.sujet in lastMentioned:
+        usePronom = True
+    else:
+        if not(genreSujet is None):
+            lastMentioned[genreSujet-1] = self.sujet
+            
+    
+    personneCod = 3
+    codUsePronom = False
+    expCod = ""
+    
+    if not(self.cod is None):
+        if locuteur in [self.cod]:
+            personneCod = 1
+        elif interlocuteur in [self.cod]:
+            personneCod = 2
+        if len([self.cod]) > 1 or [self.cod][0].quantite > 1:
+            personneCod += 3
+            
+        
+        if personneCod%3 != 0:
+          codUsePronom = True
+        elif not(self.cod.genre is None) and ([self.cod] in lastMentioned) and ((personne%3 != 0) or self.cod.genre != genreSujet):
+                codUsePronom = True
+        else:
+            if not(self.cod.genre is None) and self.cod.genre != genreSujet:
+                lastMentioned[self.cod.genre-1] = [self.cod]
+                
+        if not(self.cod is None) and codUsePronom:
+            pronoms = [["me", "te", "le", "nous", "vous", "les"], ["me", "te", "la", "nous", "vous", "les"]]
+            genre = self.cod.genre
+            if genre is None: genre = 1
+            expCod = " " + pronoms[genre-1][personneCod-1]
+            if self.temps=="passé-composé":
+                expCod = expCod.replace("le", "l\'").replace("la", "l\'")
+    
+            
+            
       
     s = ""
     if self.action is not None :
       vb = self.action.toText(self.mode, self.temps,personne)
       exp = ""
       if not(usePronom):
-        for suj in self.sujet:
-          exp += suj.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " et "
+        for i in range(len(self.sujet)):
+          suj = self.sujet[i]
+          sujPrev = []
+          if i > 0:
+              sujPrev = [self.sujet[i-1]]
+          exp += suj.toText(locuteur=locuteur, interlocuteur=interlocuteur, sujet=sujPrev, useTranslation=useTranslation, useCorrection=useCorrection) + " et "
         exp = exp[:-4]
+        
+        exp += expCod
         exp += " " + vb.replace("je ","").replace("j\'","").replace("tu ","").replace("il ","").replace("nous ","").replace("vous ","").replace("ils ","").replace("qu\'", "").replace("que ", "")
       else:
-        exp = vb
+        if genreSujet == 2: vb = vb.replace("il ", "elle ").replace("ils ", "elles ")
+        if expCod != "" :
+            vb = vb.replace("j\'", "je ")
+            liste = vb.split(" ")
+            liste = liste[:-1 - (self.temps=="passé-composé")] + [expCod.replace(" ", "")] + liste[-1 - (self.temps=="passé-composé"):]
+            exp = " ".join(liste)
+        else:
+            exp = vb
+            
+            
+      if not(self.cod is None) and self.cod.genre == 2 and self.temps=="passé-composé":
+          exp += "e"
+          
+      exp = exp.replace("\' ", "\'")
       s += exp + " "
 
-    if self.cod is not None :
-      s+= self.cod.toText(locuteur=locuteur, interlocuteur=interlocuteur, useTranslation=useTranslation, useCorrection=useCorrection) + " "
+    if self.cod is not None and not(codUsePronom):
+      s+= self.cod.toText(locuteur=locuteur, interlocuteur=interlocuteur, sujet=self.sujet,  useTranslation=useTranslation, useCorrection=useCorrection) + " "
     
     s = s[:-1]
     self.transmissionInfos(locuteur, interlocuteur)

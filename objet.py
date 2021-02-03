@@ -7,6 +7,7 @@ Created on Sun Dec 27 23:50:39 2020
 
 from psclib.diversifieur import correct, diversifier, get_syn
 from psclib.caracteristique import CaracChiffree, Caracteristique
+from psclib.diversifieur import get_genre
 import random
 
 idCounter = 1
@@ -20,6 +21,7 @@ class Objet(object):
     self.id = idCounter
     idCounter+= 1
     
+    self.genre = None
     self.lib = None
     self.proprio = None
     self.caracs = []
@@ -29,6 +31,7 @@ class Objet(object):
     if not(dico is None):
       if "lib" in dico:
         self.lib = dico["lib"]
+        self.genre = get_genre(self.lib)
       if "proprio" in dico:
         self.proprio = dico["proprio"]
       if "caracs" in dico:
@@ -75,7 +78,7 @@ class Objet(object):
       return self.toText()
   
 
-  def toText(self, types=None, locuteur=None, interlocuteur=None, mentionProprio=True, useTranslation=True, useCorrection=True):
+  def toText(self, types=None, locuteur=None, interlocuteur=None, sujet=None, mentionProprio=True, useTranslation=True, useCorrection=True):
     """
     Si la liste des \"noms\" est fournie, choisi au hasard pami ces noms
     Sinon crée un nom à partir du libellé, des caracs et du proprio
@@ -93,8 +96,12 @@ class Objet(object):
       personne += 3
 
     listePossessifs = ["mon", "ton", "son", "mes", "tes", "leurs"]
+    if self.genre == 2:
+        listePossessifs = ["ma", "ta", "sa", "mes", "tes", "leurs"]
     usePossessif = False
     if personne != 3 and personne != 6:
+      usePossessif = True
+    elif not(sujet is None) and len(sujet) == 1 and not(self.proprio is None) and self.proprio == sujet[0]:
       usePossessif = True
 
     if not(self.noms is None) and len(self.noms) > 0 and random.random() and self in interlocuteur.objets and random.random() >= 1/(1+len(self.noms)):
@@ -102,7 +109,9 @@ class Objet(object):
 
 
     # Nom de l'objet
-    exp = "lae " + get_syn(self.lib)
+    determinant = "le"
+    if self.genre == 2: determinant = "la"
+    exp = determinant + " " + get_syn(self.lib)
     #print("exp", exp)
    
     # On cherche les caracteristiques que l'on va preciser
@@ -125,9 +134,11 @@ class Objet(object):
 
     # Add proprio explicite
     if self.proprio is None: # On considère que c'est indéfini
-      exp = "un " + exp[4:]
+      determinant = "un"
+      if self.genre == 2: determinant = "une"
+      exp = determinant + " " + exp[3:]
     elif usePossessif:
-      exp = listePossessifs[personne-1] + " " +exp[4:]
+      exp = listePossessifs[personne-1] + " " +exp[3:]
     elif mentionProprio:
       exp += " de " + self.proprio.prenom + " " + self.proprio.nom
     
@@ -297,7 +308,7 @@ class Personnage(Objet):
       return self.toText()
 
 
-  def toText(self, locuteur=None, interlocuteur=None, useTranslation=True, useCorrection=True):
+  def toText(self, locuteur=None, interlocuteur=None, sujet=None, useTranslation=True, useCorrection=True):
     return self.prenom + " " + self.nom
 
 
