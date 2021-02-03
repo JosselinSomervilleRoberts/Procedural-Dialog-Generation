@@ -1,1 +1,3 @@
 En fait [1] puis [2].
+[1] et ensuite [2].
+Donc [1] et puis [2].
