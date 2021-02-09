@@ -29,13 +29,13 @@ def intro(p1,p2, useTranslation=True, useCorrection=True) : #p1 et p2 sont des o
           return accrocheFamille(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   
   if etat==0 : #les deux personnages ne se connaissent pas
-    return accroche0(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
+    return accroche0(p1,p2)
   if etat==1 : #p1 connait p2 mais pas l'inverse
-    return accroche1(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
+    return accroche1(p1,p2)
   if etat==2 : #p2 connait p1 mais pas l'inverse
-    return accroche1(p2,p1, useTranslation=useTranslation, useCorrection=useCorrection)
+    return accroche1(p2,p1)
   if etat==3 : #Les deux personnages se connaissent
-    return accroche2(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
+    return accroche2(p1,p2)
 
   print("GROS PROBLEME DANS INTRO")
   return ""
@@ -72,29 +72,56 @@ def intersection(histsA, histsB) : #On part de deux listes d'objets Histoire A e
       
   return resteA, resteB, intersection, intersectionDif
 
+#------------- Fonction annexe pour lire les parties scriptées depuis un fichier
+def lireDepuisTxt(path, p1, p2) :
+    f = open("psclib/fichiers_txt/"+path,"r", encoding="utf-8")
+    listeStr = []
+    ligne = f.readline()
+    while ligne :
+        listeStr.append(ligne)
+        ligne = f.readline()
+    f.close()
+    if not listeStr : #Si erreur (fichier texte vide)
+        s = "Erreur : fichier texte vide"
+    else :
+        s = random.choice(listeStr)
+        s = token(p1, p2, s)
+    return s
+
+#------------- Fonction annexe de remplacage des tokens
+def token(p1, p2, s) : #Remplace les tokens dans les parties scriptées
+    s = s.replace("$n","\n")
+    s = s.replace("$p1prenom", p1.prenom)
+    s = s.replace("$p1nom", p1.nom)
+    s = s.replace("$p2prenom", p2.prenom)
+    s = s.replace("$p2nom", p2.nom)
+    if p1.sexe == "f" :
+        s = s.replace("$p1genre", "e")
+        s = s.replace("$p1mrmme", "Mme")
+    else :
+        s = s.replace("$p1genre", "")
+        s = s.replace("$p1mrmme", "Mr")
+    if p2.sexe == "f" :
+        s = s.replace("$p2genre", "e")
+        s = s.replace("$p2mrmme", "Mme")
+    else :
+        s = s.replace("$p2genre", "")
+        s = s.replace("$p2mrmme", "Mr")
+    return s
+
 #------------- Les accroches, pour introduire le dialogue -------------- IL FAUT FAIRE L'ETAPE DE PRESENTATION ELEMENTAIRE
-def accroche0(p1, p2, useTranslation=True, useCorrection=True) : #Les deux personnages ne se connaissent pas -> Chacun se crée une représentation de l'autre
-  p, q = switcheroo(p1,p2) #On ne s'intéresse qu'au premier objet renvoyé
-  s = p.imprimer("Bonjour étranger, je ne vous ai jamais vu ici...", useTranslation=useTranslation, useCorrection=useCorrection)
-  s += "\n" + q.imprimer("Bonjour, moi non plus. Je m'appelle " + q.prenom + " " + q.nom + ". Et vous?", useTranslation=useTranslation, useCorrection=useCorrection)
-  s += "\n" + p.imprimer("Moi je m'appelle " + p.prenom + " " + p.nom + ". Enchanté, " + q.prenom + " " + q.nom +". ", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
-  s += "\n" + q.imprimer("Enchanté, " + p.prenom + " " + p.nom +". ", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
-  p1.contacts.append(p2.copyStrip())
-  p2.contacts.append(p1.copyStrip())
-  return s
+def accroche0(p1, p2) : #Les deux personnages ne se connaissent pas -> Chacun se crée une représentation de l'autre
+    p, q = switcheroo(p1,p2) #Cas particulier : on ne se soucie pas de qui est qui
+    p1.contacts.append(p2.copyStrip())
+    p2.contacts.append(p1.copyStrip())
+    return lireDepuisTxt("intros/accroche2Inconnus.txt", p, q)
 
-def accroche1(p1, p2, useTranslation=True, useCorrection=True) : #p1 connaît p2 mais pas l'inverse -> p2 se crée une représentation de p1
-  s = p1.imprimer("Bonjour ! Vous êtes "+p2.prenom+" "+p2.nom+", c'est ça ?", useTranslation=useTranslation, useCorrection=useCorrection)
-  s += "\n" + p2.imprimer("Euh, oui. Je ne vous connais pas, vous êtes... ?", useTranslation=useTranslation, useCorrection=useCorrection)
-  s += "\n" + p1.imprimer(p1.prenom+" "+p1.nom+", enchanté. J'ai entendu parler de vous, c'est pour ça haha.", useTranslation=useTranslation, useCorrection=useCorrection)
-  s += "\n" + p2.imprimer("Haha en effet.", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+def accroche1(p1, p2) : #p1 connaît p2 mais pas l'inverse -> p2 se crée une représentation de p1
   p2.contacts.append(p1.copyStrip())
-  return s
+  return lireDepuisTxt("intros/accroche1Inconnu.txt", p1, p2)
 
-def accroche2(p1, p2, useTranslation=True, useCorrection=True) : #Les deux personnages se connaissent
-  s = p1.imprimer("Salut mon pote !", useTranslation=useTranslation, useCorrection=useCorrection)
-  s += "\n" + p2.imprimer("Salut à toi également l'ami !", useTranslation=useTranslation, useCorrection=useCorrection)
-  return s
+def accroche2(p1, p2) : #Les deux personnages se connaissent
+  return lireDepuisTxt("intros/accroche2Connus.txt", p1, p2)
 
 def accrocheFamille(p1, p2,useTranslation=True, useCorrection=True):
     if p1.pere.id == p2.id or p1.mere.id == p2.id :

@@ -1,0 +1,2 @@
+$p1prenom $p1nom : Bonjour ! Vous êtes $p2prenom $p2nom, c'est ça ?$n$p2prenom $p2nom : Euh, oui. Je ne vous connais pas, vous êtes... ?$n$p1prenom $p1nom : $p1prenom $p1nom, enchanté$p1genre. J'ai entendu parler de vous, c'est pour ça haha.$n$p2prenom $p2nom : Ah d'accord, eh bien ravi$p2genre de faire connaissance.
+$p1prenom $p1nom : Oh $p2mrmme $p2nom ! C'est un plaisir de vous rencontrer, je me présente, $p1prenom $p1nom.$n$p2prenom $p2nom : Ravi$p2genre de faire connaissance $p1mrmme $p1nom.
