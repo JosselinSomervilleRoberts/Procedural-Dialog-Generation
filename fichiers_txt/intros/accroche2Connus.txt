@@ -1,0 +1,2 @@
+$p1prenom $p1nom : Salut mon ami$p2genre !$n$p2prenom $p2nom : Oh $p1prenom ! Ca fait plaisir de te voir !
+$p1prenom $p1nom : Oooh $p2prenom !$n$p2prenom $p2nom : $p1prenom ! Coucou ! *bises*
