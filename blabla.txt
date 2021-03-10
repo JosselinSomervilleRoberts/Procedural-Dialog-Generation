@@ -9,7 +9,7 @@ LES COMMANDES DE BASES AVEC GITHUB :
 - "git pull" avant de commencer à coder, pour actualiser ses fichiers locaux
 
 - Pour mettre ses fichiers sur le commun, "git add ."
-  Puis "git commit -m "[type de modification][ton nom] libellé""
+  Puis "git commit -m "[type de modification] libellé""
   Puis "git push" (si erreur, faire "git pull", puis "git push")
 
 - Pour changer d'où on pull : "git branch --set-upstream-to=origin/master master"

@@ -1,3 +1,4 @@
 $p1prenom $p1nom : Bonjour étranger, je ne vous ai jamais vu ici...$n$p2prenom $p2nom : Bonjour, moi non plus. Je m'appelle $p2prenom $p2nom. Et vous ?$n$p1prenom $p1nom : Je m'appelle $p1prenom $p1nom. Enchanté.
 $p1prenom $p1nom : Bonjour, je me présente, $p1prenom $p1nom, et vous-êtes ?$n$p2prenom $p2nom : $p2prenom $p2nom. Ravi$p2genre de vous rencontrer.$n$p1prenom $p1nom : Également.
 $p1prenom $p1nom : Salut, tu t'appelles comment ?$n$p2prenom $p2nom : Je m'appelle $p2prenom $p2nom. Et toi ?$n$p1prenom $p1nom : Moi c'est $p1prenom $p1nom. Heureux de faire connaissance.
+$p1prenom $p1nom : Bonjour ! Qui êtes-vous ?$n$p2prenom $p2nom : Je m'appelle $p2prenom $p2nom.$n$p1prenom $p1nom : $p1prenom $p1nom, enchanté$p1genre.$n$p2prenom $p2nom : De même !
