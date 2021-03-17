@@ -157,9 +157,28 @@ def fin(p1,p2, useTranslation=True, useCorrection=True) : #Fonction temporaire (
 def transition(useTranslation=True, useCorrection=True) :
   return "---"
 
+
+
+def histoireQuiPeuventEtresRacontees(hists1, p1, p2):
+    """Renvoie seulement les histoires dans hists1 que p1 peut raconter a p2"""
+    lien = "inconnu"
+    if p2.id in p1.contacts:
+        lien = p1.contacts[p2.id].getRelation().split("/")[0]
+    
+    hists1_a_raconter = []
+    for h in hists1:
+        if lien in h.relationPourRaconter:
+            hists1_a_raconter.append(h)
+            
+    return hists1_a_raconter
+
+
+
 #------------- Détermination du locuteur et de l'interlocuteur / du cas où les personnages n'ont rien à raconter (pas d'histoire / histoires connues par les deux)
 def quiparle(p1,p2) :
   hists1, hists2, intersect, intersectionDif = intersection(p1.histoires, p2.histoires)
+  hists1_trie = sorted(histoireQuiPeuventEtresRacontees(hists1, p1, p2), key=lambda h: h.importance)[::-1]
+  hists2_trie = sorted(histoireQuiPeuventEtresRacontees(hists2, p2, p1), key=lambda h: h.importance)[::-1]
   if len(hists1)==0 :
     if len(hists2)==0 : #Les deux personnages n'ont rien à dire
       if len(intersectionDif) > 0:
