@@ -16,13 +16,13 @@ idCounter = 1
 
 class Objet(object):
 
-  def __init__(self, dico=None):
+  def __init__(self, dico=None, lib=None):
     global idCounter
     self.id = idCounter
     idCounter+= 1
     
     self.genre = None
-    self.lib = None
+    self.lib = lib
     self.proprio = None
     self.caracs = []
     self.noms = None
@@ -205,6 +205,15 @@ class Personnage(Objet):
       self.enfants = []
       self.token = None
       
+      self.evenements = {}
+      self.endroits = []
+      self.histJournaliere = None
+      self.coeurJournalier = None
+      self.current_evenement = 0
+      self.current_endroit = 0
+      self.vientDarriverJournalier = True
+      self.listeLieux = []
+      
 
       if not(dico is None):
         if "ticsLangages" in dico:
@@ -352,3 +361,71 @@ class Personnage(Objet):
       if not(hist is None) and self.indexHistoire(hist.titre) == -1:
           hist.conteur = self
           self.histoires.append(hist)
+          
+  def update(self, heure):
+      from psclib.lien import Lien, SUITE
+      from psclib.coeuraction import CoeurAction
+      from psclib.action import Action
+      
+      print(self.current_endroit, self.current_evenement)
+      
+      # Si on a pas commencé l'histoire
+      if self.coeurJournalier is None:
+          # On choisit un endroit aleatoirement
+          self.current_endroit = random.choices([k for k in range(len(self.endroits[0]))], weights=self.endroits[0], k=1)[0]
+          # Si on va quelque part
+          if self.current_endroit != 0:
+              self.coeurJournalier = CoeurAction(sujet=self, action=Action(name="aller"))
+              self.coeurJournalier.ajouterLieu(complement=self.listeLieux[self.current_endroit-1].get_lieu(), importance = 1000)
+              self.coeurJournalier.ajouterMoment(date=self.histJournaliere.dateDebut.replace(hour=heure), importance=2)
+              self.histJournaliere.head = self.coeurJournalier
+              self.current_evenement = 0
+              self.vientDarriverJournalier = True
+      
+      # Si on fait rien, on change de lieu et qu'on ne viens pas d'arriver
+      if (self.current_evenement == 0) and not(self.vientDarriverJournalier):
+         prev_endroit = self.current_endroit
+         l = self.endroits[self.current_endroit]
+         self.current_endroit = random.choices([k for k in range(len(l))], weights=l, k=1)[0]
+              
+         # Si on bouge quelque part
+         if prev_endroit != self.current_endroit and self.current_endroit != 0:
+            coeur = CoeurAction(sujet=self, action=Action(name="aller"))
+            coeur.ajouterLieu(complement=self.listeLieux[self.current_endroit-1].get_lieu(), importance = 1000)
+            coeur.ajouterMoment(date=self.histJournaliere.dateDebut.replace(hour=heure), importance=2)
+            self.coeurJournalier.ajouterLien(Lien(coeur = coeur, typeLien = SUITE, importance = 0.5 + 0.2*self.getCaracValue(Caracteristique(name="bavard"))))
+            self.coeurJournalier = coeur
+            self.current_evenement = 0
+            self.vientDarriverJournalier = True
+              
+      # Si on est quelquepart
+      if self.current_endroit != 0:
+         # on cherche une activité
+         prev_evenement = self.current_evenement
+         l = self.evenements[self.listeLieux[self.current_endroit-1]][self.current_evenement]
+         self.current_evenement = random.choices([k for k in range(len(l))], weights=l, k=1)[0]
+              
+         # Si il y a un évenement nouveau
+         if self.current_evenement != 0 and prev_evenement != self.current_evenement:
+            coeur = self.listeLieux[self.current_endroit-1].action_possibles[self.current_evenement-1].getCoeur(self) # On génère le coeur
+            self.coeurJournalier.ajouterLien(Lien(coeur = coeur, typeLien = SUITE, importance = 0.5 + 0.2*self.getCaracValue(Caracteristique(name="bavard"))))
+            self.coeurJournalier = coeur
+            self.vientDarriverJournalier = False
+                  
+                  
+  def commencer_journee(self, date):
+      from psclib.histoire import Histoire
+      if self.histJournaliere is None:
+          self.histJournaliere = Histoire(titre="Hstoire de " + self.toText() + " le " + str(date), conteur=self, personnes=[self], dateDebut=date)
+          self.coeurJournalier = None
+          self.current_evenement = 0
+          self.current_endroit = 0
+          self.vientDarriverJournalier = True
+      else:
+          raise Exception("L histoire journaliere de " + self.toText() + " n est pas finie, impossible d en créer une nouvelle")
+      
+  def finir_journee(self):
+      if not(self.histJournaliere is None):
+          self.histoires.append(self.histJournaliere)
+          self.histJournaliere = None
+          self.coeurJournalier = None

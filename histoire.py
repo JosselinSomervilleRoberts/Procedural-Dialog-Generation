@@ -162,12 +162,13 @@ def retourArriere(typeLien, dateCoeur=None, date=None, used=None):
 # Les histoires
 class Histoire:
 
-  def __init__(self, head = None, ton = None, titre = None,personnes = None, conteur = None ):
+  def __init__(self, head = None, ton = None, titre = None,personnes = None, conteur = None, dateDebut = None):
     self.head = head # Pointeur vers le 1er coeur (d'action) de l'histoire. Celui-ci pointe ensuite vers différents liens logiques ou autres coeurs.
     self.ton = ton # String, ton de l'histoire (triste, drôle, etc.)
     self.titre = titre # String, pour les comparaisons
     self.personnes = personnes # ___, personnages évoqués dans l'histoire (c'est là pour le moment, à voir si ça sera utile ou non)
     self.conteur = conteur # ___, Narrateur originel de l'histoire, pour différencier les histoires personnelles des histoires rapportées
+    self.dateDebut = dateDebut
     
     self.liensAExplorer = []
     self.liensADemander = []
@@ -503,7 +504,7 @@ class Histoire:
         phrasesPrecedentes = locuteur.imprimer(phraseStart, useTranslation=useTranslation, useCorrection=useCorrection)
         
         if indexHist == -1: #True
-            phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non, racontes !", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+            phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non, raconte !", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
         else:
             conteur = interlocuteur.histoires[indexHist].conteur
             if conteur == locuteur:

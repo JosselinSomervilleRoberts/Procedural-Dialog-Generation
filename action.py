@@ -17,7 +17,7 @@ from psclib.diversifieur import cong
 class Action :
 
   def getAvailable():
-    return ["manger", "aller", "courir", "marcher", "attaquer", "tomber", "casser", "chanter", "parler", "regarder", "raconter", "voir", "ecrire", "boire",
+    return ["decider", "payer", "choisir", "acheter", "faire a manger", "manger", "aller", "courir", "marcher", "attaquer", "tomber", "casser", "chanter", "parler", "regarder", "raconter", "voir", "ecrire", "boire",
             "crier", "sourir", "sauter", "ecouter", "dormir", "travailler", "trouver", "devenir", "balader", "ecraser", "rouler", "soigner", "aller voir", "se défouler"]
 
   def getAlike(s):
@@ -33,14 +33,17 @@ class Action :
     if not(name is None):
       if not(name in Action.getAvailable()) : raise NameError('Il n\'y a pas d\'Action nommée ' + name)
       
-      if name == "aller" : self = Action.__init__(self, "aller", [[1, "[(aller)]"]] )
+      if name == "aller" : self = Action.__init__(self, "aller", [[1, "[aller]"]] )
+      if name == "acheter" : self = Action.__init__(self, "acheter", [[1, "[(acheter)]"]] )
       if name == "attaquer" : self = Action.__init__(self, "attaquer", [[0.8,"[(attaquer)]"], [0.2,"[tomber] sur"]] )
       if name == "balader"  : self = Action.__init__(self, "balader", [[0.5, "[balader]"], [0.5, "[promener]"]])
       if name == "boire"  : self = Action.__init__(self, "boire", [[1, "[(boire)]"]])
       if name == "casser"  : self = Action.__init__(self, "casser", [[1, "[(casser)]"]])
       if name == "chanter" : self = Action.__init__(self, "chanter", [[1, "[(chanter)]"]])
+      if name == "choisir" : self = Action.__init__(self, "choisir", [[1, "[choisir]"]] )
       if name == "courir": self = Action.__init__(self, "courir", [[1, "[(courir)]"]])
       if name == "crier"  : self = Action.__init__(self, "crier", [[1, "[(crier)]"]])
+      if name == "decider" : self = Action.__init__(self, "décider", [[1, "[(décider)]"]])
       if name == "devenir" : self = Action.__init__(self, "devenir", [[1, "[(devenir)]"]])
       if name == "dormir"  : self = Action.__init__(self, "dormir", [[1, "[(dormir)]"]])
       if name == "ecouter" : self = Action.__init__(self, "écouter", [[1, "[(écouter)]"]])
@@ -49,6 +52,7 @@ class Action :
       if name == "manger": self = Action.__init__(self, "manger", [[1.0, "[(manger)]"], [0.0, "[se prendre] une part"], [0.0, "[casser] la croute"]])
       if name == "marcher" : self = Action.__init__(self, "marcher",[ [0.7,"[(marcher)]"], [0.3, "[aller] à pieds"]])
       if name == "parler"  : self = Action.__init__(self, "parler", [[1, "[(parler)]"]])
+      if name == "payer"  : self = Action.__init__(self, "payer", [[1, "[(payer)]"]])
       if name == "raconter" : self = Action.__init__(self, "raconter", [[0.5, "[(raconter)]"], [0.2, "[(expliquer)]"], [0.3, "[(dire)]"]])
       if name == "regarder" : self = Action.__init__(self, "regarder", [[1, "[(regarder)]"]])
       if name == "rouler" : self = Action.__init__(self, "rouler", [[1, "[(rouler)]"]])
@@ -61,6 +65,7 @@ class Action :
       if name == "soigner"   : self = Action.__init__(self, "soigner",  [[0.8, "[(soigner)]"],[0.2, "[guérir]"]])
       if name == "aller voir"   : self = Action.__init__(self, "aller voir",  [[0.6, "[aller] voir"],[0.4, "[aller] consulter"]])
       if name == "se défouler"  : self = Action.__init__(self, "se défouler",  [[0.6, "[se défouler]"],[0.4, "[se dégourdir] les pattes"]])
+      if name == "faire a manger"  : self = Action.__init__(self, "faire à manger",  [[0.6, "[faire] à manger"],[0.2, "[cuire]"], [0.2, "[préparer]"]])
     else:
       self.lib = lib #str
       self.expressions = expressions #Liste couple [proba(float), string]
