@@ -162,7 +162,7 @@ def retourArriere(typeLien, dateCoeur=None, date=None, used=None):
 # Les histoires
 class Histoire:
 
-  def __init__(self, head = None, ton = None, titre = None,personnes = None, conteur = None, dateDebut = None):
+  def __init__(self, head = None, ton = None, titre = None,personnes = None, conteur = None, dateDebut = None, importance = 0, relationPourRaconter = None):
     self.head = head # Pointeur vers le 1er coeur (d'action) de l'histoire. Celui-ci pointe ensuite vers différents liens logiques ou autres coeurs.
     self.ton = ton # String, ton de l'histoire (triste, drôle, etc.)
     self.titre = titre # String, pour les comparaisons
@@ -170,8 +170,23 @@ class Histoire:
     self.conteur = conteur # ___, Narrateur originel de l'histoire, pour différencier les histoires personnelles des histoires rapportées
     self.dateDebut = dateDebut
     
+    # Determine a qui on va dire l'histoire
+    self.importance = importance
+    self.relationPourRaconter = relationPourRaconter
+    if relationPourRaconter is None:
+        if self.importance < 1:
+            self.relationPourRaconter = ["famille", "travail", "inconnu", "connaissance", "ami"]
+        elif self.importance < 3:
+            self.relationPourRaconter = ["famille", "travail", "connaissance", "ami"]
+        elif self.importance < 10:
+            self.relationPourRaconter = ["famille", "ami"]
+        else:
+            self.relationPourRaconter = ["famille"]
+    
+    # Pour les questions
     self.liensAExplorer = []
     self.liensADemander = []
+    
     
     
 
@@ -289,167 +304,6 @@ class Histoire:
           
           
       
-
-
-  def toTextOld(self, locuteur, interlocuteur, coeurCurrent=None, prefixe="", s0=""):
-    """
-    Génère le texte pour l'histoire.
-    La façon dont s'enchaine l'histoire dépend des caractéristiques du locuteur et de l'interlocuteur
-    - si le locuteur est "mystérieux", il aura peu tendance à ajouter les liens
-    - si le locuteur est "bavard", lorsqu'il précise un lien, il aura tendance à en préciser beaucoup. Ceci est à différencer de "mystérieux".
-    Par exemple si le coeur actuel à 3 liens : cause, conséquence et suite. S'il est mystérieux il aura peu tendance à préciser les liens. Si toutefois il
-    décide de préciser un ou plusieurs le lies, le nombre de liens précisés dépendra de s'il est bavard ou non.
-    - si l'interlocuteur a de la "curiosite", il aura tendance a poser des questions.
-    
-    A VERIFIER : j'ai l'impression qu'actuellement le locuteur ne peux enchainer les liens si l'interlocuteur ne lui pose pas de questions.
-    EN COURS: ajout de la transmission d'infos
-
-      Parameters
-      ----------
-      locuteur : Personnage
-          C'est celui qui raconte l'histoire
-      interlocuteur : Personnage
-          C'est celui qui écoute l'histoire
-      coeurCurrent : Coeur, optional
-          Correspond au coeur actuel. Cela permet d'appeler récursivement la fonction toText notamment.
-          Si n'est pas précisé, coeurCurrent vaut l'head de l'histoire. Ensuite si l'interlocuteur pose une question
-          On peut rappeler toText mais en précisant que l'on ne démarre plus de head mais du coeur suivant.
-      prefixe : str, optional
-          Préfixe en début de phrase, par exemple "Parce que + ...."".
-
-      Returns
-      -------
-      s : string
-          Texte de la discussion
-
-      """
-    if coeurCurrent is None: coeurCurrent = self.head
-    
-    # Ajouter l'histoire
-    indexHist = interlocuteur.indexHistoire(self.titre)
-    if indexHist == -1:
-        interlocuteur.histoires.append(Histoire(head=coeurCurrent, titre=self.titre))
-        indexHist = interlocuteur.indexHistoire(self.titre)
-        
-
-    s = ""
-    s1 = prefixe + coeurCurrent.toText(locuteur, interlocuteur)
-
-    if not(coeurCurrent.liens is None) and len(coeurCurrent.liens) > 0: # Il existe un lien
-      # Plus le perso est mystérieux, moins il a de chance de raconter les liens
-      # Linéaire : mysterieux = 0 -> proba = 0.95, mysterieux=10 -> proba = 0.25
-      probaRaconter = 0.95 - 0.07*locuteur.getCaracValue(Caracteristique(name="mysterieux"))
-      #print("mysterieux", locuteur.prenom, locuteur.getCaracValue(Caracteristique(name="mysterieux")), "/ proba=", probaRaconter)
-
-      liensRacontes = []
-      liensOmis = []
-      
-      # On ordonne les liens dans l'ordre CAUSE, CONSEQUENCE, SUITE
-      importanceTotale = 0
-      liste_liens = []
-      indexDebutConsequence = 0
-      for lien in random.sample(coeurCurrent.liens, len(coeurCurrent.liens)):
-          importanceTotale += lien.importance
-          if lien.typeLien == CAUSE:
-              liste_liens = [lien] + liste_liens
-              indexDebutConsequence += 1
-          elif lien.typeLien == SUITE:
-              liste_liens += [lien]
-          else:
-              liste_liens = liste_liens[:indexDebutConsequence] + [lien] + liste_liens[indexDebutConsequence+1:]
-      
-
-      lienPrincipal = None
-      importanceLienPrincipal = 0
-      for lien in liste_liens:
-        # Plus le perso est bavard plus il aura tendance à enchainer les liens
-        # coeff Linéaire : bavard = 0 -> coeffDimin = 20, bavard=10 -> coeffDimin = 1.1
-        coeff = 20 - 1.89*locuteur.getCaracValue(Caracteristique(name="bavard"))
-        # exposant allant de 0 a 1 par rapport à la proportion d'hisoires racontées
-        exposant = 2.*((1.+(len(liensRacontes)/float(len(coeurCurrent.liens)))) / (1.+len(liensOmis)/float(len(coeurCurrent.liens))) - 0.5)/3.
-        proba = probaRaconter / float(coeff**exposant)
-
-        if lien.importance == 3 or importanceTotale*random.random() <= (lien.importance**2)*proba: # On raconte le lien
-          liensRacontes.append(lien)
-          if lien.importance > importanceLienPrincipal:
-              lienPrincipal = lien
-        else:
-          liensOmis.append(lien)
-
-
-
-
-      # - Si il y a plusieurs liens: on ajoute dans la même phrase tous les liens sauf le lienPrincipal,
-      # puis on met un point et on recommence une phrase avec le lien principal.
-      # - Si il n'y a qu'un seul lien, il y a une chance sur 2 de recommencer une phrase.
-      # Le lien principal doit être à la fin
-      liens_continuer = {CAUSE: " parce que ", CONSEQUENCE: " donc ", SUITE: " puis "}
-      liens_recommencer = {CAUSE: "C\'est parce que ", CONSEQUENCE: "Et donc ", SUITE: "Ensuite, "}
-      
-      if len(liensRacontes) == 1:
-        if random.random() <= 0.5:
-          s1 += ". " + liens_recommencer[liensRacontes[0].typeLien]
-        else:
-          s1 += liens_continuer[liensRacontes[0].typeLien]
-        return self.toText(locuteur, interlocuteur, coeurCurrent=liensRacontes[0].coeur, prefixe=s1, s0=s0)
-      
-      elif len(liensRacontes) > 1:    
-        for l in liensRacontes :
-          if not(l == lienPrincipal):
-            s1 += liens_continuer[liensRacontes[0].typeLien] + l.coeur.toText(locuteur, interlocuteur)
-        s1 += ". " + liens_recommencer[lienPrincipal.typeLien]
-        return self.toText(locuteur, interlocuteur, coeurCurrent=lienPrincipal.coeur, prefixe=s1, s0=s0)
-
-      s0 += "\n" + locuteur.imprimer(ajouterPonctuation(s1))
-
-
-
-      # L'interlocuteur pose des questions
-      # Plus le perso est curieux, plus il a de chance de demander les liens
-      # Linéaire : curieux = 0 -> proba = 0.25, curieux=10 -> proba = 0.95
-      probaDemander = 0.25 + 0.07*interlocuteur.getCaracValue(Caracteristique(name="curiosite"))
-      #print("curiosite", interlocuteur.prenom, interlocuteur.getCaracValue(Caracteristique(name="curiosite")), "/ proba=", probaDemander)
-      probaDemanderInfoExistante = 0.75 # Proba de demander une info dans liensOmis
-
-      if random.random() <= probaDemander:
-        if len(liensOmis) > 0 and random.random() <= probaDemanderInfoExistante: # On demande une info existante
-          l = random.choice(liensOmis)
-          demande = demanderLien(l.typeLien)
-          if "[]" in demande:
-              phrase = coeurCurrent.toText(interlocuteur, locuteur)
-              demande = demande.replace("[]", phrase)
-                
-          s0 += "\n" + interlocuteur.imprimer(demande)
-          
-          dictPrefixe = {}
-          dictPrefixe[CAUSE] = ["Parce que "]
-          dictPrefixe[CONSEQUENCE] = ["Donc "]
-          dictPrefixe[SUITE] = ["Ensuite, "]
-          return self.toText(locuteur, interlocuteur, coeurCurrent=l.coeur, prefixe=random.choice(dictPrefixe[l.typeLien]), s0=s0)
-          #s0 += "\n" + self.toText(locuteur, interlocuteur, coeurCurrent=l.coeur, prefixe=random.choice(dictPrefixe[l.typeLien]))
-        else:
-          liensPossibles = [CAUSE, CONSEQUENCE, SUITE]
-          # Il ne faut pas demander un lien qui a déjà été précisé
-          for l in liensRacontes:
-            liensPossibles.remove(l.typeLien)
-          # Si on a déja mentionné tous les liens, liensPossibles est vide
-          # Dans ce cas on demande la suite
-          if len(liensPossibles) == 0:
-            liensPossibles = [SUITE]
-
-          typeLien = random.choice(liensPossibles)
-          demande = demanderLien(typeLien)
-          if "[]" in demande:
-              phrase = coeurCurrent.toText(interlocuteur, locuteur)
-              demande = demande.replace("[]", phrase)
-                
-          s0 += "\n" + interlocuteur.imprimer(demande)
-          #s0 += "\n" + interlocuteur.imprimer(demanderLien(typeLien), diversify=False)
-          s0 += "\n" + locuteur.imprimer(nePasSavoirLien(typeLien), diversify=False)
-    else:
-      s0 += "\n" + locuteur.imprimer(ajouterPonctuation(s1))
-      
-    return s0 
 
 
 

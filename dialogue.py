@@ -135,7 +135,10 @@ def accrocheFamille(p1, p2,useTranslation=True, useCorrection=True):
             appelation = "ma fille"
         else:
             appelation = p2.prenom
-    s = p1.imprimer(random.choice(salutations) + " " + appelation + " !",  useTranslation=useTranslation, useCorrection=useCorrection)         
+            
+    sal = random.choice(salutations)
+    s = p1.imprimer(sal + " " + appelation + " !",  useTranslation=useTranslation, useCorrection=useCorrection) + "\n"
+    s += p2.imprimer(sal + " !", useTranslation=useTranslation, useCorrection=useCorrection)  
     return s
 
 #------------- Les personnages ne racontent pas forcément leurs histoires jusqu'au bout
@@ -232,6 +235,7 @@ def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
   s = intro(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
   continuer = True
   premierCycle = True #Indicateur
+  
   while continuer :
     if not premierCycle :
        loc, interloc = quiparle(p1,p2) #On décide qui parle
