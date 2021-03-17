@@ -408,6 +408,7 @@ class Personnage(Objet):
          # Si il y a un évenement nouveau
          if self.current_evenement != 0 and prev_evenement != self.current_evenement:
             coeur = self.listeLieux[self.current_endroit-1].action_possibles[self.current_evenement-1].getCoeur(self) # On génère le coeur
+            coeur.ajouterMoment(date=self.histJournaliere.dateDebut.replace(hour=heure), importance=2)
             self.coeurJournalier.ajouterLien(Lien(coeur = coeur, typeLien = SUITE, importance = 0.5 + 0.2*self.getCaracValue(Caracteristique(name="bavard"))))
             self.coeurJournalier = coeur
             self.vientDarriverJournalier = False
