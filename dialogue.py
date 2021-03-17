@@ -15,18 +15,14 @@ from psclib.diversifieur import diversifier
 
 #----------- Fonction pour tester si p1 connaît p2 (non réflexif)
 def connait(p1,p2): #p1 et p2 sont des objets Personnage
-  for p in p1.contacts:
-    if p.id == p2.id :
-      return True
-  return False
+  return p1.id in p2.contacts
 
 #----------- L'introduction du dialogue
 def intro(p1,p2, useTranslation=True, useCorrection=True) : #p1 et p2 sont des objets Personnage, p1 est le locuteur et p2 l'interlocuteur
   etat = int(connait(p1,p2)) + 2*int(connait(p2,p1)) #etat est un entier
   
-  for personne in p1.famille :
-      if personne.id == p2.id :
-          return accrocheFamille(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
+  if p2.id in p1.contacts and p1.contacts[p2.id].getRelation().split("/")[0] == "famille":
+      return accrocheFamille(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   
   if etat==0 : #les deux personnages ne se connaissent pas
     return accroche0(p1,p2)
@@ -124,34 +120,22 @@ def accroche2(p1, p2) : #Les deux personnages se connaissent
   return lireDepuisTxt("intros/accroche2Connus.txt", p1, p2)
 
 def accrocheFamille(p1, p2,useTranslation=True, useCorrection=True):
-    if p1.pere.id == p2.id or p1.mere.id == p2.id :
-        if p1.pere.id == p2.id :
-            s = p1.imprimer("Salut Papa !",  useTranslation=useTranslation, useCorrection=useCorrection)
-        else :
-            s = p1.imprimer("Salut Maman !",  useTranslation=useTranslation, useCorrection=useCorrection)
-        if p1.sexe == "m":
-            s += "\n" + p2.imprimer("Coucou mon fils !", useTranslation=useTranslation, useCorrection=useCorrection)
-        if p2.sexe == "f":
-            s += "\n" + p2.imprimer("Coucou ma fille !", useTranslation=useTranslation, useCorrection=useCorrection)
-        else :
-            s += "\n" + p2.imprimer("Coucou " + p2.prenom + " !", useTranslation=useTranslation, useCorrection=useCorrection)
-    else : #p2 est un enfant de p1
-        if random.randint(0,1):
-            if p2.sexe == "m":
-                s = p1.imprimer("Coucou mon fils !", useTranslation=useTranslation, useCorrection=useCorrection)
-            if p2.sexe == "f":
-                s = p1.imprimer("Coucou ma fille !", useTranslation=useTranslation, useCorrection=useCorrection)
-            else :
-                s = p1.imprimer("Coucou " + p2.prenom + " !", useTranslation=useTranslation, useCorrection=useCorrection)
-            if p1.sexe == "m" :
-                s += "\n" + p2.imprimer("Salut Papa !", useTranslation=useTranslation, useCorrection=useCorrection)
-            if p1.sexe == "f" : 
-                s += "\n" + p2.imprimer("Salut Maman !", useTranslation=useTranslation, useCorrection=useCorrection)
-            else :
-                s += "\n" + p2.imprimer("Salut !", useTranslation=useTranslation, useCorrection=useCorrection)
-    s += "\n" + p1.imprimer("Il y a un truc que je veux te raconter.",  useTranslation=useTranslation, useCorrection=useCorrection)
-    if random.randint(0,1):
-        s += "\n" + p2.imprimer("Je t'écoute.",  useTranslation=useTranslation, useCorrection=useCorrection)          
+    lien = p1.contacts[p2.id].getRelation().split("/")[1]
+    print(lien)
+    salutations = ["Coucou", "Salut"]
+    appelation = ""
+    if lien == "parent":
+        appelation = ("papa" if p2.sexe == "m" else "maman")
+    if lien == "adelphe":
+        appelation = p2.prenom
+    if lien == "enfant":
+        if p2.sexe == "m":
+            appelation = "mon fils"
+        elif p2.sexe == "f":
+            appelation = "ma fille"
+        else:
+            appelation = p2.prenom
+    s = p1.imprimer(random.choice(salutations) + " " + appelation + " !",  useTranslation=useTranslation, useCorrection=useCorrection)         
     return s
 
 #------------- Les personnages ne racontent pas forcément leurs histoires jusqu'au bout

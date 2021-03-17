@@ -8,6 +8,7 @@ Created on Sun Dec 27 23:50:39 2020
 from psclib.diversifieur import correct, diversifier, get_syn
 from psclib.caracteristique import CaracChiffree, Caracteristique
 from psclib.diversifieur import get_genre
+from psclib.relation import Relation
 import random
 
 idCounter = 1
@@ -173,13 +174,15 @@ class Personnage(Objet):
       if name == "lancelot": self = Personnage.__init__(self, dico={"nom":"Du Lac", "prenom":"Lancelot"})
       if name == "mickey": self = Personnage.__init__(self, dico={"nom":"Mouse", "prenom":"Mickey"})
       if name == "joe": self = Personnage.__init__(self, dico={"nom":"Dalton", "prenom":"Joe"})
-      if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=10)]})
-      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10)]})
-      if name == "kevin": self = Personnage.__init__(self, dico={"nom":"", "prenom":"Kev", "ticsLangages": {"": 1, "genre": 1, "wesh,": 8, "en fait": 1, "du coup": 1},
+      if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=10)]})
+      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10)]})
+      if name == "kevin": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Kev", "ticsLangages": {"": 1, "genre": 1, "wesh,": 8, "en fait": 1, "du coup": 1},
                                                                  "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=2), 
                                                                             CaracChiffree(name="hésitation", value=10), CaracChiffree(name="memoire", value=2)]})
     else:
       Objet.__init__(self, dico=dico) # A RAJOUTER dico EN ARGUMENT
+      
+      # Caracteristiques
       self.setCarac(CaracChiffree(name="bavard", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="curiosite", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="politesse", value=5), overWrite=False)
@@ -187,24 +190,20 @@ class Personnage(Objet):
       self.setCarac(CaracChiffree(name="hésitation", value=5), overWrite=False)
       self.setCarac(CaracChiffree(name="memoire", value=5), overWrite=False)
       
+      # Tics de langages
       self.ticsLangages = {"": 1, "genre": 0, "wesh,": 0, "en fait": 0, "du coup": 0}
       
+      # Identité et liens aux autres
       self.nom = None
       self.prenom = None
       self.id = None
       self.sexe = None
       self.age = None
-      
       self.objets = []
-      
-      self.humeur = None
       self.animaux = []
-      self.famille = [] #contient le père, la mère et les enfants
-      self.pere = None
-      self.mere = None
-      self.enfants = []
-      self.token = None
+      self.contacts = {} #Liste d'objets Personnage, représente les gens connus par le personnage (ainsi que, plus tard, les informations connues par le personnage sur ses contacts)
       
+      # Génération d'histoires
       self.evenements = {}
       self.endroits = []
       self.histJournaliere = None
@@ -218,7 +217,6 @@ class Personnage(Objet):
       if not(dico is None):
         if "ticsLangages" in dico:
           self.ticsLangages = dico["ticsLangages"] 
-        #juste pour comparer facilement
         if "nom" in dico:
           self.nom = dico["nom"] #Nom est un string
         if "prenom" in dico:
@@ -226,26 +224,25 @@ class Personnage(Objet):
         if "age" in dico:
           self.age = dico["age"] #Age est un int
         if "sexe" in dico:
-          self.sexe = dico["sexe"] #Sexe est -non défini- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if "humeur" in dico:
-            self.humeur = dico["humeur"] #Humeur est un string (remplacer par une caractéristique CaracChiffree ?)
+          self.sexe = dico["sexe"] #Sexe est -non défini- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!         
         if "animaux" in dico:
             self.animaux = dico["animaux"] #Animaux est une liste d'objets (désignant des animaux de compagnie)
-        if "pere" in dico:
-            self.pere = dico["pere"] #Père est un string ou objet ou personnage
-        if "mere" in dico:
-            self.mere = dico["mere"] #Mère est un string ou objet ou personnage
-        if "enfants" in dico:
-            self.enfants = dico["enfants"] #Enfants est une liste de strings ou objets ou personnages
-      #rajouter famille, métier, etc (pas que des valeurs fixes)
+        self.ajouterRelations(dico)
    
       if not (self.prenom is None) and not (self.nom is None):
         self.id = self.prenom+self.nom #Id est un string (plus simple pour comparer des personnages)
-        self.token = self.prenom + " " + self.nom + " :"
 
-      self.contacts = [] #Liste d'objets Personnage, représente les gens connus par le personnage (ainsi que, plus tard, les informations connues par le personnage sur ses contacts)
       self.histoires = [] #Liste d'objets Histoire, représente les histoires connues par le personnage, peu importe qu'il soit le narrateur ou non
 
+
+  def ajouterRelations(self, dico):
+      for nom in ["parent", "enfant", "adelphe"]:
+          if nom in dico:
+              self.contacts[dico[nom].id] = Relation(perso = dico[nom], relationDetaillee=nom)
+    
+      for nom in ["inconnu", "ami", "connaissance"]:
+          if nom in dico:
+              self.contacts[dico[nom].id] = Relation(perso = dico[nom], relationBase=nom)
 
 
   def __eq__(self, other):
@@ -300,23 +297,10 @@ class Personnage(Objet):
             self.prenom = dico["prenom"]
           if "age" in dico: #Ecrase
             self.age = dico["age"]
-          if "humeur" in dico: #Ecrase
-            self.humeur = dico["humeur"]
           if "animaux" in dico: #Ajout
             for animal in dico["animaux"]:
               if animal not in self.animaux:
                   self.animaux.append(animal)
-          if "pere" in dico and not self.pere: #Seulement si pas encore d'info sur le père
-            self.pere = dico["pere"]
-            self.famille.append(dico["pere"])
-          if "mere" in dico and not self.mere: #Seulement si pas encore d'info sur la mère
-            self.mere = dico["mere"]
-            self.famille.append(dico["mere"])
-          if "enfants" in dico: #Ajout
-            for enfant in dico["enfants"]:
-              if enfant not in self.enfants:
-                self.enfants.append(enfant)
-                self.famille.append(enfant)
                 
                 
   def getGraphText(self):
