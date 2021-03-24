@@ -162,7 +162,7 @@ def retourArriere(typeLien, dateCoeur=None, date=None, used=None):
 # Les histoires
 class Histoire:
 
-  def __init__(self, head = None, ton = None, titre = None,personnes = None, conteur = None, dateDebut = None, importance = 0, relationPourRaconter = None):
+  def __init__(self, head = None, ton = None, titre = None,personnes = None, conteur = None, dateDebut = None, importance = 10, relationPourRaconter = None):
     self.head = head # Pointeur vers le 1er coeur (d'action) de l'histoire. Celui-ci pointe ensuite vers différents liens logiques ou autres coeurs.
     self.ton = ton # String, ton de l'histoire (triste, drôle, etc.)
     self.titre = titre # String, pour les comparaisons

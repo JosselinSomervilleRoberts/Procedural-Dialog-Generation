@@ -179,8 +179,8 @@ def quiparle(p1,p2) :
   hists1, hists2, intersect, intersectionDif = intersection(p1.histoires, p2.histoires)
   hists1_trie = sorted(histoireQuiPeuventEtresRacontees(hists1, p1, p2), key=lambda h: h.importance)[::-1]
   hists2_trie = sorted(histoireQuiPeuventEtresRacontees(hists2, p2, p1), key=lambda h: h.importance)[::-1]
-  if len(hists1)==0 :
-    if len(hists2)==0 : #Les deux personnages n'ont rien à dire
+  if len(hists1_trie)==0 :
+    if len(hists2_trie)==0 : #Les deux personnages n'ont rien à dire
       if len(intersectionDif) > 0:
           return p1, p2
       else:
@@ -188,7 +188,7 @@ def quiparle(p1,p2) :
     else : #p1 n'a rien à dire, mais p2 si -> p2 est le locuteur (1ère position)
       return p2, p1
   else :
-    if len(hists2)==0 : #p2 n'a rien à dire, mais p1 si -> p1 est le locuteur (1ère position)
+    if len(hists2_trie)==0 : #p2 n'a rien à dire, mais p1 si -> p1 est le locuteur (1ère position)
       return p1, p2
     else : #Les deux ont quelque chose à raconter
       return switcheroo(p1,p2) #On choisit au hasard
