@@ -29,9 +29,9 @@ class Relation:
         if self.relationBase != "inconnu":
             return self.relationBase + "/" + self.relationDetaillee
         else:
-            if self.nbDiscussions <= 1:
+            if self.nbDiscussions < 1:
                 return "inconnu"
-            elif self.nbDiscussions <= 3:
+            elif self.nbDiscussions < 3:
                 return "connaissance"
             else:
                 return "ami"
