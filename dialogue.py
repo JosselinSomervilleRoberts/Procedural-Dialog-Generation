@@ -196,11 +196,11 @@ def quiparle(p1,p2) :
       choix.append((p2, p1, hists2_trie[0]))
       weights.append(hists2_trie[0].importance)
   if len(intersectionDif_trie_p1) > 0:
-      choix.append((p1, p2, intersectionDif_trie_p1[0]))
-      weights.append(intersectionDif_trie_p1[0].importance)
+      choix.append((p1, p2, intersectionDif_trie_p1[0][0]))
+      weights.append(intersectionDif_trie_p1[0][0].importance)
   if len(intersectionDif_trie_p2) > 0:
-      choix.append((p2, p1, intersectionDif_trie_p2[0]))
-      weights.append(intersectionDif_trie_p2[0].importance)
+      choix.append((p2, p1, intersectionDif_trie_p2[0][1]))
+      weights.append(intersectionDif_trie_p2[0][1].importance)
       
   if len(choix) == 0:
       return None
