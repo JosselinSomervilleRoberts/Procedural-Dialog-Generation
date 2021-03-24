@@ -267,7 +267,6 @@ def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
   
   s = intro(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
   continuer = True
-  premierCycle = True #Indicateur
   
   while continuer :
     s1 = hist.toText(loc, interloc, date=date, useTranslation=useTranslation, useCorrection=useCorrection)
@@ -279,7 +278,7 @@ def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
     result = quiparle(p1,p2)
     if result is None:
       s += "\n" + "~~ Les deux personnages n'ont rien à se dire... Une gêne sensible s'installe... ~~"
-      contnuer = False
+      continuer = False
     else:
       (loc, interloc, hist) = result
       s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
