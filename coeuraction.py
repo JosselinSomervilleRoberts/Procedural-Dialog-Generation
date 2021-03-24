@@ -13,8 +13,8 @@ from psclib.diversifieur import correct
 # Coeurs d'action, représente une action, une étape, dans la narration
 class CoeurAction(Coeur) :
   
-  def __init__(self, sujet = None, action = None, cod = None, liens =  None, infos=None, parent=None, importance=None):
-    Coeur.__init__(self, liens=liens, infos=infos, parent=parent, importance=importance)
+  def __init__(self, sujet = None, action = None, cod = None, ton = None,liens =  None, infos=None, parent=None, importance=None):
+    Coeur.__init__(self, liens=liens, infos=infos, ton = ton, parent=parent, importance=importance)
     self.sujet = sujet
     self.action = action
     self.cod = cod
@@ -32,6 +32,8 @@ class CoeurAction(Coeur) :
       s+="""</table>"""
       return s
 
+  def reaction(self):
+      return Coeur.reaction(self)
     
   def toText(self, locuteur=None, interlocuteur=None, date=None, premierCoeur=True, lastMentioned=None, useTranslation=True, useCorrection=True):
     if lastMentioned is None: lastMentioned = [None, None]

@@ -10,8 +10,8 @@ from psclib.coeuraction import CoeurAction
 
 class CoeurDescriptifVerbal(CoeurAction):
     
-    def __init__(self, sujet = None, action = None, cod = None, liens =  None, infos=None, parent=None, importance=None):
-        CoeurAction.__init__(self, sujet = sujet, action = action, cod = cod, liens =  liens, infos = infos, parent=parent, importance=importance)
+    def __init__(self, sujet = None, action = None, cod = None, liens =  None, infos=None, parent=None, importance=None, ton=None):
+        CoeurAction.__init__(self, ton=ton, sujet = sujet, action = action, cod = cod, liens =  liens, infos = infos, parent=parent, importance=importance)
         
         
     def getGraphText(self):

@@ -13,8 +13,8 @@ from psclib.diversifieur import correct, cong, diversifier
 # Coeurs descriptifs, pour décrire quelque chose, pause dans le déroulé de l'histoire, verbe d'état
 class CoeurDescriptif(Coeur):
   
-  def __init__(self, sujet = None , carac = None, liens=None, infos=None, parent=None, importance=None):
-    Coeur.__init__(self, liens=liens, infos=infos, parent=parent, importance=importance)
+  def __init__(self, sujet = None , carac = None, liens=None, infos=None, parent=None, importance=None, ton=None):
+    Coeur.__init__(self, ton=ton, liens=liens, infos=infos, parent=parent, importance=importance)
     self.sujet = sujet
     self.carac = carac
     

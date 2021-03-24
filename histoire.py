@@ -317,6 +317,8 @@ class Histoire:
     # Pour avoir où placer le CCT
     indexCCT = len(debutPhrase)
     
+    previousCoeur = coeurActuel
+    
     
     # Si il n'y a pas encore de DEMANDE ou D'EXPLORATION, alors les listes sont vides
     if liensAExplorer is None: liensAExplorer = []
@@ -600,7 +602,7 @@ class Histoire:
             phrasesPrecedentes += "\n" + locuteur.imprimer("Bon, sur ce, je dois filer moi !", useTranslation=useTranslation, useCorrection=useCorrection)
             return phrasesPrecedentes
     
-    
+        
     
         # L'interlocuteur peut maintenant poser ses questions (DEMANDE puis EXPLORATION)
         
@@ -629,7 +631,10 @@ class Histoire:
             # On ajoute au texte
             if len(debutPhrase) > 0:
                 phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
-            phrasesPrecedentes += "\n" + interlocuteur.imprimer(demande, useTranslation=useTranslation, useCorrection=useCorrection)
+            react = ""
+            if type(previousCoeur) != int:
+                react = previousCoeur.reaction() + " "
+            phrasesPrecedentes += "\n" + interlocuteur.imprimer(react + demande, useTranslation=useTranslation, useCorrection=useCorrection)
             debutPhrase = motsLiasonsRecommencer(lien.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lien.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
                                reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, expUsed=expUsed, lastMentioned=lastMentioned,
@@ -670,7 +675,10 @@ class Histoire:
             # On ajoute au texte
             if len(debutPhrase) > 0:
                 phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
-            phrasesPrecedentes += "\n" + interlocuteur.imprimer(demande, useTranslation=useTranslation, useCorrection=useCorrection)
+                
+            if type(previousCoeur) != int:
+                react = previousCoeur.reaction() + " "
+            phrasesPrecedentes += "\n" + interlocuteur.imprimer(react + demande, useTranslation=useTranslation, useCorrection=useCorrection)
             debutPhrase = motsLiasonsRecommencer(lienExploration.typeLien, dateCoeur=lien.coeur.date, date=date, used=expUsed) + " "
             
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienExploration.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
@@ -681,6 +689,10 @@ class Histoire:
         else: # Il n'y a pas de liens a demander ni explorer
             if len(debutPhrase) > 0:
                 phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
+                
+                if type(previousCoeur) != int:
+                    react = previousCoeur.reaction() + " "
+                    phrasesPrecedentes += "\n" + interlocuteur.imprimer(react, useTranslation=useTranslation, useCorrection=useCorrection)
             return phrasesPrecedentes
      
       

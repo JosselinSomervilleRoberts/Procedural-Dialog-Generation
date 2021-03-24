@@ -36,7 +36,7 @@ def exemple(name, graph=False):
             
             marcel = Personnage(name="marcel")
             jackie = Personnage(name="jackie")
-            
+            marcel.ajouterRelations({"enfant":jackie})
             chien = marcel.ajouterPossession({"lib": "chien", "noms": ["Bubule"]})
             voiture = Objet({"lib": "voiture"})
             veterinaire = Objet({"lib": "veterinaire"})
@@ -44,16 +44,16 @@ def exemple(name, graph=False):
             rouler = Action(name="rouler")
             rouler.adverbes = ["trop vite"]
             
-            c1 = CoeurAction(sujet=marcel, action=Action(name="balader"), cod=chien)                    
+            c1 = CoeurAction(sujet=marcel, action=Action(name="balader"), cod=chien, ton = "joyeux")                    
             c1.ajouterLieu(name="au parc", importance=5)                        
             c1.ajouterManiere(name="avec joie", importance=20)                                          
-            c2 = CoeurAction(sujet=voiture, action=Action(name="ecraser"), cod=chien)
-            c3 = CoeurDescriptifVerbal(sujet=voiture, action=rouler)
-            c4 = CoeurDescriptif(sujet=marcel, carac=CaracChiffree(name="colere", value=8))
-            c5 = CoeurAction(sujet=[marcel,chien], action=Action(name="aller voir"), cod=veterinaire)
-            c6 = CoeurAction(sujet=veterinaire, action=Action(name="soigner"), cod=chien)   
-            c7 = CoeurAction(sujet=marcel, action=Action(name="casser"), cod=voiture) 
-            c8 = CoeurAction(sujet=chien, action=Action(name="se défouler"))
+            c2 = CoeurAction(sujet=voiture, action=Action(name="ecraser"), cod=chien, ton = "triste")
+            c3 = CoeurDescriptifVerbal(sujet=voiture, action=rouler, ton = "neutre")
+            c4 = CoeurDescriptif(sujet=marcel, carac=CaracChiffree(name="colere", value=8), ton = "neutre")
+            c5 = CoeurAction(sujet=[marcel,chien], action=Action(name="aller voir"), cod=veterinaire, ton = "neutre")
+            c6 = CoeurAction(sujet=veterinaire, action=Action(name="soigner"), cod=chien, ton = "joyeux")   
+            c7 = CoeurAction(sujet=marcel, action=Action(name="casser"), cod=voiture, ton = "neutre") 
+            c8 = CoeurAction(sujet=chien, action=Action(name="se défouler"), ton = "neutre")
             
             #c2.ajouterMoment(moment=c1, importance=50)
             c1.ajouterLien(Lien(coeur=c2, typeLien=SUITE, importance=5))

@@ -37,7 +37,7 @@ class Coeur:
     self.temps = "présent"
     self.date = None
     
-    self.ton = None
+    self.ton = ton
     self.liens = liens
     if self.liens is None:
       self.liens = []
@@ -127,7 +127,16 @@ class Coeur:
       
       #print(self.id, "(", self.date, ")", "----" + str(lien.typeLien) + "---->", lien.coeur.id, "(", self.date, ")")
 
-
+  def reaction(self):
+      s = ""
+      print("TON=", self.ton)
+      if self.ton == "joyeux":
+           s += "Ah c'est cool!"
+      if self.ton == "neutre":
+           s += "Bon bah ok."
+      if self.ton == "triste":
+           s += "NO c'est pas vrai!"
+      return s 
 
 
 
