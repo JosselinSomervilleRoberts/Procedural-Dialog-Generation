@@ -23,4 +23,6 @@ class Evenement:
         if self.liste_cods is None or len(self.liste_cods) == 0:
             return CoeurAction(sujet=perso, action=self.action)
         else:
-            return CoeurAction(sujet=perso, action=self.action, cod=Objet(lib=random.choice(self.liste_cods)))
+            cod = random.choice(self.liste_cods)
+            if type(cod) == str: cod = Objet(lib=cod)
+            return CoeurAction(sujet=perso, action=self.action, cod=cod)

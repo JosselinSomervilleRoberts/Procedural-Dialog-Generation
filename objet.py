@@ -28,6 +28,7 @@ class Objet(object):
     self.caracs = []
     self.noms = None
     self.quantite = 1
+    self.isLieu = False
 
     if not(dico is None):
       if "lib" in dico:
@@ -134,14 +135,15 @@ class Objet(object):
 
 
     # Add proprio explicite
-    if self.proprio is None: # On considère que c'est indéfini
-      determinant = "un"
-      if self.genre == 2: determinant = "une"
-      exp = determinant + " " + exp[3:]
-    elif usePossessif:
-      exp = listePossessifs[personne-1] + " " +exp[3:]
-    elif mentionProprio:
-      exp += " de " + self.proprio.prenom + " " + self.proprio.nom
+    if not(self.isLieu):
+        if self.proprio is None: # On considère que c'est indéfini
+          determinant = "un"
+          if self.genre == 2: determinant = "une"
+          exp = determinant + " " + exp[3:]
+        elif usePossessif:
+          exp = listePossessifs[personne-1] + " " +exp[3:]
+        elif mentionProprio:
+          exp += " de " + self.proprio.prenom + " " + self.proprio.nom
     
     exp = correct(exp, useCorrection=useCorrection)
     

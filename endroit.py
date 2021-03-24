@@ -11,10 +11,12 @@ from psclib.objet import Objet
 
 class Endroit:
     
-    def __init__(self, libelle = ""):
+    def __init__(self, objet = ""):
         self.posx = 0
         self.posy = 0
-        self.libelle = libelle
+        self.objet = objet
+        if type(self.objet) == str: self.objet = Objet(lib=self.objet)
+        self.objet.isLieu = True
         self.action_possibles = []
         
     def get_lieu_suivant(self, personnage, heure):
@@ -24,7 +26,7 @@ class Endroit:
         pass
     
     def get_lieu(self):
-        return Lieu(lieu=Objet(lib=self.libelle), rapport="à la")
+        return Lieu(lieu=self.objet, rapport="à")
     
     def arriver(self, personnage):
         self.personnagesPresent.append(personnage)
