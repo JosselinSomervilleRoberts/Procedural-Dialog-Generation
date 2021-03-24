@@ -31,6 +31,8 @@ def intro(p1,p2, useTranslation=True, useCorrection=True) : #p1 et p2 sont des o
       return accrocheFamille(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   
   if etat==0 : #les deux personnages ne se connaissent pas
+    p1.contacts[p2.id].nbDiscussions += 1
+    p2.contacts[p1.id].nbDiscussions += 1
     return accroche0(p1,p2)
   if etat==1 : #p1 connait p2 mais pas l'inverse
     return accroche1(p1,p2)
@@ -114,12 +116,9 @@ def token(p1, p2, s) : #Remplace les tokens dans les parties scriptées
 #------------- Les accroches, pour introduire le dialogue -------------- IL FAUT FAIRE L'ETAPE DE PRESENTATION ELEMENTAIRE
 def accroche0(p1, p2) : #Les deux personnages ne se connaissent pas -> Chacun se crée une représentation de l'autre
     p, q = switcheroo(p1,p2) #Cas particulier : on ne se soucie pas de qui est qui
-    p1.contacts.append(p2.copyStrip())
-    p2.contacts.append(p1.copyStrip())
     return lireDepuisTxt("intros/accroche2Inconnus.txt", p, q)
 
 def accroche1(p1, p2) : #p1 connaît p2 mais pas l'inverse -> p2 se crée une représentation de p1
-  p2.contacts.append(p1.copyStrip())
   return lireDepuisTxt("intros/accroche1Inconnu.txt", p1, p2)
 
 def accroche2(p1, p2) : #Les deux personnages se connaissent
@@ -268,13 +267,15 @@ def reactionjoyeuse(interloc):  # reaction d'une histoire joyeuse
 def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
   result = quiparle(p1,p2)
   if result is None:
-      return "RIEN A DIRE"
+      return intro(p1, p2, useTranslation=useTranslation, useCorrection=useCorrection) + "~~ Les deux personnages n'ont rien à se dire... Une gêne sensible s'installe... ~~"
   (loc, interloc, hist) = result
   
   s = intro(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
   continuer = True
   
   while continuer :
+    p1.contacts[p2.id].nbDiscussions += 1
+    p2.contacts[p1.id].nbDiscussions += 1
     s1 = hist.toText(loc, interloc, date=date, useTranslation=useTranslation, useCorrection=useCorrection)
     s += "\n" + s1
     #s += "\n" + reaction(hist,interloc)
