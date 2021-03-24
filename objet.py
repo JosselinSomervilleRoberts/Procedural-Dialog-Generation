@@ -361,8 +361,8 @@ class Personnage(Objet):
           self.current_endroit = random.choices([k for k in range(len(self.endroits[0]))], weights=self.endroits[0], k=1)[0]
           # Si on va quelque part
           if self.current_endroit != 0:
-              self.coeurJournalier = CoeurAction(sujet=self, action=Action(name="aller"))
-              self.coeurJournalier.ajouterLieu(complement=self.listeLieux[self.current_endroit-1].get_lieu(), importance = 1000)
+              self.coeurJournalier = CoeurAction(sujet=self, action=Action(name="aller"), cod=self.listeLieux[self.current_endroit-1].objet)
+              #self.coeurJournalier.ajouterLieu(complement=self.listeLieux[self.current_endroit-1].get_lieu(), importance = 1000)
               self.coeurJournalier.ajouterMoment(date=self.histJournaliere.dateDebut.replace(hour=heure), importance=2)
               self.histJournaliere.head = self.coeurJournalier
               self.current_evenement = 0

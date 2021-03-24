@@ -348,7 +348,7 @@ class Histoire:
     # Il faut créer l'histoire dans la mémoire de l'interlocuteur
     if coeurActuel is None:
         coeurActuel = self.head
-        indexHist = interlocuteur.ajouterHistoire(self.titre, head = self.head, ton = self.ton, personnes = self.personnes, conteur = locuteur)
+        indexHist = interlocuteur.ajouterHistoire(self.titre, head = self.head, ton = self.ton, personnes = self.personnes, conteur = locuteur, importance=0.75*self.importance)
         histInterlocuteur = interlocuteur.histoires[indexHist]
         coeurInterlocuteur = histInterlocuteur.head
         

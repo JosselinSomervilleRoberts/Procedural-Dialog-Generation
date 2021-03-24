@@ -276,6 +276,7 @@ def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
   while continuer :
     p1.contacts[p2.id].nbDiscussions += 1
     p2.contacts[p1.id].nbDiscussions += 1
+    hist.importance = hist.importance * 0.75
     s1 = hist.toText(loc, interloc, date=date, useTranslation=useTranslation, useCorrection=useCorrection)
     s += "\n" + s1
     #s += "\n" + reaction(hist,interloc)
