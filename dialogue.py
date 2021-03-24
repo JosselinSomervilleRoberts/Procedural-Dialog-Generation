@@ -7,6 +7,7 @@ Created on Mon Dec 28 00:52:22 2020
 
 
 import random
+from psclib.relation import Relation
 from psclib.diversifieur import diversifier
 
 
@@ -15,11 +16,16 @@ from psclib.diversifieur import diversifier
 
 #----------- Fonction pour tester si p1 connaît p2 (non réflexif)
 def connait(p1,p2): #p1 et p2 sont des objets Personnage
-  return p1.id in p2.contacts
+  return p2.id in p1.contacts
 
 #----------- L'introduction du dialogue
 def intro(p1,p2, useTranslation=True, useCorrection=True) : #p1 et p2 sont des objets Personnage, p1 est le locuteur et p2 l'interlocuteur
   etat = int(connait(p1,p2)) + 2*int(connait(p2,p1)) #etat est un entier
+  
+  if not connait(p1,p2) :
+      p1.contacts[p2.id] = Relation(p2.copyStrip())
+  if not connait(p2,p1) :
+      p2.contacts[p1.id] = Relation(p1.copyStrip())
   
   if p2.id in p1.contacts and p1.contacts[p2.id].getRelation().split("/")[0] == "famille":
       return accrocheFamille(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
