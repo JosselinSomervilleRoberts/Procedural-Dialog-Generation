@@ -325,7 +325,7 @@ class Personnage(Objet):
       return -1
   
     
-  def ajouterHistoire(self, titre, head = None, ton = None, personnes = None, conteur = None):
+  def ajouterHistoire(self, titre, head = None, ton = None, personnes = None, conteur = None, importance = 1):
       """Ajoute l'histoire au personnage s'il ne la connait pas déja et renvoie -1 dans ce cas
       S'il la connait déja ne l'ajoute pas et renvoie sont index"""
       from psclib.histoire import Histoire
@@ -337,7 +337,7 @@ class Personnage(Objet):
           headCopied = copy(head)
           headCopied.liens = []
           headCopied.date = None
-          h = Histoire(head = headCopied, ton = ton, titre = titre, personnes = personnes, conteur = conteur)
+          h = Histoire(head = headCopied, ton = ton, titre = titre, personnes = personnes, conteur = conteur, importance=importance)
           self.histoires.append(h)
           return -1
       return index
