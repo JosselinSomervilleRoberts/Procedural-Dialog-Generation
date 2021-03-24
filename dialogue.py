@@ -54,7 +54,7 @@ def intersection(histsA, histsB) : #On part de deux listes d'objets Histoire A e
         if a.conteur == b.conteur:
             intersection.append(a)
         else:
-            intersectionDif.append(a)
+            intersectionDif.append((a,b))
         isInB = True
     if not (isInB) :
       resteA.append(a)
@@ -179,19 +179,29 @@ def quiparle(p1,p2) :
   hists1, hists2, intersect, intersectionDif = intersection(p1.histoires, p2.histoires)
   hists1_trie = sorted(histoireQuiPeuventEtresRacontees(hists1, p1, p2), key=lambda h: h.importance)[::-1]
   hists2_trie = sorted(histoireQuiPeuventEtresRacontees(hists2, p2, p1), key=lambda h: h.importance)[::-1]
-  if len(hists1_trie)==0 :
-    if len(hists2_trie)==0 : #Les deux personnages n'ont rien à dire
-      if len(intersectionDif) > 0:
-          return p1, p2
-      else:
-          return None, None #Cas particulier
-    else : #p1 n'a rien à dire, mais p2 si -> p2 est le locuteur (1ère position)
-      return p2, p1
-  else :
-    if len(hists2_trie)==0 : #p2 n'a rien à dire, mais p1 si -> p1 est le locuteur (1ère position)
-      return p1, p2
-    else : #Les deux ont quelque chose à raconter
-      return switcheroo(p1,p2) #On choisit au hasard
+  intersectionDif_trie_p1 = sorted(intersectionDif, key=lambda h: h[0].importance)[::-1]
+  intersectionDif_trie_p2 = sorted(intersectionDif, key=lambda h: h[1].importance)[::-1]
+  
+  choix = []
+  weights = []
+  if len(hists1_trie) > 0:
+      choix.append((p1, p2, hists1_trie[0]))
+      weights.append(hists1_trie[0].importance)
+  if len(hists2_trie) > 0:
+      choix.append((p2, p1, hists2_trie[0]))
+      weights.append(hists2_trie[0].importance)
+  if len(intersectionDif_trie_p1) > 0:
+      choix.append((p1, p2, intersectionDif_trie_p1[0]))
+      weights.append(intersectionDif_trie_p1[0].importance)
+  if len(intersectionDif_trie_p2) > 0:
+      choix.append((p2, p1, intersectionDif_trie_p2[0]))
+      weights.append(intersectionDif_trie_p2[0].importance)
+      
+  if len(choix) == 0:
+      return None
+  else:
+      ch = random.choices(choix, weights=weights, k=1)[0]
+      return ch
 
 
 #------------- #Fonction d'affichage de l'histoire ----------------------------- A DEVELOPPER PLUS TARD, pour prendre en compte le fait que l'histoire ne soit pas forcément racontée en entier
@@ -250,25 +260,29 @@ def reactionjoyeuse(interloc):  # reaction d'une histoire joyeuse
     return s
 #-------------------------------------------------- La fonction (principale) du dialogue ----------------------------------------------
 def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
-  loc, interloc = quiparle(p1,p2)
+  result = quiparle(p1,p2)
+  if result is None:
+      return "RIEN A DIRE"
+  (loc, interloc, hist) = result
+  
   s = intro(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
   continuer = True
   premierCycle = True #Indicateur
   
   while continuer :
-    if not premierCycle :
-       loc, interloc = quiparle(p1,p2) #On décide qui parle
-    if loc!=None : #Cas normal : un personnage a une histoire à raconter
+    s1 = hist.toText(loc, interloc, date=date, useTranslation=useTranslation, useCorrection=useCorrection)
+    s += "\n" + s1
+    #s += "\n" + reaction(hist,interloc)
+    
+    continuer = False
+    # Pour enchainer
+    result = quiparle(p1,p2)
+    if result is None:
+      s += "\n" + "~~ Les deux personnages n'ont rien à se dire... Une gêne sensible s'installe... ~~"
+      contnuer = False
+    else:
+      (loc, interloc, hist) = result
       s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
-      s1, histoire = raconter(loc, interloc, date=date, useTranslation=useTranslation, useCorrection=useCorrection) #On choisit et raconte une histoire
-      s += "\n" + s1
-      s += "\n" + reaction(histoire,interloc)
-      #interloc.histoires.append(histoire) #L'interlocuteur connaît maintenant l'histoire qu'on lui a raconté (à modifier, car en réalité il ne connait pas forcément TOUTE l'histoire)
-      continuer = testContinuer(loc,interloc) #On teste si les personnages continuent de dialoguer
-    else : #Les deux personnages n'ont pas d'histoire à se raconter
-      continuer = False
-      if premierCycle : #Cas où les personnages n'ont rien échangé avant que le dialogue se termine
-        s += "\n" + "~~ Les deux personnages n'ont rien à se dire... Une gêne sensible s'installe... ~~"
-    premierCycle = False
+      
   s += "\n" + fin(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   return s
