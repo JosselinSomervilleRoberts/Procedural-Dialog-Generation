@@ -24,5 +24,5 @@ class Evenement:
             return CoeurAction(sujet=perso, action=self.action)
         else:
             cod = random.choice(self.liste_cods)
-            if type(cod) == str: cod = Objet(lib=cod)
+            if type(cod) == str: cod = Objet(dico={"lib": cod}, addDeterminant=False)
             return CoeurAction(sujet=perso, action=self.action, cod=cod)

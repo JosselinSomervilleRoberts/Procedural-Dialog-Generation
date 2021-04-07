@@ -17,7 +17,7 @@ idCounter = 1
 
 class Objet(object):
 
-  def __init__(self, dico=None, lib=None):
+  def __init__(self, dico=None, lib=None, addDeterminant=True):
     global idCounter
     self.id = idCounter
     idCounter+= 1
@@ -29,17 +29,20 @@ class Objet(object):
     self.noms = None
     self.quantite = 1
     self.isLieu = False
+    self.addDeterminant = addDeterminant
 
     if not(dico is None):
       if "lib" in dico:
         self.lib = dico["lib"]
-        self.genre = get_genre(self.lib)
       if "proprio" in dico:
         self.proprio = dico["proprio"]
       if "caracs" in dico:
         self.caracs = dico["caracs"]
       if "noms" in dico:
         self.noms = dico["noms"]
+    
+    if not(self.lib is None): 
+        self.genre = get_genre(self.lib)
         
         
   def __eq__(self, other):
@@ -113,7 +116,10 @@ class Objet(object):
     # Nom de l'objet
     determinant = "le"
     if self.genre == 2: determinant = "la"
-    exp = determinant + " " + get_syn(self.lib)
+    if not(self.addDeterminant):
+        exp = self.lib
+    else:
+        exp = determinant + " " + get_syn(self.lib)
     #print("exp", exp)
    
     # On cherche les caracteristiques que l'on va preciser
@@ -135,7 +141,7 @@ class Objet(object):
 
 
     # Add proprio explicite
-    if not(self.isLieu):
+    if not(self.isLieu) and self.addDeterminant:
         if self.proprio is None: # On considère que c'est indéfini
           determinant = "un"
           if self.genre == 2: determinant = "une"
@@ -144,6 +150,8 @@ class Objet(object):
           exp = listePossessifs[personne-1] + " " +exp[3:]
         elif mentionProprio:
           exp += " de " + self.proprio.prenom + " " + self.proprio.nom
+    elif self.isLieu:
+        exp = "à " + exp
     
     exp = correct(exp, useCorrection=useCorrection)
     
@@ -413,8 +421,6 @@ class Personnage(Objet):
       from psclib.coeuraction import CoeurAction
       from psclib.action import Action
       
-      print(self.current_endroit, self.current_evenement)
-      
       # Si on a pas commencé l'histoire
       if self.coeurJournalier is None:
           # On choisit un endroit aleatoirement
@@ -436,8 +442,8 @@ class Personnage(Objet):
               
          # Si on bouge quelque part
          if prev_endroit != self.current_endroit and self.current_endroit != 0:
-            coeur = CoeurAction(sujet=self, action=Action(name="aller"))
-            coeur.ajouterLieu(complement=self.listeLieux[self.current_endroit-1].get_lieu(), importance = 1000)
+            coeur = CoeurAction(sujet=self, action=Action(name="aller"), cod=self.listeLieux[self.current_endroit-1].objet)
+            #coeur.ajouterLieu(complement=self.listeLieux[self.current_endroit-1].get_lieu(), importance = 1000)
             coeur.ajouterMoment(date=self.histJournaliere.dateDebut.replace(hour=heure), importance=2)
             self.coeurJournalier.ajouterLien(Lien(coeur = coeur, typeLien = SUITE, importance = 0.5 + 0.2*self.getCaracValue(Caracteristique(name="bavard"))))
             self.coeurJournalier = coeur

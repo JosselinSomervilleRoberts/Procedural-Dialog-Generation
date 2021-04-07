@@ -1,0 +1,3 @@
+$p1prenom $p1nom : Bonjour $p2prenom.$n$p2prenom $p2nom : Bonjour, content$p2genre de te revoir.
+$p1prenom $p1nom : Bonjour, tu es bien $p2prenom, c'est ça ?$n$p2prenom $p2nom : Bonjour, oui, c'est ça. Ravi$p2genre de te revoir, $p1prenom.
+$p1prenom $p1nom : Bonjour, $p2prenom.$n$p2prenom $p2nom : Oh, bonjour... tu t'appelles $p1prenom, n'est-ce pas ?$n$p1prenom $p1nom : Oui, c'est ça.

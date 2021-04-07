@@ -41,7 +41,6 @@ def buildQuestionsReponses():
     
     for ext1 in liste1:
         chemin_intermediaire = chemin_base + "/" + ext1 + "/" + ext1 + "_"
-        print(chemin_intermediaire)
         dictExp[ext1] = {}
         for elt2 in liste2:
             index, ext2 = elt2[0], elt2[1]

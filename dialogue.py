@@ -9,6 +9,7 @@ Created on Mon Dec 28 00:52:22 2020
 import random
 from psclib.relation import Relation
 from psclib.diversifieur import diversifier
+from psclib.caracteristique import Caracteristique
 
 
 
@@ -18,31 +19,51 @@ from psclib.diversifieur import diversifier
 def connait(p1,p2): #p1 et p2 sont des objets Personnage
   return p2.id in p1.contacts
 
-#----------- L'introduction du dialogue
+#----------- L'introduction du dialogue - ON PART DU PRINCIPE QUE LES 2 ONT UNE RELATION ENTRE EUX
 def intro(p1,p2, useTranslation=True, useCorrection=True) : #p1 et p2 sont des objets Personnage, p1 est le locuteur et p2 l'interlocuteur
-  etat = int(connait(p1,p2)) + 2*int(connait(p2,p1)) #etat est un entier
+  #etat = int(connait(p1,p2)) + 2*int(connait(p2,p1)) #etat est un entier
   
-  if not connait(p1,p2) :
-      p1.contacts[p2.id] = Relation(p2.copyStrip())
-  if not connait(p2,p1) :
-      p2.contacts[p1.id] = Relation(p1.copyStrip())
+  #if not connait(p1,p2) :
+  #    p1.contacts[p2.id] = Relation(p2.copyStrip())
+  #if not connait(p2,p1) :
+  #    p2.contacts[p1.id] = Relation(p1.copyStrip())
+  relation = p1.contacts[p2.id].getRelation().split("/")[0]
   
-  if p2.id in p1.contacts and p1.contacts[p2.id].getRelation().split("/")[0] == "famille":
+  if p2.id in p1.contacts and relation == "famille": #NORMALEMENT PAS BESOIN DE VERIFIER L'EXISTENCE DU CONTACT
       return accrocheFamille(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   
-  if etat==0 : #les deux personnages ne se connaissent pas
-    p1.contacts[p2.id].nbDiscussions += 1
-    p2.contacts[p1.id].nbDiscussions += 1
-    return accroche0(p1,p2)
-  if etat==1 : #p1 connait p2 mais pas l'inverse
-    return accroche1(p1,p2)
-  if etat==2 : #p2 connait p1 mais pas l'inverse
-    return accroche1(p2,p1)
-  if etat==3 : #Les deux personnages se connaissent
-    return accroche2(p1,p2)
+  if relation == "travail":
+      return accrocheTravail(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
+  
+  if relation == "inconnu":
+      return lireDepuisTxt("intros/accroche2Inconnus.txt",p1,p2)
+  
+  if relation == "connaissance":
+      return lireDepuisTxt("intros/accrocheConnaissances.txt", p1, p2)
+  
+  if relation == "ami":
+      return lireDepuisTxt("intros/accrocheAmis.txt", p1,p2)
+  
+  #if etat==0 : #les deux personnages ne se connaissent pas
+  #  p1.contacts[p2.id].nbDiscussions += 1
+  #  p2.contacts[p1.id].nbDiscussions += 1
+  #  return accroche0(p1,p2)
+  #if etat==1 : #p1 connait p2 mais pas l'inverse
+  #  return accroche1(p1,p2)
+  #if etat==2 : #p2 connait p1 mais pas l'inverse
+  #  return accroche1(p2,p1)
+  #if etat==3 : #Les deux personnages se connaissent
+  #  return accroche2(p1,p2)
 
   print("GROS PROBLEME DANS INTRO")
   return ""
+
+#-------------- Intro pour 2 inconnus : ils se présentent
+def introInconnus(p1,p2) :
+    p1.contacts[p2.id] = Relation(p2.copyStrip(),relation="connaissance")
+    p2.contacts[p1.id] = Relation(p1.copyStrip(),relation="connaissance")
+    p,q = switcheroo(p1,p2)
+    return lireDepuisTxt("intros/accroche2Inconnus.txt", p, q)
 
 #------------- Fonction annexe
 def switcheroo(a,b) : #Echange aléatoirement a et b (peu importe ce que sont a et b)
@@ -53,7 +74,7 @@ def switcheroo(a,b) : #Echange aléatoirement a et b (peu importe ce que sont a 
 
 #------------- Fonction annexe
 def intersection(histsA, histsB) : #On part de deux listes d'objets Histoire A et B, et on construit l'intersection, le reste de A et le reste B
-  resteA, resteB, intersection, intersectionDif = [], [], [], []
+  resteA, resteB, intersection, intersectionDif = [], [], [], [] #intersectionDif correspond aux histoires communes mais pas entendues de la même personne
   for a in histsA : #construction de l'intersection et du reste de histsA
     isInB = False
     for b in histsB :
@@ -126,7 +147,7 @@ def accroche2(p1, p2) : #Les deux personnages se connaissent
 
 def accrocheFamille(p1, p2,useTranslation=True, useCorrection=True):
     lien = p1.contacts[p2.id].getRelation().split("/")[1]
-    print(lien)
+    #print(lien)
     salutations = ["Coucou", "Salut"]
     appelation = ""
     if lien == "parent":
@@ -140,6 +161,29 @@ def accrocheFamille(p1, p2,useTranslation=True, useCorrection=True):
             appelation = "ma fille"
         else:
             appelation = p2.prenom
+            
+    sal = random.choice(salutations)
+    s = p1.imprimer(sal + " " + appelation + " !",  useTranslation=useTranslation, useCorrection=useCorrection) + "\n"
+    s += p2.imprimer(sal + " !", useTranslation=useTranslation, useCorrection=useCorrection)  
+    return s
+
+def accrocheTravail(p1, p2,useTranslation=True, useCorrection=True):
+    lien = p1.contacts[p2.id].getRelation().split("/")[1]
+    #print(lien)
+    salutations = ["Bonjour", "Salut"]
+    appelation = ""
+    if lien == "patron":
+        if p2.sexe == "m":
+            appelation = random.choice(["Mr "+p2.nom,"patron","boss"])
+        else :
+            appelation = random.choice(["Mme ".p2.nom,"patronne","boss"])
+    if lien == "collègue":
+        appelation = p2.prenom
+    if lien == "employé":
+        if p2.sexe == "m":
+            appelation = random.choice([p2.prenom])
+        else:
+            appelation = random.choice([p2.prenom])
             
     sal = random.choice(salutations)
     s = p1.imprimer(sal + " " + appelation + " !",  useTranslation=useTranslation, useCorrection=useCorrection) + "\n"
@@ -265,9 +309,12 @@ def reactionjoyeuse(interloc):  # reaction d'une histoire joyeuse
     return s
 #-------------------------------------------------- La fonction (principale) du dialogue ----------------------------------------------
 def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
+  if not connait(p1,p2) and not connait(p2,p1) :
+      return introInconnus(p1,p2)
   result = quiparle(p1,p2)
   if result is None:
-      return intro(p1, p2, useTranslation=useTranslation, useCorrection=useCorrection) + "~~ Les deux personnages n'ont rien à se dire... Une gêne sensible s'installe... ~~"
+      #return "/!\ quiparle() a retourné None..."
+      return intro(p1, p2, useTranslation=useTranslation, useCorrection=useCorrection) + "\n~~ Les deux personnages n'ont rien à se dire... Une gêne sensible s'installe... ~~"
   (loc, interloc, hist) = result
   
   s = intro(loc, interloc, useTranslation=useTranslation, useCorrection=useCorrection) #L'intro
@@ -281,7 +328,7 @@ def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
     s += "\n" + s1
     #s += "\n" + reaction(hist,interloc)
     
-    continuer = False
+    #continuer = False
     # Pour enchainer
     result = quiparle(p1,p2)
     if result is None:
@@ -289,6 +336,8 @@ def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
       continuer = False
     else:
       (loc, interloc, hist) = result
+      test_continuer = random.randint(0,9)
+      if test_continuer >= loc.getCaracValue(Caracteristique(name="bavard")) : continuer=False
       s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
       
   s += "\n" + fin(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
