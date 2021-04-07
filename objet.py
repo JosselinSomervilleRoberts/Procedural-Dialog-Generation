@@ -158,7 +158,7 @@ class Objet(object):
 class Personnage(Objet):
 
   def getAvailable():
-    return ["inconnu", "lancelot", "mickey", "joe", "marcel", "jackie", "kevin"]
+    return ["inconnu", "lancelot", "mickey", "joe", "marcel", "jackie", "kevin","kerma","torva","fisker","agni","chieto","arold","clara","cassius","traula","alaric","alice","charles","rosamund"]
 
   def getAlike(s):
     """ Renvoie tous les Personnage qui contiennent s dans leur nom"""
@@ -181,6 +181,66 @@ class Personnage(Objet):
       if name == "kevin": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Kev", "ticsLangages": {"": 1, "genre": 1, "wesh,": 8, "en fait": 1, "du coup": 1},
                                                                  "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=2), 
                                                                             CaracChiffree(name="hésitation", value=10), CaracChiffree(name="memoire", value=2)]})
+      if name == "kerma": self = Personnage.__init__(self, dico={"nom":"Boulanger", "sexe": "f", "prenom":"Kerma", "ticsLangages": {"": 5, "bon": 1, "alors,": 1},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=5), 
+                                                                            CaracChiffree(name="hésitation", value=2), CaracChiffree(name="memoire", value=7),
+                                                                            CaracChiffree(name="bavard", value=8), CaracChiffree(name="compassion", value=7)]})
+      if name == "fisker": self = Personnage.__init__(self, dico={"nom":"Forgeron", "sexe": "m", "prenom":"Fisker", "ticsLangages": {"": 5, "beh": 1, "boudiou,": 1, "par ma barbe":0.5 },
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=2), CaracChiffree(name="politesse", value=3), 
+                                                                            CaracChiffree(name="hésitation", value=2), CaracChiffree(name="memoire", value=3),
+                                                                            CaracChiffree(name="bavard", value=1), CaracChiffree(name="compassion", value=2)]})
+      if name == "torva": self = Personnage.__init__(self, dico={"nom":"Charpentier", "sexe": "f", "prenom":"Torva", "ticsLangages": {"": 5, "cheh": 1, "meh,": 1},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=5), CaracChiffree(name="politesse", value=5), 
+                                                                            CaracChiffree(name="hésitation", value=7), CaracChiffree(name="memoire", value=10),
+                                                                            CaracChiffree(name="bavard", value=2), CaracChiffree(name="compassion", value=8)]})
+      
+      
+      
+      
+      if name == "agni": self = Personnage.__init__(self, dico={"nom":"Marchand", "sexe": "m", "prenom":"Agni", "ticsLangages": {"": 5, "bon": 1, "alors,": 1},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=5), 
+                                                                            CaracChiffree(name="hésitation", value=2), CaracChiffree(name="memoire", value=7),
+                                                                            CaracChiffree(name="bavard", value=8), CaracChiffree(name="compassion", value=7)]})
+      if name == "chieto": self = Personnage.__init__(self, dico={"nom":"Chef", "sexe": "f", "prenom":"Chieto", "ticsLangages": {"": 5,"bon":1},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=7), CaracChiffree(name="politesse", value=7), 
+                                                                            CaracChiffree(name="hésitation", value=1), CaracChiffree(name="memoire", value=9),
+                                                                            CaracChiffree(name="bavard", value=3), CaracChiffree(name="compassion", value=4)]})
+      if name == "arold": self = Personnage.__init__(self, dico={"nom":"Paysan", "sexe": "m", "prenom":"Arold", "ticsLangages": {"": 5, "eh beh": 2, "bah diu": 2, "maizalors": 2, "ouhmi diou": 2},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=2), 
+                                                                            CaracChiffree(name="hésitation", value=1), CaracChiffree(name="memoire", value=3),
+                                                                            CaracChiffree(name="bavard", value=10), CaracChiffree(name="compassion", value=8)]})
+      if name == "clara": self = Personnage.__init__(self, dico={"nom":"Bucheron", "sexe": "f", "prenom":"Clara", "ticsLangages": {"": 5, "hum": 0.5, "meh": 0.5},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=4), CaracChiffree(name="politesse", value=8), 
+                                                                            CaracChiffree(name="hésitation", value=4), CaracChiffree(name="memoire", value=9),
+                                                                            CaracChiffree(name="bavard", value=2), CaracChiffree(name="compassion", value=1)]})
+      if name == "cassius": self = Personnage.__init__(self, dico={"nom":"Chasseur", "sexe": "m", "prenom":"Cassius", "ticsLangages": {"": 5, "ah la la": 1, "oh lo lo": 1, "damn": 1},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=2), 
+                                                                            CaracChiffree(name="hésitation", value=5), CaracChiffree(name="memoire", value=5),
+                                                                            CaracChiffree(name="bavard", value=7), CaracChiffree(name="compassion", value=7)]})
+      if name == "traula": self = Personnage.__init__(self, dico={"nom":"Alouro", "sexe": "f", "prenom":"Traula", "ticsLangages": {"": 1},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=5), CaracChiffree(name="politesse", value=10), 
+                                                                            CaracChiffree(name="hésitation", value=0), CaracChiffree(name="memoire", value=10),
+                                                                            CaracChiffree(name="bavard", value=3), CaracChiffree(name="compassion", value=7)]})
+      if name == "alaric": self = Personnage.__init__(self, dico={"nom":"Tanneur", "sexe": "m", "prenom":"Alaric", "ticsLangages": {"": 5, "grmf": 2, "eh": 2, "hm": 2},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=7), CaracChiffree(name="politesse", value=3), 
+                                                                            CaracChiffree(name="hésitation", value=5), CaracChiffree(name="memoire", value=9),
+                                                                            CaracChiffree(name="bavard", value=1), CaracChiffree(name="compassion", value=8)]})
+      if name == "alice": self = Personnage.__init__(self, dico={"nom":"Paysan", "sexe": "f", "prenom":"Alice", "ticsLangages": {"": 5,"crénom":1,"ah":1},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=7), CaracChiffree(name="politesse", value=8), 
+                                                                            CaracChiffree(name="hésitation", value=2), CaracChiffree(name="memoire", value=7),
+                                                                            CaracChiffree(name="bavard", value=7), CaracChiffree(name="compassion", value=9)]})
+                                                                                          
+      if name == "charles": self = Personnage.__init__(self, dico={"nom":"Paysan", "sexe": "m", "prenom":"Charles", "ticsLangages": {"": 5, "euuuuuh":1,"attends":1},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=1), 
+                                                                            CaracChiffree(name="hésitation", value=2), CaracChiffree(name="memoire", value=4),
+                                                                            CaracChiffree(name="bavard", value=8), CaracChiffree(name="compassion", value=3)]})
+      if name == "rosamund": self = Personnage.__init__(self, dico={"nom":"Paysan", "sexe": "f", "prenom":"Rosamund", "ticsLangages": {"": 5, "hum": 2},
+                                                                 "caracs": [CaracChiffree(name="curiosite", value=2), CaracChiffree(name="politesse", value=7), 
+                                                                            CaracChiffree(name="hésitation", value=3), CaracChiffree(name="memoire", value=3),
+                                                                            CaracChiffree(name="bavard", value=3), CaracChiffree(name="compassion", value=3)]})
+                                                                                          
+                                                                                          
+     
     else:
       Objet.__init__(self, dico=dico) # A RAJOUTER dico EN ARGUMENT
       
