@@ -360,7 +360,7 @@ def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
       (loc, interloc, hist) = result
       test_continuer = random.randint(0,9)
       if test_continuer >= loc.getCaracValue(Caracteristique(name="bavard")) : continuer=False
-      s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
+      if continuer==True : s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
       
   s += "\n" + fin(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
   
