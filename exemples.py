@@ -30,6 +30,56 @@ def getExemplesDispo():
 def exemple(name, graph=False):
     
     
+    if name=="qinpei":
+        if True:
+            monak = Personnage(name="lancelot")
+            anne = Personnage(name="jackie")
+            monak.ajouterRelations({"ami":anne})
+            chien = monak.ajouterPossession({"lib": "chien", "noms": ["Bigni"]})
+            voyageur = Objet({"lib": "voyageur"})
+            loup = Objet({"lib": "loup"})
+            
+            balader = Action(name="balader")
+            balader.adverbes = ["tranquillement"]
+            
+            c1 = CoeurAction(sujet=monak, action=balader, cod=chien, ton = "joyeux")  
+            c1.ajouterLieu(name="dans la forêt", importance=10)                        
+            #c1.ajouterManiere(name="avec joie", importance=20)
+            c2 = CoeurAction(sujet=monak, action=Action(name="exercer"), cod=chien, ton = "joyeux")
+            c3 = CoeurAction(sujet=[monak,chien], action=Action(name="rencontrer"),cod = voyageur,ton = "neutre")
+            c4 = CoeurAction(sujet=loup, action=Action(name="battre"),cod=chien,ton ="triste")
+            c5 = CoeurDescriptifVerbal(sujet=voyageur, action=Action(name = "marcher"), ton = "neutre")
+            c5.ajouterLieu(name="dans la forêt", importance=10)
+            c6 = CoeurAction(sujet=[monak,chien], action=Action(name="continuer"),ton="neutre")
+            c7 = CoeurAction(sujet=monak,action=Action(name="pêcher"),ton="neutre")
+            c7.ajouterLieu(name="à la rivière")
+            c8 = CoeurAction(sujet=[monak,chien], action=Action(name="monter"),ton="neutre")
+            c8.ajouterLieu(name="sur la montagne")
+            c9 = CoeurAction(sujet=[monak,chien],action=Action(name="dormir"),ton="joyeux")
+            c9.ajouterLieu(name="à la belle étoile")
+            c10 = CoeurDescriptif(sujet=chien, carac=CaracChiffree(name="blesse", value=8), ton = "triste")
+            
+            
+            
+            c1.ajouterLien(Lien(coeur=c2, typeLien=OBJECTIF, importance=10))
+            c1.ajouterLien(Lien(coeur=c3, typeLien=SUITE, importance=20))
+            c2.ajouterLien(Lien(coeur=c4, typeLien=CAUSE,importance=1 ))
+            c3.ajouterLien(Lien(coeur=c5, typeLien=CAUSE,importance=1 ))
+            c4.ajouterLien(Lien(coeur=c10, typeLien=CONSEQUENCE,importance=3 ))
+            c3.ajouterLien(Lien(coeur=c6, typeLien=SUITE,importance=3 ))
+            c6.ajouterLien(Lien(coeur=c7, typeLien=OBJECTIF,importance=3 ))
+            c6.ajouterLien(Lien(coeur=c8, typeLien=SUITE,importance=3 ))
+            c8.ajouterLien(Lien(coeur=c9, typeLien=SUITE,importance=3 ))
+            
+            hist = Histoire(head=c1, titre="Monak marche avec son chien")
+            hist.ton = "joyeux"
+            monak.creerHistoire(hist)
+            
+            ajd = datetime(2021,1,22)
+            print(dialogue(monak, anne, date=ajd, useTranslation=False, useCorrection=False))
+            
+    
+    
     if name == "conjugaison":
         
         for i in range(3):
