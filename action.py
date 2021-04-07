@@ -19,7 +19,7 @@ class Action :
   def getAvailable():
     return ["decider", "payer", "choisir", "acheter", "faire a manger", "manger", "aller", "courir", "marcher", "attaquer", "tomber", "casser", "chanter", "parler", "regarder", "raconter", "voir", "ecrire", "boire",
             "crier", "sourir", "sauter", "ecouter", "dormir", "travailler", "trouver", "devenir", "balader", "ecraser", "rouler", "soigner", "aller voir", "se défouler","discuter","s'occuper","faire","tenir","livrer",
-            "vendre","patrouiller","se balader","se reposer","forger","tanner","fabriquer","chasser","installer","traiter","s'informer","réparer","moudre","reporter","couper"]
+            "vendre","patrouiller","se balader","se reposer","forger","tanner","fabriquer","chasser","installer","traiter","s'informer","réparer","moudre","reporter","couper", "exercer","rencontrer", "battre","continuer","pêcher", "monter"]
 
   def getAlike(s):
     """ Renvoie toutes les actions qui contiennent s dans leur nom"""
@@ -86,6 +86,12 @@ class Action :
       if name == "moudre"  : self = Action.__init__(self, "moudre", [[1, "[(moudre)]"]] )
       if name == "reporter"  : self = Action.__init__(self, "reporter", [[1, "[(reporter)]"]] )
       if name == "couper"  : self = Action.__init__(self, "couper", [[1, "[(couper)]"]] )
+      if name == "continuer"  : self = Action.__init__(self, "continuer", [[1, "[(continuer)]"]])
+      if name == "exercer" : self = Action.__init__(self, "exercer", [[1, "[(exercer)]"]])
+      if name == "pêcher"  : self = Action.__init__(self, "pêcher", [[1, "[(pêcher)]"]])
+      if name == "rencontrer" : self = Action.__init__(self, "rencontrer", [[1, "[(rencontrer)]"]])
+      if name == "battre"  : self = Action.__init__(self, "battre", [[1, "[(battre)]"]])
+      if name == "monter" : self = Action.__init__(self, "monter", [[1, "[(monter)]"]])
     else:
       self.lib = lib #str
       self.expressions = expressions #Liste couple [proba(float), string]
