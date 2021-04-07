@@ -35,6 +35,7 @@ def exemple(name, graph=False):
             monak = Personnage(name="lancelot")
             anne = Personnage(name="jackie")
             monak.ajouterRelations({"ami":anne})
+            anne.ajouterRelations({"ami":monak})
             chien = monak.ajouterPossession({"lib": "chien", "noms": ["Bigni"]})
             voyageur = Objet({"lib": "voyageur"})
             loup = Objet({"lib": "loup"})

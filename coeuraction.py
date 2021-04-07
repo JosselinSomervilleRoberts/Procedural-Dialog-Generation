@@ -110,6 +110,9 @@ class CoeurAction(Coeur) :
             if not(self.cod.genre is None) and self.cod.genre != genreSujet:
                 lastMentioned[self.cod.genre-1] = [self.cod]
                 
+        if not(self.cod is None) and self.cod.isLieu:
+            codUsePronom = False
+                
         if not(self.cod is None) and codUsePronom:
             pronoms = [["me", "te", "le", "nous", "vous", "les"], ["me", "te", "la", "nous", "vous", "les"]]
             genre = self.cod.genre

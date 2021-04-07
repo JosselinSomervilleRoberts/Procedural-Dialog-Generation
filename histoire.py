@@ -675,6 +675,7 @@ class Histoire:
             if len(debutPhrase) > 0:
                 phrasesPrecedentes += "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
                 
+            react = ""
             if type(previousCoeur) != int:
                 react = previousCoeur.reaction() + " "
             phrasesPrecedentes += "\n" + interlocuteur.imprimer(react + demande, useTranslation=useTranslation, useCorrection=useCorrection)

@@ -307,6 +307,28 @@ def reactionjoyeuse(interloc):  # reaction d'une histoire joyeuse
         s = interloc.imprimer("Wow c'est cool!", diversify=False)
     #if a == 3 :
     return s
+
+
+
+def enleverDesMots(s, mot):
+    l = s.split(mot + ", ")
+    count = len(l)
+    countMentioned = 0
+    s_return = ""
+    for i in range(count):
+        s_return += l[i]
+        if i < count - 1:
+            if random.random() < (2-countMentioned) / float(count) or countMentioned==0:
+                s_return += mot + ", "
+                countMentioned += 1
+    return s_return
+            
+
+def clean(s):
+    return s.replace("à le", "au")
+
+
+
 #-------------------------------------------------- La fonction (principale) du dialogue ----------------------------------------------
 def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
   if not connait(p1,p2) and not connait(p2,p1) :
@@ -341,4 +363,9 @@ def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
       s += "\n" + transition(useTranslation=useTranslation, useCorrection=useCorrection) #à définir
       
   s += "\n" + fin(p1,p2, useTranslation=useTranslation, useCorrection=useCorrection)
+  
+  # Nettoyage
+  s = enleverDesMots(s, "aujourd'hui")
+  s = enleverDesMots(s, "hier")
+  s = clean(s)
   return s
