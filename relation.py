@@ -13,9 +13,11 @@ class Relation:
         self.perso = perso
         self.nbRencontres = 0
         self.nbDiscussions = 0
-        self.relationBase = relation
+        self.relationBase = "neutre"
         self.relationDetaillee = ""
         
+        if relation == "inconnu":
+            self.relationBase = "neutre"
         if relation == "connaissance":
             self.relationBase = "neutre"
             self.nbDiscussions = 1
