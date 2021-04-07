@@ -88,6 +88,7 @@ def exemple(name, graph=False):
             marcel = Personnage(name="marcel")
             jackie = Personnage(name="jackie")
             marcel.ajouterRelations({"enfant":jackie})
+            jackie.ajouterRelations({"parent":marcel})
             chien = marcel.ajouterPossession({"lib": "chien", "noms": ["Bubule"]})
             voiture = Objet({"lib": "voiture"})
             veterinaire = Objet({"lib": "veterinaire"})
