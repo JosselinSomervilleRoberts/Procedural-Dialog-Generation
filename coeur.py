@@ -129,13 +129,13 @@ class Coeur:
 
   def reaction(self):
       s = ""
-      print("TON=", self.ton)
+      #print("TON=", self.ton)
       if self.ton == "joyeux":
            s += "Ah c'est cool!"
       if self.ton == "neutre":
            s += "Bon bah ok."
       if self.ton == "triste":
-           s += "NO c'est pas vrai!"
+           s += "Non c'est pas vrai!"
       return s 
 
 
