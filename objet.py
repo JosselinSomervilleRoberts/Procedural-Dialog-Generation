@@ -308,7 +308,7 @@ class Personnage(Objet):
   def ajouterRelations(self, dico):
       for nom in ["parent", "enfant", "adelphe", "neutre", "inconnu", "connaissance", "ami", "patron", "collègue", "employé"]:
           if nom in dico:
-              self.contacts[dico[nom].id] = Relation(dico[nom].copyStrip(), relation=nom
+              self.contacts[dico[nom].id] = Relation(dico[nom].copyStrip(), relation=nom)
 
 
   def __eq__(self, other):
