@@ -166,7 +166,8 @@ class Histoire:
     self.ton = ton # String, ton de l'histoire (triste, drôle, etc.)
     self.titre = titre # String, pour les comparaisons
     self.personnes = personnes # ___, personnages évoqués dans l'histoire (c'est là pour le moment, à voir si ça sera utile ou non)
-    self.conteur = conteur # ___, Narrateur originel de l'histoire, pour différencier les histoires personnelles des histoires rapportées
+    self.conteurs = []
+    if not(conteur is None): self.conteurs.append(conteur)
     self.dateDebut = dateDebut
     
     # Determine a qui on va dire l'histoire
@@ -309,9 +310,10 @@ class Histoire:
   def toText(self, locuteur, interlocuteur, date=None, coeurActuel=None, histInterlocuteur=None, coeurInterlocuteur=None, 
              reponse=False, phrasesPrecedentes="", debutPhrase="", nbCoeursDansLaPhrase=0, expUsed=None, lastMentioned=None,
              liensAExplorer=None, liensADemander=None, 
-             useTranslation=True, useCorrection=True): 
+             useTranslation=True, useCorrection=True, previousCoeur=None): 
       
     global STOP
+    
     
     # Pour avoir où placer le CCT
     indexCCT = len(debutPhrase)
@@ -327,27 +329,28 @@ class Histoire:
     
     
     # On oublie potentiellement certaines questions
-    liste_questions = [liensAExplorer, liensADemander]
-    for questions in liste_questions:
-        nbQuestions = len(questions)
-        toBeRemoved = []
-        
-        for i in range(nbQuestions):
-            probaOublier = 1 - ((nbQuestions - i)**0.5)*(interlocuteur.getCaracValue(Caracteristique(name="memoire")) / 10.) ** (0.33)
-            if random.random() <= probaOublier:
-                toBeRemoved.append(questions[i])
-          
-        if len(toBeRemoved):
-            #print("ON OUBLIE UNE QUESTION !!!!!!")
-            #print("len before:", len(questions))
-            for elt in toBeRemoved:
-                questions.remove(elt)
-            #print("len after:", len(questions))
+    if not(phrasesPrecedentes[-11:] == "notamment, "):
+        liste_questions = [liensAExplorer, liensADemander]
+        for questions in liste_questions:
+            nbQuestions = len(questions)
+            toBeRemoved = []
+            
+            for i in range(nbQuestions):
+                probaOublier = 1 - ((nbQuestions - i)**0.5)*(interlocuteur.getCaracValue(Caracteristique(name="memoire")) / 10.) ** (0.33)
+                if random.random() <= probaOublier:
+                    toBeRemoved.append(questions[i])
+              
+            if len(toBeRemoved):
+                #print("ON OUBLIE UNE QUESTION !!!!!!")
+                #print("len before:", len(questions))
+                for elt in toBeRemoved:
+                    questions.remove(elt)
+                #print("len after:", len(questions))
     
       
     # Si on commence à raconter l'histoire, on commence par le début
     # Il faut créer l'histoire dans la mémoire de l'interlocuteur
-    if coeurActuel is None:
+    if coeurActuel is None and not(coeurActuel is STOP):
         coeurActuel = self.head
         indexHist = interlocuteur.ajouterHistoire(self.titre, head = self.head, ton = self.ton, personnes = self.personnes, conteur = locuteur, importance=0.75*self.importance)
         histInterlocuteur = interlocuteur.histoires[indexHist]
@@ -361,26 +364,31 @@ class Histoire:
         if indexHist == -1: #True
             phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non, raconte !", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
         else:
-            conteur = interlocuteur.histoires[indexHist].conteur
-            if conteur == locuteur:
+            conteurs = interlocuteur.histoires[indexHist].conteurs
+            if locuteur in conteurs:
                 phrasesPrecedentes += "\n" + interlocuteur.imprimer("Oui tu m'en as déja parlé", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
             else:
-                phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non mais " + conteur.toText(interlocuteur, locuteur, useTranslation, useCorrection) + " m'a déja raconté.", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+                self.conteurs.append(interlocuteur)
+                if conteurs[0] == interlocuteur:
+                    phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non mais je suis déja au courant, c'est moi qui ai raconté cette histoire à " + self.conteurs[0].toText(interlocuteur, locuteur, useTranslation, useCorrection) + "qui te l'a dit ensuite !", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
+                else:
+                    phrasesPrecedentes += "\n" + interlocuteur.imprimer("Non mais " + conteurs[0].toText(interlocuteur, locuteur, useTranslation, useCorrection) + " m'a déja raconté.", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
             
             liensAExplorer += interlocuteur.histoires[indexHist].liensAExplorer
             liensADemander += interlocuteur.histoires[indexHist].liensADemander
             if len(liensAExplorer) > 0 or len(liensADemander) > 0:
+                interlocuteur.histoires[indexHist].conteurs.append(locuteur)
                 phrasesPrecedentes += "\n" + interlocuteur.imprimer("Mais je ne sais pas encore tout de cette histoire, notamment, ", diversify=False, useTranslation=useTranslation, useCorrection=useCorrection)
             
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
                                reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase="", nbCoeursDansLaPhrase=0, expUsed=None,
                                liensAExplorer=liensAExplorer, liensADemander=liensADemander,
-                               useTranslation=useTranslation, useCorrection=useCorrection)
+                               useTranslation=useTranslation, useCorrection=useCorrection, previousCoeur=coeurActuel)
         
         return self.toText(locuteur, interlocuteur, date=date, coeurActuel=self.head, histInterlocuteur=histInterlocuteur,  coeurInterlocuteur=coeurInterlocuteur,
                            reponse=False, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=locuteur.getTic(interlocuteur, False) + "alors, ", nbCoeursDansLaPhrase=0, expUsed=None,
                            liensAExplorer=None, liensADemander=None,
-                           useTranslation=useTranslation, useCorrection=useCorrection)
+                           useTranslation=useTranslation, useCorrection=useCorrection, previousCoeur=coeurActuel)
             
             
     
@@ -536,7 +544,7 @@ class Histoire:
         return self.toText(locuteur, interlocuteur, date=date, coeurActuel=STOP, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
                            phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, expUsed=expUsed, lastMentioned=lastMentioned,
                            liensAExplorer=liensAExplorer, liensADemander=liensADemander,
-                           useTranslation=useTranslation, useCorrection=useCorrection)
+                           useTranslation=useTranslation, useCorrection=useCorrection, previousCoeur=coeurActuel)
         #return phrasesPrecedentes + "\n" + locuteur.imprimer(ajouterPonctuation(debutPhrase), useTranslation=useTranslation, useCorrection=useCorrection)
     
     
@@ -581,7 +589,7 @@ class Histoire:
       return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienChoisi.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
                          phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=nbCoeursDansLaPhrase, expUsed=expUsed, lastMentioned=lastMentioned,
                          liensAExplorer=liensAExplorer, liensADemander=liensADemander,
-                         useTranslation=useTranslation, useCorrection=useCorrection)
+                         useTranslation=useTranslation, useCorrection=useCorrection, previousCoeur=lienChoisi.coeur)
   
       # ==================================================================================== #
       
@@ -589,6 +597,10 @@ class Histoire:
     
         # Le locuteur peut décider de partir
         probaPartir = 1 - (0.4 + 0.05*locuteur.getCaracValue(Caracteristique(name="bavard")))
+        
+        if phrasesPrecedentes[-11:] == "notamment, ":
+            probaPartir = 0
+
         if random.random() <= probaPartir:
             # On ajoute au texte
             if len(debutPhrase) > 0:
@@ -638,7 +650,7 @@ class Histoire:
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lien.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
                                reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, expUsed=expUsed, lastMentioned=lastMentioned,
                                liensAExplorer=liensAExplorer, liensADemander=liensADemander,
-                               useTranslation=useTranslation, useCorrection=useCorrection)
+                               useTranslation=useTranslation, useCorrection=useCorrection, previousCoeur=lien.coeur)
             
         elif len(liensAExplorer) > 0:
             d = random.choice(liensAExplorer)
@@ -684,7 +696,7 @@ class Histoire:
             return self.toText(locuteur, interlocuteur, date=date, coeurActuel=lienExploration.coeur, histInterlocuteur=histInterlocuteur, coeurInterlocuteur=coeurInterlocuteur,
                                reponse=True, phrasesPrecedentes=phrasesPrecedentes, debutPhrase=debutPhrase, nbCoeursDansLaPhrase=0, expUsed=expUsed, lastMentioned=lastMentioned,
                                liensAExplorer=liensAExplorer, liensADemander=liensADemander,
-                               useTranslation=useTranslation, useCorrection=useCorrection)
+                               useTranslation=useTranslation, useCorrection=useCorrection, previousCoeur=lienExploration.coeur)
             
         else: # Il n'y a pas de liens a demander ni explorer
             if len(debutPhrase) > 0:

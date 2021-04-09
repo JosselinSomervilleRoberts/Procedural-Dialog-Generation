@@ -143,7 +143,7 @@ def exemple(name, graph=False):
                 dot = hist.getGraph()
                 dot.render(nom, view=True, format="png")
     
-            ajd = datetime(2021,1,22)
+            ajd = datetime(2021,1,24)
             print(dialogue(jackie, marcel, date=ajd, useTranslation=False, useCorrection=False))
             
           
@@ -154,6 +154,9 @@ def exemple(name, graph=False):
         marcel = Personnage(name="marcel")
         jackie = Personnage(name="jackie")
         kevin = Personnage(name="kevin")
+        marcel.ajouterRelations({"ami":[jackie,kevin]})
+        jackie.ajouterRelations({"ami":[marcel,kevin]})
+        kevin.ajouterRelations({"ami":[jackie,marcel]})
         
         chien = marcel.ajouterPossession({"lib": "chien", "noms": ["Bubule"]})
         voiture = Objet({"lib": "voiture"})

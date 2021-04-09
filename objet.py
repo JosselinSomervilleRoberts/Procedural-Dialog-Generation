@@ -308,7 +308,9 @@ class Personnage(Objet):
   def ajouterRelations(self, dico):
       for nom in ["parent", "enfant", "adelphe", "neutre", "inconnu", "connaissance", "ami", "patron", "collègue", "employé"]:
           if nom in dico:
-              self.contacts[dico[nom].id] = Relation(dico[nom].copyStrip(), relation=nom)
+              if not(type(dico[nom] == list)): dico[nom] = [dico[nom]]
+              for perso in dico[nom]:
+                  self.contacts[perso.id] = Relation(perso.copyStrip(), relation=nom)
 
 
   def __eq__(self, other):
@@ -409,7 +411,7 @@ class Personnage(Objet):
     
   def creerHistoire(self, hist):
       if not(hist is None) and self.indexHistoire(hist.titre) == -1:
-          hist.conteur = self
+          hist.conteurs = [self]
           self.histoires.append(hist)
           
   def update(self, heure):

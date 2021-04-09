@@ -74,14 +74,14 @@ def switcheroo(a,b) : #Echange aléatoirement a et b (peu importe ce que sont a 
       return b, a
 
 #------------- Fonction annexe
-def intersection(histsA, histsB) : #On part de deux listes d'objets Histoire A et B, et on construit l'intersection, le reste de A et le reste B
+def intersection(histsA, histsB, persoA, persoB) : #On part de deux listes d'objets Histoire A et B, et on construit l'intersection, le reste de A et le reste B
   resteA, resteB, intersection, intersectionDif = [], [], [], [] #intersectionDif correspond aux histoires communes mais pas entendues de la même personne
   for a in histsA : #construction de l'intersection et du reste de histsA
     isInB = False
     for b in histsB :
       if a.titre==b.titre :
         #print(a.conteur, b.conteur)
-        if a.conteur == b.conteur:
+        if (a.conteurs[0] == b.conteurs[0]) or (persoA in b.conteurs) or (persoB in a.conteurs):
             intersection.append(a)
         else:
             intersectionDif.append((a,b))
@@ -226,7 +226,7 @@ def histoireQuiPeuventEtresRacontees(hists1, p1, p2):
 
 #------------- Détermination du locuteur et de l'interlocuteur / du cas où les personnages n'ont rien à raconter (pas d'histoire / histoires connues par les deux)
 def quiparle(p1,p2) :
-  hists1, hists2, intersect, intersectionDif = intersection(p1.histoires, p2.histoires)
+  hists1, hists2, intersect, intersectionDif = intersection(p1.histoires, p2.histoires, p1, p2)
   hists1_trie = sorted(histoireQuiPeuventEtresRacontees(hists1, p1, p2), key=lambda h: h.importance)[::-1]
   hists2_trie = sorted(histoireQuiPeuventEtresRacontees(hists2, p2, p1), key=lambda h: h.importance)[::-1]
   intersectionDif_trie_p1 = sorted(intersectionDif, key=lambda h: h[0].importance)[::-1]
@@ -262,7 +262,7 @@ def raconter(loc, interloc, date=None, useTranslation=True, useCorrection=True) 
 
 #------------- #Fonction de sélection de l'histoire à raconter, qui n'est pas dans la liste des histoires connues par l'interlocuteur
 def pickStory(loc, interloc) :
-  resteLoc, resteInterloc, intersect, intersectionDif = intersection(loc.histoires, interloc.histoires) #On prend les histoires que l'interlocuteur ne connaît pas
+  resteLoc, resteInterloc, intersect, intersectionDif = intersection(loc.histoires, interloc.histoires, loc, interloc) #On prend les histoires que l'interlocuteur ne connaît pas
   if len(resteLoc) > 0:
       return resteLoc[random.randrange(len(resteLoc))] #On en prend une au hasard
   else:
@@ -326,13 +326,13 @@ def enleverDesMots(s, mot):
             
 
 def clean(s):
-    regs = [[r'(le|la) (a|e|i|o|u|y|é|à|è|h)', 3],  [r'que (a|e|i|o|u|y|é|à|è)', 4]]
+    regs = [[r' (le|la) (a|e|i|o|u|y|é|à|è|h)', 4, " l'"],  [r' que (a|e|i|o|u|y|é|à|è)', 5, " que'"]]
     for elt in regs:
         reg = elt[0]
         long = elt[1]
         c = re.search(reg, s)
         while not(c is None):
-          s = s[:c.span()[0]] + "l'" + s[c.span()[0]+long:] # On eneleve "le "
+          s = s[:c.span()[0]] + elt[2] + s[c.span()[0]+long:] # On eneleve "le "
           c = re.search(reg, s)
     
     s = s.replace("à le", "au")
