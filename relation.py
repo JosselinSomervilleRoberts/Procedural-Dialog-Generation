@@ -25,7 +25,7 @@ class Relation:
             self.relationBase = "neutre"
             self.nbDiscussions = 3
             
-        if relation in ["parent", "enfant", "adelphe"]:
+        if relation in ["parent", "enfant", "adelphe", "époux"]:
             self.relationBase = "famille"
             self.relationDetaillee = relation
         

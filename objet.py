@@ -306,7 +306,7 @@ class Personnage(Objet):
 
 
   def ajouterRelations(self, dico):
-      for nom in ["parent", "enfant", "adelphe", "neutre", "inconnu", "connaissance", "ami", "patron", "collègue", "employé"]:
+      for nom in ["parent", "enfant", "adelphe", "époux", "neutre", "inconnu", "connaissance", "ami", "patron", "collègue", "employé"]:
           if nom in dico:
               if not(type(dico[nom] == list)): dico[nom] = [dico[nom]]
               for perso in dico[nom]:
