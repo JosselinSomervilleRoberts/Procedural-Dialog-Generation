@@ -101,10 +101,10 @@ def exemple(name, graph=False):
             c1.ajouterManiere(name="avec joie", importance=20)                                          
             c2 = CoeurAction(sujet=voiture, action=Action(name="ecraser"), cod=chien, ton = "triste")
             c3 = CoeurDescriptifVerbal(sujet=voiture, action=rouler, ton = "neutre")
-            c4 = CoeurDescriptif(sujet=marcel, carac=CaracChiffree(name="colere", value=8), ton = "neutre")
-            c5 = CoeurAction(sujet=[marcel,chien], action=Action(name="aller voir"), cod=veterinaire, ton = "neutre")
+            c4 = CoeurDescriptif(sujet=marcel, carac=CaracChiffree(name="colere", value=8), ton = "triste")
+            c5 = CoeurAction(sujet=[marcel,chien], action=Action(name="aller voir"), cod=veterinaire, ton = "triste")
             c6 = CoeurAction(sujet=veterinaire, action=Action(name="soigner"), cod=chien, ton = "joyeux")   
-            c7 = CoeurAction(sujet=marcel, action=Action(name="casser"), cod=voiture, ton = "neutre") 
+            c7 = CoeurAction(sujet=marcel, action=Action(name="casser"), cod=voiture, ton = "triste") 
             c8 = CoeurAction(sujet=chien, action=Action(name="se défouler"), ton = "neutre")
             
             #c2.ajouterMoment(moment=c1, importance=50)

@@ -10,6 +10,7 @@ import random
 from psclib.relation import Relation
 from psclib.diversifieur import diversifier
 from psclib.caracteristique import Caracteristique
+import re
 
 
 
@@ -325,7 +326,17 @@ def enleverDesMots(s, mot):
             
 
 def clean(s):
-    return s.replace("à le", "au")
+    regs = [[r'(le|la) (a|e|i|o|u|y|é|à|è|h)', 3],  [r'que (a|e|i|o|u|y|é|à|è)', 4]]
+    for elt in regs:
+        reg = elt[0]
+        long = elt[1]
+        c = re.search(reg, s)
+        while not(c is None):
+          s = s[:c.span()[0]] + "l'" + s[c.span()[0]+long:] # On eneleve "le "
+          c = re.search(reg, s)
+    
+    s = s.replace("à le", "au")
+    return s
 
 
 
