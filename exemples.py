@@ -217,6 +217,8 @@ def exemple(name, graph=False):
                 
         print("\n\n\n")
         print(dialogue(kevin, marcel, date=ajd, useTranslation=False, useCorrection=False))
+        print(dialogue(kevin, marcel, date=ajd, useTranslation=False, useCorrection=False))
+        print(dialogue(kevin, marcel, date=ajd, useTranslation=False, useCorrection=False))
         
         if graph:
             persos = [marcel, jackie, kevin]
