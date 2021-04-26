@@ -110,7 +110,8 @@ class Objet(object):
       usePossessif = True
 
     if not(self.noms is None) and len(self.noms) > 0 and random.random() and self in interlocuteur.objets and random.random() >= 1/(1+len(self.noms)):
-      return random.choice(self.noms)
+      choix_nom = random.choice(self.noms)
+      return choix_nom[0].upper() + choix_nom[1:]
 
 
     # Nom de l'objet
@@ -159,7 +160,12 @@ class Objet(object):
         interlocuteur.objets.append(self)
         if not(self.noms is None) and len(self.noms) > 0 and random.random():
             exp += ", " + random.choice(self.noms) + ","
-    return exp[0].lower() + exp[1:]
+            
+            
+    if useCorrection:
+        return exp[0].lower() + exp[1:]
+    else:
+        return exp
 
 
 
@@ -185,7 +191,7 @@ class Personnage(Objet):
       if name == "mickey": self = Personnage.__init__(self, dico={"nom":"Mouse", "prenom":"Mickey"})
       if name == "joe": self = Personnage.__init__(self, dico={"nom":"Dalton", "prenom":"Joe"})
       if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=10)]})
-      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10)]})
+      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="memoire", value=0)]})
       if name == "kevin": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Kev", "ticsLangages": {"": 1, "genre": 1, "wesh,": 8, "en fait": 1, "du coup": 1},
                                                                  "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=2), 
                                                                             CaracChiffree(name="hésitation", value=10), CaracChiffree(name="memoire", value=2)]})
@@ -376,7 +382,7 @@ class Personnage(Objet):
 
 
   def toText(self, locuteur=None, interlocuteur=None, sujet=None, useTranslation=True, useCorrection=True):
-    return self.prenom + " " + self.nom
+    return self.prenom[0].upper() + self.prenom[1:] + " " + self.nom[0].upper() + self.nom[1:]
 
 
   def indexHistoire(self, titre):

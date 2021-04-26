@@ -150,7 +150,7 @@ class CoeurAction(Coeur) :
             exp = vb
             
             
-      if not(self.cod is None) and self.cod.genre == 2 and self.temps=="passé-composé":
+      if not(self.cod is None) and self.cod.genre == 2 and self.temps=="passé-composé" and codUsePronom:
           exp += "e"
           
       exp = exp.replace("\' ", "\'")
@@ -162,4 +162,9 @@ class CoeurAction(Coeur) :
     s = s[:-1]
     self.transmissionInfos(locuteur, interlocuteur)
     exp = correct(s, useCorrection=useCorrection)
-    return exp[0].lower() + exp[1:]
+    
+    
+    if useCorrection:
+        return exp[0].lower() + exp[1:]
+    else:
+        return exp

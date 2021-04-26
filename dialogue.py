@@ -326,7 +326,7 @@ def enleverDesMots(s, mot):
             
 
 def clean(s):
-    regs = [[r' (le|la) (a|e|i|o|u|y|é|à|è|h)', 4, " l'"],  [r' que (a|e|i|o|u|y|é|à|è)', 5, " que'"]]
+    regs = [[r' (le|la) (a|e|i|o|u|y|é|à|è|h)', 4, " l'"],  [r' que (a|e|i|o|u|y|é|à|è)', 5, " qu'"]]
     for elt in regs:
         reg = elt[0]
         long = elt[1]

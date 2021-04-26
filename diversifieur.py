@@ -130,6 +130,7 @@ def get_syn(s, registre=None):
   - syn_choisi: str. (Un synonyme choisi aléatoirement)
   """
   global syns
+  return s # DESACTIVE LES SYNONYMES
   
   if len(syns) == 0:
     buildSynonyms()

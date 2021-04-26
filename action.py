@@ -17,7 +17,7 @@ from psclib.diversifieur import cong
 class Action :
 
   def getAvailable():
-    return ["decider", "payer", "choisir", "acheter", "faire a manger", "manger", "aller", "courir", "marcher", "attaquer", "tomber", "casser", "chanter", "parler", "regarder", "raconter", "voir", "ecrire", "boire",
+    return ["s'exercer", "decider", "payer", "choisir", "acheter", "faire a manger", "manger", "aller", "courir", "marcher", "attaquer", "tomber", "casser", "chanter", "parler", "regarder", "raconter", "voir", "ecrire", "boire",
             "crier", "sourir", "sauter", "ecouter", "dormir", "travailler", "trouver", "devenir", "balader", "ecraser", "rouler", "soigner", "aller voir", "se défouler","discuter","s'occuper","faire","tenir","livrer",
             "vendre","patrouiller","se balader","se reposer","forger","tanner","fabriquer","chasser","installer","traiter","s'informer","réparer","moudre","reporter","couper", "exercer","rencontrer", "battre","continuer","pêcher", "monter"]
 
@@ -92,6 +92,7 @@ class Action :
       if name == "rencontrer" : self = Action.__init__(self, "rencontrer", [[1, "[(rencontrer)]"]])
       if name == "battre"  : self = Action.__init__(self, "battre", [[1, "[(battre)]"]])
       if name == "monter" : self = Action.__init__(self, "monter", [[1, "[(monter)]"]])
+      if name == "s'exercer" : self = Action.__init__(self, "s'exercer", [[1, "[(s'exercer)]"]])
     else:
       self.lib = lib #str
       self.expressions = expressions #Liste couple [proba(float), string]
