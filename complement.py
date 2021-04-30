@@ -21,7 +21,7 @@ class Complement():
         return ""
     
         
-    def toText(self, locuteur=None, interlocuteur=None, useTranslation=True, useCorrection=True):
+    def toText(self, locuteur=None, interlocuteur=None, date=None, useTranslation=True, useCorrection=True):
         if len(self.name) > 0:
             return random.choice(self.name)
         else:

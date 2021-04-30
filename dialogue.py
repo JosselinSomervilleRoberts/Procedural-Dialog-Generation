@@ -336,6 +336,11 @@ def clean(s):
           c = re.search(reg, s)
     
     s = s.replace("à le", "au")
+    s = s.replace("dans à", "dans")
+    s = s.replace("derrière à", "derrière")
+    s = s.replace("devant à", "devant")
+    s = s.replace("à côté à", "à côté")
+    s = s.replace("à côté de à", "à côté de")
     return s
 
 

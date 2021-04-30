@@ -40,6 +40,8 @@ class Objet(object):
         self.caracs = dico["caracs"]
       if "noms" in dico:
         self.noms = dico["noms"]
+      if "quantite" in dico:
+        self.quantite = dico["quantite"]
     
     if not(self.lib is None): 
         self.genre = get_genre(self.lib)
@@ -146,7 +148,8 @@ class Objet(object):
         if self.proprio is None: # On considère que c'est indéfini
           determinant = "un"
           if self.genre == 2: determinant = "une"
-          exp = determinant + " " + exp[3:]
+          if self.quantite > 1: determinant = "des"
+          exp = determinant + " " + exp[3:] + ("s"*(self.quantite>1))
         elif usePossessif:
           exp = listePossessifs[personne-1] + " " +exp[3:]
         elif mentionProprio:
@@ -191,7 +194,7 @@ class Personnage(Objet):
       if name == "mickey": self = Personnage.__init__(self, dico={"nom":"Mouse", "prenom":"Mickey"})
       if name == "joe": self = Personnage.__init__(self, dico={"nom":"Dalton", "prenom":"Joe"})
       if name == "marcel": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Marcel", "caracs": [CaracChiffree(name="bavard", value=10)]})
-      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="memoire", value=0)]})
+      if name == "jackie": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Jackie", "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="memoire", value=10)]})
       if name == "kevin": self = Personnage.__init__(self, dico={"nom":"", "sexe": "m", "prenom":"Kev", "ticsLangages": {"": 1, "genre": 1, "wesh,": 8, "en fait": 1, "du coup": 1},
                                                                  "caracs": [CaracChiffree(name="curiosite", value=10), CaracChiffree(name="politesse", value=2), 
                                                                             CaracChiffree(name="hésitation", value=10), CaracChiffree(name="memoire", value=2)]})
@@ -358,8 +361,13 @@ class Personnage(Objet):
 
 
   def ajouterPossession(self, dico):
-      dico["proprio"] = self
-      objet = Objet(dico)
+      objet = None
+      if type(dico) == dict:
+          dico["proprio"] = self
+          objet = Objet(dico)
+      else:
+          objet = dico
+          objet.proprio = self
       self.objets.append(objet)
       return objet
 
@@ -382,7 +390,14 @@ class Personnage(Objet):
 
 
   def toText(self, locuteur=None, interlocuteur=None, sujet=None, useTranslation=True, useCorrection=True):
-    return self.prenom[0].upper() + self.prenom[1:] + " " + self.nom[0].upper() + self.nom[1:]
+      prenomStr, nomStr, separateur = "", "", ""
+      if len(self.prenom) > 0:
+          prenomStr = self.prenom[0].upper() + self.prenom[1:]
+      if len(self.nom) > 0:
+          nomStr = self.nom[0].upper() + self.nom[1:]
+      if len(nomStr) > 0:
+          separateur = " "
+      return prenomStr + separateur + nomStr
 
 
   def indexHistoire(self, titre):

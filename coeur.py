@@ -92,7 +92,10 @@ class Coeur:
       
   def ajouterMoment(self, complement=None, name="", moment=None, rapport="", date=None, importance=1):
       if complement is None: complement = Moment(name=name, moment=moment, rapport=rapport, date=date)
-      if not(date is None): self.date = date # On ajoute le temps
+      if not(date is None):
+          self.date = date # On ajoute le temps
+      else:
+          date = self.date
       coeur = CoeurComplement(complement, self, typeComplement=COMPLEMENT_TEMPS)
       if not(date is None): coeur.date = date
       self.liens.append(Lien(coeur, COMPLEMENT_TEMPS, importance=importance))
