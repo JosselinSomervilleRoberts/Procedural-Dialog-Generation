@@ -119,7 +119,7 @@ class CoeurAction(Coeur) :
             if genre is None: genre = 1
             expCod = " " + pronoms[genre-1][personneCod-1]
             if self.temps=="passé-composé":
-                expCod = expCod.replace("le", "l\'").replace("la", "l\'")
+                expCod = expCod.replace("le ", "l\'").replace("la ", "l\'")
     
             
             
