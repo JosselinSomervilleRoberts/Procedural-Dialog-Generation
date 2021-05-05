@@ -162,7 +162,13 @@ def accrocheFamille(p1, p2,useTranslation=True, useCorrection=True):
             appelation = "ma fille"
         else:
             appelation = p2.prenom
-            
+    if lien == "époux":
+        if p2.sexe == "m":
+            appelation = "chéri"
+        elif p2.sexe == "f":
+            appelation = "chérie"
+        else :
+            appelation = p2.prenom 
     sal = random.choice(salutations)
     s = p1.imprimer(sal + " " + appelation + " !",  useTranslation=useTranslation, useCorrection=useCorrection) + "\n"
     s += p2.imprimer(sal + " !", useTranslation=useTranslation, useCorrection=useCorrection)  
@@ -370,7 +376,6 @@ def dialogue(p1,p2, date=None, useTranslation=True, useCorrection=True) :
     # Pour enchainer
     result = quiparle(p1,p2)
     if result is None:
-      s += "\n" + "~~ Les deux personnages n'ont rien à se dire... Une gêne sensible s'installe... ~~"
       continuer = False
     else:
       (loc, interloc, hist) = result
